@@ -32,7 +32,11 @@ if not firebase_admin._apps:
                 print("⚠️ Warning: 'firebase-credentials.json' not found.")
         
         if cred:
-            initialize_app(cred)
+            # Fix: Explicitly set the project ID to avoid "A project ID is required" error
+            initialize_app(cred, options={
+                'projectId': 'genaihack-240d7',
+                'storageBucket': 'genaihack-240d7.firebasestorage.app' 
+            })
             print("✅ Firebase Admin SDK initialized successfully.")
     except Exception as e:
         print(f"❌ Failed to initialize Firebase Admin SDK: {e}")
@@ -89,10 +93,24 @@ async def debug_auth():
             
     # 2. Check Initialization
     is_initialized = bool(firebase_admin._apps)
+    project_id = "Unknown"
+    service_account_email = "Unknown"
     
+    if is_initialized:
+        try:
+            app = firebase_admin.get_app()
+            project_id = app.project_id
+            # Try to get credential details if available
+            if app.credential:
+                 service_account_email = getattr(app.credential, 'service_account_email', "N/A")
+        except Exception as e:
+            project_id = f"Error retrieving: {str(e)}"
+
     return {
         "firebase_admin_initialized": is_initialized,
         "environment_variable_status": env_status,
+        "project_id_used_by_backend": project_id,
+        "service_account_email": service_account_email,
         "backend_pid": os.getpid(),
         "python_version": sys.version
     }

@@ -38,8 +38,9 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> Dict[str, Any
         return decoded_token
     except Exception as e:
         print(f"Auth error in get_current_user: {e}")
+        # DEBUG: Returning the actual error message to the frontend to diagnose the 401 issue
         raise HTTPException(
             status_code=401,
-            detail="Invalid authentication credentials",
+            detail=f"Authentication failed: {str(e)}", 
             headers={"WWW-Authenticate": "Bearer"},
         )
