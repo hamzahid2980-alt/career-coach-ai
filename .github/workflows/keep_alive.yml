@@ -1,0 +1,17 @@
+name: Keep Render Alive
+
+on:
+  schedule:
+    # Run every 14 minutes (Render sleeps after 15 mins of inactivity)
+    - cron: '*/14 * * * *'
+  workflow_dispatch: # Allows manual triggering
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Render Backend
+        run: |
+          # Replace with your ACTUAL Render backend URL
+          # Using a safe timeout to avoid hanging if it's currently waking up
+          curl -I https://career-guider-backend.onrender.com || echo "Ping failed (server might be starting up)"
