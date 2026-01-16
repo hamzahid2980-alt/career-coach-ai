@@ -1,5 +1,5 @@
 const firebaseConfig = {
-    apiKey: "YOUR_FIREBASE_API_KEY", // Replace with your actual key in production (or use environment variables if applicable)
+    apiKey: "AIzaSyBD9ChoveaB_T2Oin5qeoo3GYZLiakzDUk", // Replace with your actual key in production (or use environment variables if applicable)
     authDomain: "genaihack-240d7.firebaseapp.com",
     projectId: "genaihack-240d7",
     storageBucket: "genaihack-240d7.firebasestorage.app",
