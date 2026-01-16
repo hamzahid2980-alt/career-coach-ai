@@ -38,6 +38,13 @@ def setup_api_keys():
         print(f"DEBUG: .env not found at {env_path}, trying default load_dotenv()")
         load_dotenv()
     
+    # Support for comma-separated keys (Render friendly)
+    multi_keys = os.getenv("GEMINI_API_KEYS")
+    if multi_keys:
+        parsed_keys = [k.strip() for k in multi_keys.split(',') if k.strip()]
+        API_KEYS.extend(parsed_keys)
+        print(f"Loaded {len(parsed_keys)} keys from GEMINI_API_KEYS")
+
     i = 1
     while True:
         key = os.getenv(f"GEMINI_API_KEY_{i}")
@@ -45,7 +52,8 @@ def setup_api_keys():
              key = os.getenv("GOOGLE_API_KEY") # Backward compatibility for the first key
 
         if key:
-            API_KEYS.append(key)
+            if key not in API_KEYS:
+                API_KEYS.append(key)
             i += 1
         else:
             break
