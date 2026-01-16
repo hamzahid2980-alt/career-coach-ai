@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Smart Job Mapping - AI Career Coach</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style/joblisting.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="icon" type="image/png" href="./assets/favicon.png"> 
+</head>
+<body>
+  <div class="background-glow"></div>
+
+  <header class="page-header" role="banner">
+    <div class="header-content">
+      <a href="home.html" class="logo-link" aria-label="Homepage">
+        <h1 id="page-title" class="main-title">
+          <span>AI Career Coach</span>
+        </h1>
+      </a>
+      <nav class="header-nav" role="navigation" aria-label="Main navigation">
+        <a href="home.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+        <a href="profile.html" class="nav-link"><i class="fas fa-user-circle"></i> Profile</a>
+        <a href="roadmap.html" class="nav-link"><i class="fas fa-road"></i> Roadmap</a>
+        <button id="logoutButton" class="nav-button"><i class="fas fa-sign-out-alt"></i> Logout</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="container" role="main">
+    <section class="search-panel-wrapper" aria-labelledby="search-heading">
+      <div class="search-content">
+        <h2 id="search-heading" class="search-title">Find Your Next Career Move</h2>
+        <p class="search-tagline">Upload your resume. Let our AI find the perfect job for you.</p>
+      </div>
+      <form id="job-search-form" class="search-form card">
+        <div class="upload-area-container" id="upload-area-container">
+          <div class="upload-area" id="dropzone" tabindex="0">
+            <i class="fas fa-file-arrow-up upload-icon"></i>
+            <span id="file-name-display">Click to upload or drag & drop resume</span>
+            <input type="file" id="resumeUpload" accept=".pdf,.docx" class="file-input-native" />
+          </div>
+          <!-- NEW: Saved Resume Display UI -->
+          <div id="saved-resume-info-display" class="saved-resume-info hidden">
+              <p><i class="fas fa-file-alt"></i> Saved Resume: <span id="savedResumeName">N/A</span></p>
+              <!-- <p><i class="fas fa-calendar-alt"></i> Last Processed: <span id="savedResumeDate">N/A</span></p> -->
+          </div>
+        </div>
+        <div class="input-group">
+          <i class="fas fa-map-marker-alt"></i>
+          <input type="text" id="locationInput" placeholder="Location" value="Pune">
+        </div>
+        <button type="button" id="findJobsButton" class="btn primary-btn">
+          <i class="fas fa-search"></i> Find Jobs
+        </button>
+      </form>
+      <div class="form-footer">
+        <label class="checkbox-label">
+          <input type="checkbox" id="useSavedResumeCheckbox"> Use my saved resume from the Archives
+        </label>
+        <div id="job-search-status" class="status-message hidden" role="status" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <div id="loading" class="loading-wrapper hidden" role="status" aria-live="polite">
+      <div class="spinner"></div>
+      <p class="loading-text">Analyzing your profile and scanning thousands of jobs...</p>
+    </div>
+
+    <section id="results-container" class="hidden" aria-labelledby="results-title">
+      <div class="results-header">
+        <h2 id="results-title" class="results-heading">Recommended For You</h2>
+        <div class="results-meta">
+          <div id="matchCount" class="count-badge">0 Matches</div>
+          <button id="startNewSearchButton" class="btn secondary-btn"><i class="fas fa-redo"></i> New Search</button>
+        </div>
+      </div>
+
+      <div class="skills-summary card" aria-labelledby="skills-heading">
+        <h3 id="skills-heading"><i class="fas fa-star"></i> Key Skills Detected</h3>
+        <ul id="skills-list" class="chips" role="list"></ul>
+      </div>
+
+      <div id="jobs-list" class="jobs-grid" aria-live="polite">
+        </div>
+      <div id="no-jobs-message" class="card hidden">
+        <h3><i class="fas fa-exclamation-circle"></i> No Matches Found</h3>
+        <p>We couldn't find jobs matching your profile right now. Try uploading an updated resume or broadening your search.</p>
+      </div>
+    </section>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <script src="./script/auth.js"></script>
+  <script src="./script/joblisting.js"></script>
+</body>
+</html>

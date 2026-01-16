@@ -1,0 +1,480 @@
+ /* --- AI Career Coach Theme --- */
+        :root {
+            --bg-main: #0B0A10;
+            --bg-card: #13111C;
+            --border-color: rgba(138, 73, 255, 0.2);
+            --primary: #8A49FF;
+            --primary-hover: #702cf8;
+            --secondary: #2C2A3A;
+            --text-light: #EAEBF0;
+            --text-muted: #A09DB8;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --radius: 16px;
+            --shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+            --font-main: 'Poppins', system-ui, sans-serif;
+        }
+
+        /* --- Base & Body Styles --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-main);
+            background-image: linear-gradient(rgba(255,255,255,0.01) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.01) 1px, transparent 1px);
+            background-size: 35px 35px;
+            color: var(--text-light);
+            min-height: 100vh;
+            position: relative;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* --- Background Glow --- */
+        .background-glow {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(138, 73, 255, 0.1) 0%, rgba(138, 73, 255, 0) 60%);
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: -1;
+            animation: pulseGlow 8s ease-in-out infinite;
+        }
+
+        /* --- Main Container --- */
+        .container-wrapper {
+             max-height: 100vh;
+             overflow-y: auto;
+             overflow-x: hidden;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 2.5rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* --- Page Header --- */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+            animation: fadeInDown 0.8s ease-out;
+        }
+        .page-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: var(--text-light);
+        }
+        .page-header h1 i { color: var(--primary); }
+        
+        .header-nav { display: flex; gap: 1rem; }
+        .nav-link, .nav-button {
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.7rem 1.3rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+            background: transparent;
+            cursor: pointer;
+        }
+        .nav-link:hover, .nav-button:hover {
+            color: var(--text-light);
+            background-color: var(--secondary);
+            border-color: var(--primary);
+        }
+
+        /* --- General Card Styling --- */
+        .card {
+            background: linear-gradient(145deg, rgba(22, 19, 33, 0.8), rgba(22, 19, 33, 0.95));
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 2.5rem;
+            margin-bottom: 2.5rem;
+            box-shadow: var(--shadow);
+            animation: fadeInUp 0.5s ease-out forwards;
+            opacity: 0;
+            transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(138, 73, 255, 0.4);
+            box-shadow: var(--shadow), 0 0 45px rgba(138, 73, 255, 0.2);
+        }
+        .card h2, .card h3 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        .card h2 i, .card h3 i { color: var(--primary); }
+        .section-description {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            margin-top: -1.5rem;
+            max-width: 80%;
+        }
+
+        /* --- Form Specifics --- */
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.75rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+        
+        /* === FIX STARTS HERE === */
+        /* This rule now styles textareas inside a .form-group OR a textarea that has the class .form-group */
+        .form-group input, 
+        .form-group textarea, 
+        .form-group select,
+        textarea.form-group {
+            width: 100%;
+            background-color: var(--bg-main);
+            border: 1px solid var(--border-color);
+            color: var(--text-light);
+            padding: 0.9rem 1.1rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            font-family: var(--font-main);
+        }
+        
+        .form-group select {
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%238E8C99' class='bi bi-chevron-down' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+        }
+
+        /* This rule now styles the :focus state for the above elements as well */
+        .form-group input:focus, 
+        .form-group textarea:focus, 
+        .form-group select:focus,
+        textarea.form-group:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(138, 73, 255, 0.2);
+        }
+        /* === FIX ENDS HERE === */
+
+        .form-group small {
+            display: block;
+            margin-top: 0.75rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* --- Buttons --- */
+        .form-actions {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1.5rem;
+            margin-top: 2.5rem;
+            flex-wrap: wrap;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.7rem;
+            font-weight: 600;
+            font-size: 1rem;
+            padding: 0.9rem 1.8rem;
+            border-radius: 12px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s ease-in-out;
+            border: none;
+        }
+        .primary-btn {
+            background: linear-gradient(90deg, var(--primary), var(--primary-hover));
+            color: white;
+            box-shadow: 0 4px 20px rgba(138, 73, 255, 0.25);
+        }
+        .primary-btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(138, 73, 255, 0.35);
+        }
+        .secondary-btn {
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+        }
+        .secondary-btn:hover:not(:disabled) { border-color: var(--primary); color: var(--text-light); background-color: var(--secondary); transform: translateY(-2px); }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        /* --- Status & Loading --- */
+        .hidden { display: none !important; }
+        .status-message {
+            text-align: center;
+            padding: 1.2rem;
+            margin-top: 2rem;
+            border-radius: var(--radius);
+            font-weight: 500;
+        }
+        .status-message.error { background-color: rgba(220, 53, 69, 0.1); border: 1px solid var(--danger); color: var(--danger); }
+        .status-message.success { background-color: rgba(40, 167, 69, 0.1); border: 1px solid var(--success); color: var(--success); }
+        .status-message.warning { background-color: rgba(255, 193, 7, 0.1); border: 1px solid var(--warning); color: var(--warning); }
+        
+        #loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            backdrop-filter: blur(5px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+        }
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            border-left-color: var(--primary);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        
+        /* --- Assessment-Specific Styles --- */
+        .question-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            gap: 1rem;
+        }
+        .progress-bar-container {
+            flex-grow: 1;
+            height: 10px;
+            background-color: var(--secondary);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary);
+            width: 0%;
+            transition: width 0.3s ease-in-out;
+        }
+        #current-question-count {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .question-display {
+            padding: 2rem 0;
+        }
+        .question-display h3 {
+            font-size: 1.4rem;
+            font-weight: 500;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+        #question-options { /* Renamed from .options-group to be more specific */
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .option-item {
+            display: flex; /* Changed from block to flex */
+            align-items: center;
+            background: var(--secondary);
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
+        }
+        .option-item:hover {
+            border-color: var(--primary);
+        }
+        .option-item input[type="radio"], .option-item input[type="checkbox"] {
+            display: none;
+        }
+        .option-item input[type="radio"]:checked + span, .option-item input[type="checkbox"]:checked + span {
+            color: var(--primary);
+            font-weight: 600;
+        }
+        .option-item input[type="radio"]:checked + span::before {
+             border-color: var(--primary);
+             background-color: var(--primary);
+             box-shadow: 0 0 0 2px var(--bg-card), inset 0 0 0 2px white;
+        }
+        .option-item input[type="checkbox"]:checked + span::before {
+             border-color: var(--primary);
+             background-color: var(--primary);
+             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='white' class='bi bi-check-lg' viewBox='0 0 16 16'%3E%3Cpath d='M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022z'/%3E%3C/svg%3E");
+             background-position: center;
+             background-repeat: no-repeat;
+        }
+
+        .option-item span {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .option-item span::before {
+            content: '';
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--text-muted);
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+        /* Radio vs Checkbox styling */
+        .option-item input[type="radio"] + span::before { border-radius: 50%; }
+        .option-item input[type="checkbox"] + span::before { border-radius: 4px; }
+        
+        /* --- Results Styles --- */
+        .results-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2.5rem;
+            text-align: center;
+        }
+        .result-stat-card {
+            background-color: var(--bg-main);
+            padding: 2rem;
+            border-radius: var(--radius);
+        }
+        .result-stat-card h3 {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+        .result-stat-card p {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .chart-container {
+            height: 400px;
+            margin: 0 auto;
+        }
+        #strengths-weaknesses-card ul {
+            list-style: none;
+            padding-left: 0;
+            margin-bottom: 1.5rem;
+        }
+        #strengths-weaknesses-card li {
+            font-size: 1.1rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        li.strength i { color: var(--success); }
+        li.weakness i { color: var(--danger); }
+        #recommendations-list {
+            list-style: none;
+            padding: 0;
+        }
+        #recommendations-list li {
+             margin-bottom: 1rem;
+             display: flex;
+             align-items: flex-start;
+             gap: 1rem;
+             font-size: 1.1rem;
+        }
+         #recommendations-list li i {
+            color: var(--primary);
+            margin-top: 5px;
+        }
+        #recommendations-list a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+        #recommendations-list a:hover {
+            color: var(--primary-hover);
+            text-decoration: underline;
+        }
+        
+
+        /* --- Animations --- */
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulseGlow {
+          0% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+          50% { opacity: 0.8; transform: translate(-50%, -50%) scale(1.05); }
+          100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        /* --- Responsiveness --- */
+        @media (max-width: 768px) {
+            .container { padding: 1.5rem; }
+            .page-header { flex-direction: column; gap: 1.5rem; text-align: center; }
+            .page-header h1 { font-size: 2rem; }
+            .card { padding: 1.5rem; }
+            .card h2, .card h3 { font-size: 1.4rem; }
+        }
+
+
+
+/* --- CUSTOM DARK-THEME SCROLLBAR --- */
+
+/* For WebKit-based browsers (Chrome, Safari, Edge, etc.) */
+/* This targets all scrollbars on the page */
+*::-webkit-scrollbar {
+  width: 12px;  /* Width of the vertical scrollbar */
+  height: 12px; /* Height of the horizontal scrollbar */
+}
+
+/* The track (the background of the scrollbar) */
+*::-webkit-scrollbar-track {
+  background: var(--background); /* Use your main background color */
+}
+
+/* The thumb (the draggable part of the scrollbar) */
+*::-webkit-scrollbar-thumb {
+  background-color: var(--secondary);    /* A nice, visible grey from your theme */
+  border-radius: 20px;       /* Makes it fully rounded or "pill-shaped" */
+  border: 3px solid var(--background); /* Creates a padding effect around the thumb */
+}
+
+/* The thumb when you hover over it */
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--primary); /* Uses your primary accent color on hover */
+}
+
+/* For Firefox */
+/* This provides a simpler, but still effective, customization */
+html {
+  scrollbar-width: thin; /* Can be 'auto', 'thin', or 'none' */
+  scrollbar-color: var(--secondary) var(--background); /* thumb color, track color */
+
+}

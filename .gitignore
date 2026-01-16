@@ -1,0 +1,39 @@
+﻿
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+.env
+.venv
+
+# Secrets - CRITICAL for Deployment
+*.json
+!Backend/requirements.txt
+!package.json
+!tsconfig.json
+!jsconfig.json
+# Specifically ignore credentials
+*credentials.json
+*secret.json
+*service-account.json
+Backend/firebase-credentials.json
+Backend/client_secret.json
+Backend/service-account.json
+
+# Test Scripts (contain keys)
+Backend/test.py
+Backend/test_*.py
+Backend/check_models.py
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/

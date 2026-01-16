@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Career Mail | AI Career Coach</title>
+    
+    <!-- Link Standard Home Theme First -->
+    <link rel="stylesheet" href="style/home.css">
+    <!-- Link Page Specific Styles (ovrriding strictly necessary elements) -->
+    <link rel="stylesheet" href="style/career_mail.css">
+
+    <!-- Google Fonts: Inter (Standard) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="icon" type="image/png" href="./assets/favicon.png">
+
+    <!-- Custom Layout Styles for Balance -->
+    <style>
+        .balanced-grid {
+            display: flex;
+            gap: 30px;
+            align-items: stretch; /* Forces equal height */
+        }
+        .balanced-col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 0; /* Prevents flex overflow */
+            min-width: 300px;
+        }
+        .flex-grow-card {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .full-height-list {
+            flex: 1;
+            overflow-y: auto;
+            min-height: 200px;
+        }
+        
+        @media (max-width: 900px) {
+            .balanced-grid {
+                flex-direction: column;
+                height: auto !important;
+            }
+            .balanced-col {
+                width: 100%;
+                min-width: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="background-glow"></div>
+    <div class="particles-container" id="particles"></div>
+
+    <!-- particles-container is already there -->
+
+    <div class="container" style="max-width: 1400px; margin: 0 auto; padding: 20px;">
+        <header class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+            <div class="header-left">
+                 <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 0;">Career Mail Agent</h1>
+            </div>
+            <nav class="header-nav" style="display: flex; gap: 15px; align-items: center;">
+                <div class="agent-status" id="agentStatus" style="margin-right: 20px;">
+                    <span class="status-dot"></span> Agent Active
+                </div>
+                <a href="home.html" class="btn" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); color: var(--text-light); width: auto; margin: 0; padding: 0.8rem 1.5rem; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-arrow-left"></i> Back to Dashboard
+                </a>
+            </nav>
+        </header>
+
+        <div class="dashboard-container" style="margin-top: 0;">
+            
+            <!-- Connect / Sync Section -->
+            <section class="stat-card sync-section" style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center;">
+                <div class="sync-info">
+                    <h2 style="font-size: 1.25rem; margin-bottom: 0.5rem;"><i class="fa-brands fa-google" style="color: var(--primary);"></i> Google Integrations</h2>
+                    <p style="color: var(--text-muted);">Connect your account to let the agent manage interviews, tasks, and applications.</p>
+                </div>
+                <div class="sync-controls">
+                    <button id="connectGoogleBtn" class="btn primary-gradient-btn" style="margin-top: 0; width: auto;"><i class="fa-brands fa-google"></i> Connect Account</button>
+                    <button id="syncBtn" class="btn hidden" style="border: 1px solid var(--primary); color: var(--primary); margin-top: 0; width: auto; background: transparent;"><i class="fa-solid fa-rotate"></i> Sync Now</button>
+                </div>
+                <!-- Message container inside or outside -->
+            </section>
+            <div id="syncStatusMsg" class="sync-message" style="margin-bottom: 1rem;"></div>
+
+            <div class="dashboard-container" style="display: flex; flex-direction: column; gap: 20px;">
+            
+            <!-- ROW 1: Cumulative Analysis & Advice (Full Width) -->
+            <div class="feature-card analysis-panel" style="width: 100%;">
+                <div class="card-header-row" style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div>
+                        <h3 class="card_title" style="margin-bottom: 0.5rem;"><i class="fa-solid fa-brain"></i> Strategic Interview Coach</h3>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0;">Your cumulative strengths, weaknesses, and personalized training plan.</p>
+                    </div>
+                </div>
+
+                <div class="analysis-content" id="analysisContent" style="display: flex; gap: 30px; margin-top: 20px; flex-wrap: wrap;">
+                    
+                    <!-- Left: Text Stats & Advice -->
+                    <div style="flex: 2; min-width: 300px;">
+                        <!-- AI Advice Box -->
+                        <div class="advice-box" id="adviceBox" style="background: rgba(108, 99, 255, 0.1); border-left: 4px solid var(--primary); padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                            <h4 style="color: #fff; margin-top: 0; display: flex; align-items: center; gap: 10px;">
+                                <i class="fa-solid fa-wand-magic-sparkles" style="color: var(--primary);"></i> Coach's Strategy
+                            </h4>
+                            <p id="cumulativeAdviceText" style="color: #e0e0e0; line-height: 1.6; font-style: italic;">
+                                Sync your emails or submit a session analysis to generate your personalized coaching plan.
+                            </p>
+                        </div>
+                        
+                        <!-- Stats Grid -->
+                        <div class="stats-row hidden" id="statsRow" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div class="stat-sub-card" style="background: rgba(255,255,255,0.03); padding: 15px; border-radius: 10px;">
+                                <h4 style="color: #ff0266; margin-top: 0; font-size: 0.9rem; margin-bottom: 10px;">Focus Areas (Weaknesses)</h4>
+                                <ul id="weaknessList" style="padding-left: 20px; font-size: 0.9rem; margin: 0; color: #ccc;"></ul>
+                            </div>
+                            <div class="stat-sub-card" style="background: rgba(255,255,255,0.03); padding: 15px; border-radius: 10px;">
+                                <h4 style="color: #03dac6; margin-top: 0; font-size: 0.9rem; margin-bottom: 10px;">Top Strengths</h4>
+                                <ul id="strengthList" style="padding-left: 20px; font-size: 0.9rem; margin: 0; color: #ccc;"></ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Topic Chart -->
+                    <div style="flex: 1; min-width: 250px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.2); border-radius: 10px; padding: 15px;">
+                        <h4 style="margin-top: 0; font-size: 0.9rem; align-self: flex-start; margin-bottom: 15px;">Recurring Topics</h4>
+                        <div class="chart-container hidden" id="chartContainer" style="width: 100%; max-width: 220px;">
+                            <canvas id="topicsChart"></canvas>
+                        </div>
+                        <!-- Next Suggestion - moved here for compactness -->
+                        <div class="suggestion-box hidden" id="suggestionBox" style="margin-top: 15px; width: 100%; text-align: center;">
+                            <small id="suggestionText" style="color: var(--text-muted); display: block;"></small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ROW 2: Split Columns (Left: Feedback/History, Right: Schedule/Tasks) -->
+            <div class="balanced-grid">
+                
+                <!-- COLUMN 1: LEFT (Analysis Input + History) -->
+                <div class="balanced-col">
+                    
+                    <!-- Feedback Input -->
+                    <div class="feature-card feedback-input" style="flex: 0 0 auto;">
+                        <h3 class="card_title"><i class="fa-solid fa-comment-dots"></i> Analyze New Session</h3>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">Paste your interview experience or thoughts here.</p>
+                        <div class="input-group">
+                            <textarea id="feedbackInput" class="glass-input" placeholder="e.g. 'I had a technical round with Google. They asked about graph traversal...'" rows="4" style="width: 100%; resize: vertical;"></textarea>
+                        </div>
+                        <button id="submitFeedbackBtn" class="btn primary-gradient-btn" style="width: 100%; margin-top: 10px;"><i class="fa-solid fa-microchip"></i> Analyze Session</button>
+                    </div>
+
+                    <!-- Interview History (Flex Grow) -->
+                    <div class="feature-card history-panel flex-grow-card">
+                         <div class="sync-header" style="display: flex; justify-content: space-between; margin-bottom: 1rem; align-items: center;">
+                            <h3 class="card_title" style="margin: 0;"><i class="fa-solid fa-clock-rotate-left"></i> Previous Interview Summaries</h3>
+                            <button id="refreshHistoryBtn" class="btn-icon-small" title="Refresh" style="background:none; border:none; color:var(--text-muted); cursor:pointer;"><i class="fa-solid fa-rotate-right"></i></button>
+                        </div>
+                        <div id="historyList" class="history-container full-height-list">
+                             <p class="placeholder-text">Loading history...</p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- COLUMN 2: RIGHT (Schedule & Tasks) -->
+                <div class="balanced-col">
+                    
+                    <!-- Schedule Panel (Split) -->
+                    <div class="feature-card schedule-panel" style="flex: 0 0 auto;">
+                        <div class="sync-header" style="display: flex; justify-content: space-between;">
+                            <h3 class="card_title"><i class="fa-regular fa-calendar-check"></i> Upcoming Schedule</h3>
+                            <i class="fa-solid fa-rotate-right" id="refreshScheduleBtn" style="cursor: pointer; color: var(--text-muted);"></i>
+                        </div>
+                        
+                        <!-- Interviews Section -->
+                        <div style="margin-top: 15px;">
+                            <h4 style="color: var(--primary); font-size: 0.9rem; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px;">Interviews</h4>
+                            <div class="schedule-list" id="interviewList" style="height: 200px; overflow-y: auto; padding-right: 5px;">
+                                <p class="placeholder-text">No upcoming interviews.</p>
+                            </div>
+                        </div>
+
+                        <!-- Hackathons Section -->
+                        <div style="margin-top: 20px;">
+                             <h4 style="color: #ff0266; font-size: 0.9rem; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px;">Hackathons</h4>
+                            <div class="schedule-list" id="hackathonList" style="height: 200px; overflow-y: auto; padding-right: 5px;">
+                                <p class="placeholder-text">No upcoming hackathons.</p>
+                            </div>
+                        </div>
+                        
+                        <!-- General Events (Hidden or Fallback) -->
+                         <div id="scheduleContent" class="schedule-list hidden"></div>
+                    </div>
+
+                    <!-- Tasks Panel -->
+                    <div class="feature-card tasks-panel" style="flex: 0 0 auto; display: flex; flex-direction: column;">
+                        <div class="sync-header" style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                              <h3 class="card_title"><i class="fa-solid fa-list-check"></i> Prep Tasks</h3>
+                        </div>
+                        <div class="tasks-list" id="tasksContent" style="height: 250px; overflow-y: auto; padding-right: 5px;">
+                            <p class="placeholder-text">No pending tasks.</p>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+
+            <!-- ROW 3: Email Drafter Input -->
+            <div class="feature-card email-drafter" style="width: 100%; margin-top: 20px;">
+                <h3 class="card_title"><i class="fa-solid fa-pen-nib"></i> Smart Email Drafter</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">Draft professional follow-ups or inquiries in seconds.</p>
+                
+                <div style="display: flex; flex-direction: column; gap: 15px;">
+                     <div>
+                         <label style="display: block; color: var(--text-muted); margin-bottom: 5px;">Email Type</label>
+                        <select id="emailType" class="glass-input" style="width: 100%; margin-bottom: 15px;">
+                            <option value="follow_up">Post-Interview Follow-Up</option>
+                            <option value="cold_email">Cold Email to Recruiter</option>
+                            <option value="networking">Networking Logic</option>
+                            <option value="resignation">Resignation Letter</option>
+                        </select>
+                        <label style="display: block; color: var(--text-muted); margin-bottom: 5px;">Context / Job Description</label>
+                        <textarea id="jobDescInput" class="glass-input" placeholder="Paste Job Description, Company Name, or context..." rows="5" style="width: 100%; resize: vertical;"></textarea>
+                         <button id="draftEmailBtn" class="btn primary-gradient-btn" style="width: 100%; margin-top: 15px;">Draft Email</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ROW 4: Draft Result (Initially Hidden) -->
+            <div id="draftResult" class="feature-card hidden" style="width: 100%; margin-top: 20px; border: 1px solid var(--primary); background: rgba(0,0,0,0.4);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h3 class="card_title" style="color: var(--primary); margin: 0;"><i class="fa-solid fa-envelope-open-text"></i> Draft Preview</h3>
+                    <button id="editDraftBtn" class="btn-icon-small" title="Edit Email" style="border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; padding: 5px 10px; color: var(--text-light);">
+                        <i class="fa-solid fa-pen-to-square"></i> Edit
+                    </button>
+                    <button id="saveDraftBtn" class="btn-icon-small hidden" title="Save Changes" style="border: 1px solid #00ff88; border-radius: 6px; padding: 5px 10px; color: #00ff88; background: rgba(0, 255, 136, 0.1);">
+                        <i class="fa-solid fa-check"></i> Save
+                    </button>
+                </div>
+                
+                <textarea id="draftContent" style="width: 100%; height: 300px; background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); color: #fff; font-family: monospace; resize: vertical; padding: 15px; border-radius: 8px; line-height: 1.5;" readonly></textarea>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px; flex-wrap: wrap; gap: 10px;">
+                     <div style="flex: 1; min-width: 250px;">
+                        <input type="email" id="recipientEmailInput" placeholder="Recipient Email (Optional)" class="glass-input" style="width: 100%;">
+                     </div>
+                     <div style="display: flex; gap: 10px;">
+                         <button id="copyDraftBtn" class="btn" style="background: rgba(255,255,255,0.1); border: 1px solid var(--border-color); width: auto;"><i class="fa-regular fa-copy"></i> Copy Text</button>
+                         <button id="createGmailDraftBtn" class="btn" style="background: #EA4335; color: white; border: none; width: auto;"><i class="fa-brands fa-google"></i> Create Gmail Draft</button>
+                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="./script/auth.js"></script>
+    <script type="module" src="./script/career_mail.js"></script>
+</body>
+</html>

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume & LinkedIn Optimizer</title>
+    <link rel="stylesheet" href="./style/optimizer.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="icon" type="image/png" href="./assets/favicon.png">
+    <link rel="stylesheet" href="./style/optimizer.css">
+</head>
+
+<body>
+    <div class="background-glow"></div>
+
+    <div class="container-wrapper">
+        <div class="container optimizer-container">
+            <header class="page-header">
+                <h1><i class="fas fa-atom"></i> Resume & LinkedIn Optimizer</h1>
+                <nav class="header-nav">
+                    <a href="home.html" class="nav-link"><i class="fas fa-arrow-left"></i> Home</a>
+                    <a href="profile.html" class="nav-link"><i class="fas fa-user-circle"></i> Profile</a>
+                    <button id="logoutButton" class="nav-button"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                </nav>
+            </header>
+
+            <section id="upload-section" class="card">
+                <h2><i class="fas fa-upload"></i> Upload Your Resume</h2>
+                <p class="section-description">Upload your resume (PDF or DOCX) and optionally provide a job description
+                    for ATS analysis.</p>
+                <form id="upload-form">
+
+                    <!-- UPDATED: This div now contains BOTH the file upload and saved resume display -->
+                    <div id="resume-input-container" class="resume-input-container">
+                        <!-- File Upload Group (Initially shown, hidden when 'use saved' is checked) -->
+                        <div id="file-upload-elements" class="form-group file-upload-group">
+                            <label for="resume_file" class="custom-file-button">
+                                <i class="fas fa-file-arrow-up"></i> Choose File
+                                <input type="file" id="resume_file" accept=".pdf,.docx"
+                                    aria-describedby="fileNameStatus" required>
+                            </label>
+                            <span id="fileName" class="file-name">No file chosen</span>
+                        </div>
+
+                        <!-- Saved Resume Display UI (Initially hidden, shown when 'use saved' is checked) -->
+                        <div id="saved-resume-display" class="saved-resume-info hidden">
+                            <p><i class="fas fa-file-alt"></i> Saved Resume: <span id="savedResumeName">N/A</span></p>
+                            <!-- <p><i class="fas fa-calendar-alt"></i> Last Processed: <span id="savedResumeDate">N/A</span></p> -->
+                        </div>
+                    </div>
+                    
+                    <div class="form-group checkbox-group">
+                        <input type="checkbox" id="useSavedResumeCheckbox">
+                        <label for="useSavedResumeCheckbox">Use my saved resume from the Archives</label>
+                    </div>                    
+
+                    <div class="form-group">
+                        <label for="job_description">Job Description (Optional, for Targeted Analysis):</label>
+                        <textarea id="job_description" rows="6"
+                            placeholder="Paste the job description here to get a tailored ATS score and recommendations."></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" id="uploadResumeButton" class="btn primary-btn"><i
+                                class="fas fa-bolt"></i> Analyze & Optimize</button>
+                    </div>
+                    <div id="upload-error-message" class="status-message error hidden" role="status" aria-live="polite">
+                    </div>
+                </form>
+
+                <div id="loading" class="hidden">
+                    <div class="spinner"></div>
+                    <p class="loading-text">Analyzing with Vibranium Core... This may take a moment...</p>
+                </div>
+
+                <div class="template-section">
+                    <h3><i class="fas fa-scroll"></i> No Resume? Start with an Template!</h3>
+                    <p class="template-description">Select an editable template. Fill it out, then upload it for AI
+                        optimization.</p>
+
+                    <div class="template-cards-grid">
+                        <div class="template-card">
+                            <div class="template-preview"><img src="./assets/modern.png" alt="Modern Template"></div>
+                            <h4>Modern Style</h4>
+                            <p>Clean design for tech and corporate roles.</p>
+                            <a href="./templates/Modern_resume.docx" download class="btn secondary-btn"
+                                target="_blank"><i class="fas fa-download"></i> Download</a>
+                        </div>
+                        <div class="template-card">
+                            <div class="template-preview"><img src="./assets/professional.png"
+                                    alt="Professional Template"></div>
+                            <h4>Professional</h4>
+                            <p>A timeless, ATS-friendly layout.</p>
+                            <a href="./templates/Professional_resume.docx" download class="btn secondary-btn"
+                                target="_blank"><i class="fas fa-download"></i> Download</a>
+                        </div>
+                        <div class="template-card">
+                            <div class="template-preview"><img src="./assets/classic.png" alt="Classic Template"></div>
+                            <h4>Classic</h4>
+                            <p>Showcase personality for creative fields.</p>
+                            <a href="./templates/Classic_resume.docx" download class="btn secondary-btn"
+                                target="_blank"><i class="fas fa-download"></i> Download</a>
+                        </div>
+                        <div class="template-card">
+                            <div class="template-preview"><img src="./assets/basic.png" alt="Basic Template"></div>
+                            <h4>Simple & Basic</h4>
+                            <p>A straightforward and clean approach.</p>
+                            <a href="./templates/Basic_resume.docx" download class="btn secondary-btn"
+                                target="_blank"><i class="fas fa-download"></i> Download</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- NEW SECTION FOR FULL ANALYSIS REPORT -->
+            <section id="full-analysis-report-section" class="card hidden">
+                <h2><i class="fas fa-file-invoice"></i> AI Resume Analysis Report</h2>
+                <p class="section-description">Here's a detailed breakdown of your resume's strengths and areas for
+                    improvement.</p>
+
+                <div class="report-header-info">
+                    <p><strong>Job Role:</strong> <span id="report-job-role">N/A</span></p>
+                    <!-- <p><strong>Analysis Date:</strong> <span id="report-analysis-date">N/A</span></p>
+                    <p><strong>AI Model:</strong> <span id="report-ai-model">N/A</span></p> -->
+                    <p><strong>Overall Score:</strong> <span id="report-overall-score">N/A</span> / 100 - <span
+                            id="report-overall-grade">N/A</span></p>
+                </div>
+
+                <div class="score-gauges-container">
+                    <div class="score-gauge-card">
+                        <h3>Resume Score</h3>
+                        <div class="gauge-display">
+                            <span id="display-resume-score" class="big-score">N/A</span>
+                        </div>
+                        <p class="score-caption" id="caption-resume-grade">N/A</p>
+                    </div>
+                    <div class="score-gauge-card">
+                        <h3><i class="fas fa-robot"></i> ATS Optimization Score</h3>
+                        <div class="gauge-display">
+                            <span id="display-ats-score" class="big-score">N/A</span>
+                        </div>
+                        <p class="score-caption" id="caption-ats-score-grade">N/A</p>
+                    </div>
+                </div>
+
+                <div class="report-section-card green-card">
+                    <h3><i class="fas fa-user-tie"></i> Professional Profile Analysis</h3>
+                    <p id="prof-profile-summary">N/A</p>
+                </div>
+
+                <div class="report-section-card yellow-card">
+                    <h3><i class="fas fa-graduation-cap"></i> Education Analysis</h3>
+                    <p id="education-summary">N/A</p>
+                </div>
+
+                <div class="report-section-card red-card">
+                    <h3><i class="fas fa-briefcase"></i> Experience Analysis</h3>
+                    <p id="experience-summary">N/A</p>
+                </div>
+
+                <div class="report-section-card blue-card">
+                    <h3><i class="fas fa-tools"></i> Skills Analysis</h3>
+                    <p id="skills-summary">N/A</p>
+                </div>
+
+                <div class="report-section-card green-card">
+                    <h3><i class="fas fa-check-circle"></i> Key Strengths</h3>
+                    <ul id="key-strengths-list">
+                        <li>No key strengths identified.</li>
+                    </ul>
+                </div>
+
+                <div class="report-section-card red-card">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Areas for Improvement</h3>
+                    <ul id="areas-for-improvement-list">
+                        <li>No specific areas for improvement identified.</li>
+                    </ul>
+                </div>
+
+                <div class="report-section-card blue-card">
+                    <h3><i class="fas fa-chart-line"></i> Overall Assessment</h3>
+                    <p id="overall-assessment-summary">N/A</p>
+                </div>
+
+                <div class="form-actions two-buttons">
+                    <button type="button" id="proceedToOptimizationBtn" class="btn primary-btn"><i
+                            class="fas fa-arrow-right"></i> Proceed to Optimization</button>
+                    <button type="button" id="uploadNewResumeFromAnalysisBtn" class="btn secondary-btn"><i
+                            class="fas fa-sync-alt"></i> Upload New Resume</button>
+                </div>
+                <div id="full-analysis-error-message" class="status-message error hidden" role="status"
+                    aria-live="polite"></div>
+            </section>
+
+
+            <section id="choice-section" class="card hidden">
+                <h2><i class="fas fa-cogs"></i> Choose Your Enhancement</h2>
+                <div class="feature-cards">
+                    <div class="feature-card" id="show-resume-optimizer-card">
+                        <h3><i class="fas fa-file-alt"></i> Resume Sections</h3>
+                        <p>Get AI suggestions to improve specific sections like summary, experience, or skills.</p>
+                        <span class="btn primary-btn"><i class="fas fa-arrow-right"></i> Optimize Resume</span>
+                    </div>
+                    <div class="feature-card" id="show-linkedin-optimizer-card">
+                        <h3><i class="fab fa-linkedin"></i> Global Profile (LinkedIn)</h3>
+                        <p>Generate compelling headlines, "About" sections, and experience descriptions.</p>
+                        <span class="btn primary-btn"><i class="fas fa-arrow-right"></i> Optimize Profile</span>
+                    </div>
+                </div>
+                <p class="start-over-text"><a href="#" id="start-over-link"><i class="fas fa-sync-alt"></i> Upload a
+                        different Resume</a></p>
+            </section>
+
+            <section id="resume-optimizer-section" class="card hidden">
+                <h2><i class="fas fa-wand-magic-sparkles"></i> Optimize Sections</h2>
+                <p class="section-description">Request improvements for specific sections. The optimized resume will be
+                    downloaded as a DOCX file.</p>
+                <form id="optimize-form-resume">
+                    <div class="form-group">
+                        <label for="resume_user_request">Your Directive (Optional):</label>
+                        <textarea id="resume_user_request" rows="4"
+                            placeholder="e.g., 'Work experience: quantify achievements with Vibranium-level impact.'"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn primary-btn"><i class="fas fa-download"></i> Enhance &
+                            Download</button>
+                    </div>
+                </form>
+                <div id="resume-optimize-error-message" class="status-message error hidden"></div>
+                <p class="start-over-text"><a href="#" class="back-link"><i class="fas fa-chevron-left"></i> Back to
+                        Choices</a></p>
+            </section>
+
+            <section id="linkedin-optimizer-section" class="card hidden">
+                <h2><i class="fab fa-linkedin"></i> Optimize Global Profile</h2>
+                <p class="section-description">Generate AI-powered content for your LinkedIn profile.</p>
+                <form id="optimize-form-linkedin">
+                    <div class="form-group">
+                        <label for="linkedin_user_request">Specific Focus (Optional):</label>
+                        <textarea id="linkedin_user_request" rows="4"
+                            placeholder="e.g., 'Generate strong headlines and an About section that reflects my expertise.'"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn primary-btn"><i class="fas fa-sync-alt"></i> Generate
+                            Content</button>
+                    </div>
+                </form>
+                <div id="linkedin-optimize-error-message" class="status-message error hidden"></div>
+                <div id="linkedin-content" class="output-content">
+                    <p>Your generated content will appear here.</p>
+                </div>
+                <p class="start-over-text"><a href="#" class="back-link"><i class="fas fa-chevron-left"></i> Back to
+                        Choices</a></p>
+            </section>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="./script/auth.js"></script>
+    <script src="./script/optimizer.js"></script>
+</body>
+
+</html>

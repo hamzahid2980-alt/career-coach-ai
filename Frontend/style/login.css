@@ -1,0 +1,265 @@
+/* frontend/login.css */
+/* --- GenAI Theme Variables for Login/Signup --- */
+:root {
+    --primary-genai-color: #c20300; /* A vibrant green for GenAI accents */
+    --secondary-genai-color: #9dff00; /* A subtle blue for secondary actions/links */
+    --background-dark: #1A1A2E; /* Deep dark background */
+    --card-bg-dark: #4a332a; /* Slightly lighter dark for cards */
+    --text-light: #E0E0E0; /* Light text for readability */
+    --text-medium: #B0B0C0; /* Medium grey text */
+    --text-subtle: #808090; /* Subtler text for hints */
+    --border-dark: #3A3A5A; /* Darker border for contrast */
+    --input-bg-dark: #3A3A5A; /* Input field background */
+    --error-red: #E05252; /* Red for errors */
+    --success-green: #962077; /* Green for success */
+    --shadow-dark: 0 8px 25px rgba(0, 0, 0, 0.6); /* Darker shadow */
+    --font-stack: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* --- Premium GenAI Theme for Login Page (Corrected) --- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --bg-main: #0A090F;
+  --bg-card: rgba(10, 9, 15, 0.7); /* Matches header glass effect */
+  --border-color: rgba(138, 73, 255, 0.15);
+  --input-bg: rgba(0, 0, 0, 0.2);
+  --primary: #8A49FF;
+  --primary-hover: #702cf8;
+  --text-light: #EAEBF0;
+  --text-muted: #8E8C99;
+  --error: #f87171;
+  --radius: 16px;
+  --shadow: 0 16px 48px rgba(0, 0, 0, 0.6);
+  --font-main: 'Inter', system-ui, sans-serif;
+}
+
+/* --- Login Page Theme Matching Job Listing --- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --bg-main: #0A090F;
+  --bg-card: rgba(10, 9, 15, 0.7);
+  --border-color: rgba(138, 73, 255, 0.15);
+  --input-bg: rgba(0, 0, 0, 0.2);
+  --primary: #8A49FF;
+  --primary-hover: #702cf8;
+  --text-light: #EAEBF0;
+  --text-muted: #8E8C99;
+  --error: #f87171;
+  --radius: 16px;
+  --shadow: 0 16px 48px rgba(0, 0, 0, 0.6);
+  --font-main: 'Inter', system-ui, sans-serif;
+}
+
+/* --- Base & Layout --- */
+body {
+    font-family: var(--font-main);
+    margin: 0;
+    background-color: var(--bg-main);
+    color: var(--text-light);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden;
+    transition: opacity 0.5s ease-out;
+}
+
+body.auth-success {
+    opacity: 0;
+}
+
+.background-glow {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 900px;
+  height: 700px;
+  background: radial-gradient(circle, rgba(138, 73, 255, 0.15) 0%, rgba(138, 73, 255, 0) 60%);
+  pointer-events: none;
+  z-index: -1;
+  animation: pulseGlow 8s infinite ease-in-out;
+}
+
+/* --- Card & Form Containers --- */
+.card {
+    background-color: var(--bg-card);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+    width: 420px;
+    min-height: 580px;
+    padding: 2.5rem 3rem;
+    box-sizing: border-box;
+    position: relative;
+    animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.form-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 2.5rem 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease-in-out;
+}
+
+.form-container.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* --- Typography & Content --- */
+h1 {
+    color: var(--text-light);
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+}
+
+p {
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+}
+
+/* --- Forms & Inputs --- */
+form { margin-top: 1.5rem; }
+
+input[type="email"],
+input[type="password"],
+input[type="text"] {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 1rem;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    background-color: var(--input-bg);
+    color: var(--text-light);
+    font-family: var(--font-main);
+    font-size: 1rem;
+    box-sizing: border-box;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(138, 73, 255, 0.3);
+    outline: none;
+}
+
+/* --- Buttons --- */
+button[type="submit"] {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(90deg, var(--primary), var(--primary-hover));
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    margin-top: 1rem;
+}
+
+button[type="submit"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(138, 73, 255, 0.3);
+}
+
+.google-btn {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--text-light);
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+.google-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255,255,255,0.2);
+}
+.google-btn img {
+    width: 20px;
+    height: 20px;
+    background: white;
+    border-radius: 50%;
+    padding: 2px;
+}
+
+/* --- Helpers & Utilities --- */
+.divider-text {
+    display: flex;
+    align-items: center;
+    margin: 1.5rem 0;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+.divider-text::before, .divider-text::after {
+    content: ""; flex: 1; border-bottom: 1px solid var(--border-color);
+}
+.divider-text span { padding: 0 1rem; }
+
+.form-toggle-text { margin-top: 1.5rem; font-size: 0.95rem; color: var(--text-muted); }
+.form-toggle-text a { color: var(--primary); text-decoration: none; font-weight: 600; cursor: pointer; }
+.form-toggle-text a:hover { text-decoration: underline; }
+
+.error {
+    color: var(--error);
+    background-color: rgba(248, 113, 113, 0.1);
+    border: 1px solid rgba(248, 113, 113, 0.5);
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    position: absolute;
+    bottom: 1rem;
+    left: 3rem;
+    right: 3rem;
+    text-align: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+.error.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.password-input-group { position: relative; width: 100%; }
+.password-input-group input { padding-right: 45px; margin-bottom: 0; }
+.toggle-password { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--text-muted); font-size: 1.2rem; }
+.toggle-password:hover { color: var(--text-light); }
+
+.forgot-password-link { display: block; text-align: right; font-size: 0.9em; color: var(--primary); text-decoration: none; margin: 0.75rem 0 1rem 0; }
+.forgot-password-link:hover { text-decoration: underline; }
+
+/* --- Animations --- */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes pulseGlow {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); }
+    50% { transform: translate(-50%, -50%) scale(1.05); }
+}

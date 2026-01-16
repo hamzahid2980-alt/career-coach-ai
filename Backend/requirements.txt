@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+python-multipart
+firebase-admin
+python-dotenv
+google-generativeai
+groq
+pymupdf
+python-docx
+requests

@@ -1,0 +1,680 @@
+
+:root {
+    --bg-main: #0A031A;
+    --bg-card: linear-gradient(145deg, rgba(26, 16, 51, 0.8), rgba(16, 10, 33, 0.95));
+    --border-color: rgba(123, 66, 246, 0.2);
+    --primary: #7B42F6;
+    --primary-hover: #9368F8;
+    --secondary: #2C2A3A;
+    --text-light: #F0F2FC;
+    --text-muted: #A4A6C5;
+    --accent-vibranium: #C0C0C0;
+    --success: #28a745;
+    --danger: #dc3545;
+    --radius: 16px;
+    --shadow: 0 16px 48px rgba(0, 0, 0, 0.7);
+    --font-main: 'Poppins', system-ui, sans-serif;
+}
+
+/* --- Base & Body Styles --- */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+    font-family: var(--font-main);
+    background-color: var(--bg-main);
+    background-image: linear-gradient(rgba(255, 255, 255, 0.01) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.01) 1px, transparent 1px);
+    background-size: 35px 35px;
+    color: var(--text-light);
+    min-height: 100vh;
+    position: relative;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* --- Background Glow --- */
+.background-glow {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 800px;
+    height: 800px;
+    background: radial-gradient(circle, rgba(123, 66, 246, 0.1) 0%, rgba(123, 66, 246, 0) 60%);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: -1;
+    animation: pulseGlow 8s ease-in-out infinite;
+}
+
+/* --- Main Layout --- */
+.container-wrapper {
+    max-height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+.container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 2.5rem;
+    position: relative;
+    z-index: 2;
+}
+
+/* --- Page Header --- */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 3rem;
+    animation: fadeInDown 0.8s ease-out;
+}
+.page-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+.page-header h1 i { color: var(--primary); }
+.header-nav { display: flex; gap: 1rem; }
+.nav-link, .nav-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1.3rem;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    color: var(--text-muted);
+    border: 1px solid var(--border-color);
+    background: transparent;
+    cursor: pointer;
+    font-family: var(--font-main);
+    font-size: 1rem;
+}
+.nav-link:hover, .nav-button:hover {
+    color: var(--text-light);
+    background-color: var(--secondary);
+    border-color: var(--primary);
+}
+
+/* --- General Card Styling --- */
+.card {
+    background: var(--bg-card);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: 2.5rem;
+    margin-bottom: 2.5rem;
+    box-shadow: var(--shadow);
+    animation: fadeInUp 0.5s ease-out forwards;
+    opacity: 0;
+    transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+}
+.card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(123, 66, 246, 0.4);
+    box-shadow: var(--shadow), 0 0 45px rgba(123, 66, 246, 0.2);
+}
+.card h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+.card h2 i { color: var(--primary); }
+.section-description {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+    max-width: 80ch;
+}
+
+/* --- Buttons --- */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.7rem;
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 0.9rem 1.8rem;
+    border-radius: 12px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease-in-out;
+    border: none;
+    white-space: nowrap;
+}
+.primary-btn {
+    background: linear-gradient(90deg, var(--primary), var(--primary-hover));
+    color: white;
+    box-shadow: 0 4px 20px rgba(123, 66, 246, 0.25);
+}
+.primary-btn:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(123, 66, 246, 0.35);
+}
+.secondary-btn {
+    background-color: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+}
+.secondary-btn:hover:not(:disabled) {
+    border-color: var(--primary);
+    color: var(--text-light);
+    background-color: var(--secondary);
+    transform: translateY(-2px);
+}
+.btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* --- Forms & Inputs --- */
+.form-group { margin-bottom: 1.5rem; }
+.form-group label {
+    display: block;
+    margin-bottom: 0.75rem;
+    font-weight: 500;
+    color: var(--text-muted);
+}
+textarea {
+    width: 100%;
+    background-color: var(--bg-main);
+    border: 1px solid var(--border-color);
+    color: var(--text-light);
+    padding: 0.9rem 1.1rem;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    font-family: var(--font-main);
+    resize: vertical;
+}
+textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(123, 66, 246, 0.2);
+}
+.form-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+}
+/* Custom File Input */
+.file-upload-group {
+    display: flex;
+    /* flex-direction: column; */
+    align-items: center;
+    gap: 1rem;
+    /* border: 2px dashed var(--border-color); */
+    /* padding: 2rem; */
+    border-radius: var(--radius);
+    /* background: rgba(0,0,0,0.2); */
+    transition: border-color 0.3s;
+}
+.file-upload-group:hover { border-color: var(--primary); }
+input[type="file"] {
+    width: 0.1px; height: 0.1px;
+    opacity: 0; overflow: hidden;
+    position: absolute; z-index: -1;
+}
+.custom-file-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 0.9rem 1.8rem;
+    border-radius: 12px;
+    cursor: pointer;
+    background: var(--secondary);
+    color: var(--text-light);
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+.custom-file-button:hover {
+    background: var(--primary);
+    border-color: var(--primary);
+    transform: translateY(-2px);
+}
+.file-name { color: var(--text-muted); }
+/* Custom Checkbox */
+.checkbox-group { display: flex; align-items: center; justify-content: center; gap: 0.75rem; }
+.checkbox-group label { margin-bottom: 0; cursor: pointer; }
+input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--border-color);
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+input[type="checkbox"]:checked {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+input[type="checkbox"]:checked::after {
+    content: '\f00c';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    color: white;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 12px;
+}
+
+/* --- Status, Links, and Loading --- */
+.hidden { display: none !important; }
+.status-message {
+    text-align: center;
+    padding: 1.2rem;
+    margin-top: 2rem;
+    border-radius: var(--radius);
+    font-weight: 500;
+}
+.status-message.error { background-color: rgba(220, 53, 69, 0.1); border: 1px solid var(--danger); color: var(--danger); }
+.status-message.success { background-color: rgba(40, 167, 69, 0.1); border: 1px solid var(--success); color: var(--success); }
+.start-over-text { text-align: center; margin-top: 2rem; }
+.start-over-text a, .back-link {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+.start-over-text a:hover, .back-link:hover { color: var(--primary); }
+#loading { text-align: center; padding: 2rem 0; }
+.spinner {
+    border: 4px solid rgba(255, 255, 255, 0.2);
+    border-left-color: var(--primary);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
+}
+
+/* --- Template Section Specifics --- */
+.template-section { margin-top: 3rem; }
+.template-section h3 { font-size: 1.4rem; text-align: center; margin-bottom: 1rem; }
+.template-section .template-description { text-align: center; color: var(--text-muted); margin-bottom: 2rem; }
+.template-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+.template-card {
+    background: var(--bg-main);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    text-align: center;
+    padding: 1.5rem;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+.template-card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
+.template-card h4 { margin: 1rem 0 0.5rem; }
+.template-card p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem; }
+.template-preview {
+    border-radius: 10px; overflow: hidden;
+    border: 1px solid var(--border-color);
+    margin-bottom: 1rem;
+}
+.template-preview img { display: block; width: 100%; height: auto; }
+
+/* --- Choice Section Specifics --- */
+.feature-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+.feature-card {
+    padding: 2rem;
+    background: var(--bg-main);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+}
+.feature-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    border-color: var(--primary);
+}
+.feature-card h3 { font-size: 1.4rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+.feature-card p { color: var(--text-muted); margin-bottom: 2rem; }
+.feature-card .btn { margin-top: auto; }
+
+/* --- LinkedIn Output Specifics --- */
+.output-content {
+    margin-top: 2rem;
+    background-color: var(--bg-main);
+    padding: 2rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--border-color);
+}
+.output-content h3 { font-size: 1.3rem; color: var(--primary); border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 1rem; }
+.output-content h4 { font-size: 1.1rem; margin: 1.5rem 0 0.5rem; color: var(--text-light); }
+.output-content p, .output-content li { color: var(--text-muted); line-height: 1.7; }
+.output-content ul { padding-left: 20px; }
+
+/* --- Animations --- */
+@keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes pulseGlow {
+  0% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 0.8; transform: translate(-50%, -50%) scale(1.05); }
+  100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* --- Responsiveness --- */
+@media (max-width: 768px) {
+    .container { padding: 1.5rem; }
+    .page-header { flex-direction: column; gap: 1.5rem; text-align: center; }
+    .page-header h1 { font-size: 2rem; }
+    .card { padding: 1.5rem; }
+    .feature-cards { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+    .header-nav { flex-direction: column; width: 100%;}
+    .nav-link, .nav-button { justify-content: center; width: 100%;}
+    .template-cards-grid { grid-template-columns: 1fr; }
+}
+
+/* --- Full Analysis Report Section Specifics --- */
+#full-analysis-report-section .report-header-info {
+    background-color: var(--secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+#full-analysis-report-section .report-header-info p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+#full-analysis-report-section .report-header-info strong {
+    color: var(--text-light);
+}
+
+#full-analysis-report-section .score-gauges-container {
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    gap: 2rem;
+    justify-content: center;
+    margin-bottom: 3rem;
+}
+
+.score-gauge-card {
+    flex: 1; /* Allow cards to grow and shrink */
+    min-width: 280px; /* Minimum width for the card */
+    background: var(--bg-main);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+}
+
+.score-gauge-card:hover {
+    transform: translateY(-5px);
+}
+
+.score-gauge-card h3 {
+    font-size: 1.2rem;
+    color: var(--primary);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.gauge-display {
+    /* This will eventually be replaced by actual SVG/charting library for arc */
+    width: 150px;
+    height: 100px; /* Adjust height to accommodate score */
+    margin: 1rem auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3.5rem; /* Larger score numbers */
+    font-weight: 800;
+    color: var(--accent-vibranium);
+    border-radius: 50%;
+    /* Optional: placeholder for arc gauge background */
+    /* background: radial-gradient(circle at top, rgba(123, 66, 246, 0.2) 0%, transparent 70%); */
+}
+
+.gauge-display .big-score {
+    /* Style for the actual score number */
+    font-size: 3.8rem;
+    font-weight: 800;
+    color: var(--text-light); /* Ensure text is visible */
+}
+
+.score-caption {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    margin-top: 0.5rem;
+}
+
+.report-section-card {
+    background: var(--bg-main);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: 1.8rem;
+    margin-bottom: 1.5rem;
+}
+
+.report-section-card h3 {
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.report-section-card h3 i {
+    color: var(--primary); /* Default icon color */
+}
+
+/* Color variations for report cards */
+.report-section-card.green-card h3 { color: #28a745; }
+.report-section-card.green-card h3 i { color: #28a745; }
+
+.report-section-card.red-card h3 { color: #dc3545; }
+.report-section-card.red-card h3 i { color: #dc3545; }
+
+.report-section-card.yellow-card h3 { color: #ffc107; }
+.report-section-card.yellow-card h3 i { color: #ffc107; }
+
+.report-section-card.blue-card h3 { color: #007bff; }
+.report-section-card.blue-card h3 i { color: #007bff; }
+
+.report-section-card p, .report-section-card li {
+    color: var(--text-muted);
+    line-height: 1.7;
+    margin-bottom: 0.5rem;
+}
+
+.report-section-card ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.report-section-card ul li {
+    padding-left: 1.5rem;
+    position: relative;
+    margin-bottom: 0.5rem;
+}
+
+.report-section-card.green-card ul li::before {
+    content: "\f00c"; /* Font Awesome check icon */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: #28a745;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.report-section-card.red-card ul li::before {
+    content: "\f071"; /* Font Awesome exclamation triangle */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: #dc3545;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+@media (max-width: 768px) {
+    #full-analysis-report-section .report-header-info {
+        grid-template-columns: 1fr;
+    }
+    .score-gauges-container {
+        flex-direction: column;
+    }
+    .score-gauge-card {
+        min-width: unset; /* Allow to stretch */
+    }
+}
+
+/* --- Saved Resume Info UI --- */
+.saved-resume-info {
+    background-color: var(--secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: 1rem 1.5rem;
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+.saved-resume-info p {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.saved-resume-info i {
+    color: var(--primary);
+}
+
+
+
+/* --- Saved Resume Info UI (Updated for better integration) --- */
+.resume-input-container {
+    min-height: 120px; /* Ensure consistent height to prevent layout shifts */
+    display: flex; /* Flexbox to manage hiding/showing nicely */
+    align-items: center;
+    justify-content: center;
+    border: 2px dashed var(--border-color); /* Matches the upload group border */
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem; /* Consistent spacing with other form groups */
+    background: rgba(0,0,0,0.2);
+    transition: border-color 0.3s;
+}
+.resume-input-container:hover { 
+    background-color: rgba(123, 66, 246, 0.05);
+    border-color: var(--primary);
+    color: var(--text-light);
+ }
+
+/* Hide file upload elements completely when active */
+#file-upload-elements.hidden-by-js {
+    display: none !important;
+}
+
+.saved-resume-info {
+    /* Existing styles, ensure these are present */
+    background-color: transparent; /* Changed to transparent as parent container has background */
+    border: none; /* Changed to none as parent container has border */
+    padding: 0; /* Changed to 0 as parent container has padding */
+    margin: 0; /* Changed to 0 */
+    
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem; /* Slightly more space */
+    color: var(--text-muted);
+    font-size: 1rem; /* Slightly larger font */
+    text-align: center; /* Center align text inside */
+}
+
+.saved-resume-info p {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Center content horizontally */
+    gap: 0.75rem;
+}
+
+.saved-resume-info i {
+    color: var(--primary);
+    font-size: 1.2rem; /* Larger icons */
+}
+
+.saved-resume-info span {
+    font-weight: 500;
+    color: var(--text-light); /* Make the actual values more prominent */
+}
+
+/* Ensure the file-name is centered if it becomes visible alone */
+.file-upload-group .file-name {
+    text-align: center;
+}
+
+
+
+
+/* --- CUSTOM DARK-THEME SCROLLBAR --- */
+
+/* For WebKit-based browsers (Chrome, Safari, Edge, etc.) */
+/* This targets all scrollbars on the page */
+*::-webkit-scrollbar {
+  width: 12px;  /* Width of the vertical scrollbar */
+  height: 12px; /* Height of the horizontal scrollbar */
+}
+
+/* The track (the background of the scrollbar) */
+*::-webkit-scrollbar-track {
+  background: var(--background); /* Use your main background color */
+}
+
+/* The thumb (the draggable part of the scrollbar) */
+*::-webkit-scrollbar-thumb {
+  background-color: var(--secondary);    /* A nice, visible grey from your theme */
+  border-radius: 20px;       /* Makes it fully rounded or "pill-shaped" */
+  border: 3px solid var(--background); /* Creates a padding effect around the thumb */
+}
+
+/* The thumb when you hover over it */
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--primary); /* Uses your primary accent color on hover */
+}
+
+/* For Firefox */
+/* This provides a simpler, but still effective, customization */
+html {
+  scrollbar-width: thin; /* Can be 'auto', 'thin', or 'none' */
+  scrollbar-color: var(--secondary) var(--background); /* thumb color, track color */
+
+}

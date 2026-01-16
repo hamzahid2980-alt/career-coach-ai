@@ -1,0 +1,232 @@
+/* --- Career Mail Specific Styles --- */
+
+/* Ensure we use the variables from home.css */
+/* --bg-main, --bg-card, --primary, --text-light, --text-muted, --border-color */
+
+/* --- Header Status --- */
+.agent-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(138, 73, 255, 0.1);
+  /* Primary with opacity */
+  padding: 6px 16px;
+  border-radius: 20px;
+  color: var(--primary);
+  font-weight: 500;
+  font-size: 0.9rem;
+  border: 1px solid rgba(138, 73, 255, 0.2);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #00ff88;
+  /* Active green */
+  border-radius: 50%;
+  box-shadow: 0 0 8px #00ff88;
+}
+
+/* --- Layout --- */
+/* .dashboard-grid is defined in home.css but we want 2 columns here specifically */
+.dashboard-grid {
+  grid-template-columns: 1fr 1fr;
+  align-items: start;
+  /* Don't stretch height necessarily */
+}
+
+@media (max-width: 1024px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --- Sync Section --- */
+.sync-section {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  padding: 1.5rem 2rem;
+}
+
+/* --- Schedule List --- */
+.schedule-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 5px;
+  margin-top: 1rem;
+}
+
+/* Custom Scrollbar for list */
+.schedule-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.schedule-list::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.schedule-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.event-card {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 12px;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+}
+
+.event-card:hover {
+  transform: translateX(5px);
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(138, 73, 255, 0.2);
+}
+
+.event-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(138, 73, 255, 0.15);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 15px;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.event-details {
+  flex: 1;
+  min-width: 0;
+  /* truncate text properly */
+}
+
+.event-details h4 {
+  margin: 0 0 4px 0;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-light);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.event-meta {
+  display: flex;
+  gap: 10px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  align-items: center;
+}
+
+/* Badges */
+.badge {
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.badge.interview {
+  background: rgba(3, 218, 198, 0.15);
+  color: #03dac6;
+}
+
+.badge.hackathon {
+  background: rgba(255, 2, 102, 0.15);
+  color: #ff0266;
+}
+
+.badge.conference {
+  background: rgba(255, 222, 3, 0.15);
+  color: #ffde03;
+}
+
+/* Buttons & Controls */
+.btn-icon-small {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 5px;
+  transition: color 0.2s;
+}
+
+.btn-icon-small:hover {
+  color: var(--text-light);
+}
+
+.placeholder-text {
+  color: var(--text-muted);
+  font-style: italic;
+  text-align: center;
+  padding: 20px;
+  font-size: 0.9rem;
+}
+
+/* --- Task Panel Specifics --- */
+.task-card .event-icon {
+  background: rgba(3, 218, 198, 0.15);
+  color: #03dac6;
+}
+
+.source-tag {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 3px 8px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.delete-btn {
+  color: #ff5252;
+  opacity: 0.7;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.delete-btn:hover {
+  opacity: 1;
+}
+
+/* --- Email Drafter & Inputs --- */
+.input-group label {
+  font-weight: 500;
+}
+
+textarea:focus,
+input:focus,
+select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(138, 73, 255, 0.1);
+}
+
+.draft-result {
+  border: 1px solid var(--border-color) !important;
+  background: #000 !important;
+}
+
+/* Utilities */
+.hidden {
+  display: none !important;
+}

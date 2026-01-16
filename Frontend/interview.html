@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Video Mock Interview</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./style/interview.css">
+    <link rel="icon" type="image/png" href="./assets/favicon.png"> 
+    <!-- Add TensorFlow.js libraries for Object Detection -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+</head>
+<body>
+    <div class="background-glow"></div>
+
+    <!-- Full Screen Spinner Overlay -->
+    <div id="spinner-overlay" style="display: none;">
+        <div class="spinner"></div>
+        <p id="spinner-overlay-text" class="loader-text">Loading...</p>
+    </div>
+
+    <div id="toast-notification" class="toast"></div>
+
+    <main class="interview-container">
+        <header class="page-header">
+             <h1><i class="fas fa-video"></i> AI Video Interview</h1>
+            <nav class="header-nav">
+                <a href="home.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+                <button id="logoutButton" class="nav-button"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </nav>
+        </header>
+
+        <!-- Step 1: Job Description -->
+        <section class="card" id="job-description-card">
+            <h2><i class="fas fa-paste"></i> Job Description</h2>
+            <p class="muted-text">Paste a job description to begin a realistic, AI-driven video interview.</p>
+            <textarea id="job-description-input" placeholder="Paste the job description here..."></textarea>
+            <div class="form-actions"><button id="proceed-to-difficulty-btn" class="btn primary-btn">Analyze & Proceed</button></div>
+        </section>
+
+        <!-- Step 2: Difficulty Selection -->
+        <section class="card" id="difficulty-card" style="display: none;">
+            <h2><i class="fas fa-sliders-h"></i> Select Interview Difficulty</h2>
+            <div class="difficulty-buttons">
+                <div class="difficulty-btn" data-difficulty="easy"><h4>Easy</h4><p>Entry-level</p></div>
+                <div class="difficulty-btn" data-difficulty="medium"><h4>Medium</h4><p>Mid-level</p></div>
+                <div class="difficulty-btn" data-difficulty="hard"><h4>Hard</h4><p>Senior-level</p></div>
+            </div>
+        </section>
+
+        <!-- Step 3: Start Prompt -->
+        <section class="card" id="start-prompt-card" style="display: none;">
+            <h2><i class="fas fa-check-circle"></i> Ready to Begin?</h2>
+            <p class="muted-text">Your browser will now ask for camera and microphone permissions.</p>
+            <div id="confirmation-details"></div>
+            <div class="form-actions"><button id="start-interview-btn" class="btn primary-btn"><i class="fas fa-play-circle"></i> Start Video Interview</button></div>
+        </section>
+
+        <!-- Step 4: The Main Interview -->
+        <section class="card" id="interview-card" style="display: none;">
+            <div class="video-interface">
+                <div class="video-container">
+                    <video id="video-preview" autoplay muted></video>
+                    <div id="recording-indicator" style="display: none;">REC ●</div>
+                </div>
+                <div class="video-controls">
+                    <button id="record-btn" class="btn primary-btn" disabled><i class="fas fa-video"></i> Record</button>
+                    <button id="stop-btn" class="btn primary-btn" disabled><i class="fas fa-stop"></i> Submit</button>
+                </div>
+                <!-- Local spinner for video submission -->
+                <div class="spinner-container" id="video-spinner-container" style="display: none;">
+                    <div class="spinner"></div>
+                    <p id="video-spinner-text" class="loader-text">Processing...</p>
+                </div>
+                <!-- UPDATED: End Interview button moved here -->
+                <button id="end-interview-btn" class="btn secondary-btn" disabled>End Interview & Get Summary</button>
+            </div>
+            
+            <div class="interview-dialogue">
+                <h2 id="interview-header-title">Live Interview</h2>
+                <div class="chat-messages" id="chat-messages"></div>
+            </div>
+            
+        </section>
+
+        <!-- Step 5: Summary -->
+        <section class="card" id="summary-card" style="display: none;">
+            <h2><i class="fas fa-award"></i> Interview Performance Summary</h2>
+            <div id="summary-content"></div>
+            <div class="form-actions"><button id="restart-interview-btn" class="btn primary-btn">Start New Interview</button></div>
+        </section>
+    </main>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="./script/auth.js"></script>
+    <script src="script/interview.js"></script>
+</body>
+</html>

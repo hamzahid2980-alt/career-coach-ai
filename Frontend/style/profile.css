@@ -1,0 +1,465 @@
+
+        :root {
+            --bg-main: #0A090F;
+            --bg-card: #13111C;
+            --border-color: rgba(138, 73, 255, 0.15);
+            --primary: #8A49FF;
+            --primary-hover: #702cf8;
+            --gemini-blue: #4285F4;
+            --gemini-teal: #34A853;
+            --text-light: #EAEBF0;
+            --text-muted: #8E8C99;
+            --radius: 14px;
+            --shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+            --font-main: 'Inter', system-ui, sans-serif;
+        }
+
+        /* --- Base & Body Styles --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-main);
+            color: var(--text-light);
+            min-height: 100vh;
+            overflow: hidden; /* Prevent scrollbars from canvas overflow */
+            position: relative;
+        }
+
+        /* --- Particle & Glow Background --- */
+        #particle-canvas {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -2;
+        }
+
+        .background-glow {
+            position: fixed;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(138, 73, 255, 0.1) 0%, rgba(138, 73, 255, 0) 60%);
+            pointer-events: none;
+            z-index: -1;
+            animation: pulseGlow 8s ease-in-out infinite;
+        }
+
+        /* --- Main Container --- */
+        .container-wrapper {
+             height: 100vh;
+             overflow-y: auto;
+             overflow-x: hidden;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* --- Page Header --- */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            animation: fadeInDown 0.8s ease-out;
+        }
+        .page-header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: linear-gradient(90deg, #EAEBF0, #c5c7d3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .page-header h1 i {
+            color: var(--primary);
+        }
+
+        .header-nav {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-link, .nav-button {
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.2rem;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link {
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+        }
+        .nav-link:hover {
+            color: var(--text-light);
+            background-color: var(--bg-card);
+            border-color: var(--primary);
+        }
+        .nav-button {
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+        .nav-button:hover {
+            color: #e05252;
+            background-color: rgba(224, 82, 82, 0.1);
+            border-color: #e05252;
+        }
+
+        /* --- Cards --- */
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+            animation: fadeInUp 0.5s ease-out forwards;
+            opacity: 0;
+        }
+
+        .card:nth-child(2) { animation-delay: 0.1s; }
+        .card:nth-child(3) { animation-delay: 0.2s; }
+        .card:nth-child(4) { animation-delay: 0.3s; }
+        
+        .card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .card h2 i {
+            color: var(--primary);
+        }
+        .card p {
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+        
+        /* --- Form Elements --- */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-light);
+        }
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            background-color: var(--bg-main);
+            border: 1px solid var(--border-color);
+            color: var(--text-light);
+            padding: 0.8rem 1rem;
+            border-radius: 10px;
+            font-family: var(--font-main);
+            font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(138, 73, 255, 0.2);
+        }
+        .form-group input[disabled],
+        .form-group textarea[disabled] {
+            background-color: rgba(0,0,0,0.2);
+            cursor: not-allowed;
+        }
+        .form-group small {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            display: block;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        /* --- Buttons --- */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            font-weight: 600;
+            font-size: 1rem;
+            padding: 0.8rem 1.5rem;
+            border-radius: 12px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s ease-in-out;
+            border: none;
+        }
+        .primary-btn {
+            background: linear-gradient(90deg, var(--primary), var(--primary-hover));
+            color: white;
+            box-shadow: 0 4px 20px rgba(138, 73, 255, 0.25);
+            position: relative;
+            overflow: hidden;
+        }
+        .primary-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+        .primary-btn:hover::before { left: 100%; }
+        .primary-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(138, 73, 255, 0.3);
+        }
+        .secondary-btn {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+        }
+        .secondary-btn:hover {
+            border-color: var(--primary);
+            color: var(--text-light);
+        }
+
+        /* --- Custom File Input --- */
+        .file-upload-group {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .file-upload-label {
+            width: auto;
+            flex-shrink: 0;
+        }
+        .file-name-display {
+            color: var(--text-muted);
+            font-style: italic;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* --- Status Messages --- */
+        .status-message {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .status-message.hidden { display: none; }
+
+        /* --- Animations --- */
+        @keyframes fadeInDown {
+          from { opacity: 0; transform: translateY(-20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(30px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulseGlow {
+          0% { opacity: 0.5; transform: translateX(-50%) scale(1); }
+          50% { opacity: 0.8; transform: translateX(-50%) scale(1.05); }
+          100% { opacity: 0.5; transform: translateX(-50%) scale(1); }
+        }
+        
+
+/* Add these new styles to your existing profile.css file */
+
+/* General Improvements */
+.hidden {
+    display: none !important;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+/* --- Tab Navigation Styles --- */
+.tab-container {
+    margin-top: 1.5rem;
+}
+
+.tab-nav {
+    display: flex;
+    border-bottom: 2px solid var(--border-color);
+    margin-bottom: 1.5rem;
+}
+
+.tab-link {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: color 0.2s ease, border-bottom 0.2s ease;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+}
+
+.tab-link:hover {
+    color: var(--text-light);
+}
+
+.tab-link.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+}
+
+.tab-link i {
+    margin-right: 0.5rem;
+}
+
+.tab-pane {
+    display: none;
+}
+
+.tab-pane.active {
+    display: block;
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Dynamic Skills (Tags) Input Styles --- */
+.skills-tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    margin-top: 0.5rem;
+    min-height: 40px;
+}
+
+.skill-tag {
+    display: inline-flex;
+    align-items: center;
+    background-color: var(--primary);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.9rem;
+}
+
+.skill-tag button {
+    background: none;
+    border: none;
+    color: white;
+    margin-left: 0.5rem;
+    cursor: pointer;
+    font-size: 1.2rem;
+    line-height: 1;
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+}
+
+.skill-tag button:hover {
+    opacity: 1;
+}
+
+/* --- Dynamic Projects List Styles --- */
+#projects-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.project-entry {
+    background: var(--background);
+    padding: 1rem;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    position: relative;
+}
+
+.btn-remove-project {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.btn-remove-project:hover {
+    color: var(--danger);
+}
+
+
+/* --- CUSTOM DARK-THEME SCROLLBAR --- */
+
+/* For WebKit-based browsers (Chrome, Safari, Edge, etc.) */
+/* This targets all scrollbars on the page */
+*::-webkit-scrollbar {
+  width: 12px;  /* Width of the vertical scrollbar */
+  height: 12px; /* Height of the horizontal scrollbar */
+}
+
+/* The track (the background of the scrollbar) */
+*::-webkit-scrollbar-track {
+  background: var(--background); /* Use your main background color */
+}
+
+/* The thumb (the draggable part of the scrollbar) */
+*::-webkit-scrollbar-thumb {
+  background-color: var(--secondary);    /* A nice, visible grey from your theme */
+  border-radius: 20px;       /* Makes it fully rounded or "pill-shaped" */
+  border: 3px solid var(--background); /* Creates a padding effect around the thumb */
+}
+
+/* The thumb when you hover over it */
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--primary); /* Uses your primary accent color on hover */
+}
+
+/* For Firefox */
+/* This provides a simpler, but still effective, customization */
+html {
+  scrollbar-width: thin; /* Can be 'auto', 'thin', or 'none' */
+  scrollbar-color: var(--secondary) var(--background); /* thumb color, track color */
+
+}

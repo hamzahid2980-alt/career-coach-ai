@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Profile - AI Career Coach</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./style/profile.css">
+    <link rel="icon" type="image/png" href="./assets/favicon.png">
+</head>
+<body>
+    <canvas id="particle-canvas"></canvas>
+    <div class="background-glow"></div>
+
+    <div class="container-wrapper">
+        <div class="container">
+            <header class="page-header">
+                <h1><i class="fas fa-user-circle"></i> Your Profile</h1>
+                <nav class="header-nav">
+                    <a href="home.html" class="nav-link"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+                    <button id="logoutButton" class="nav-button"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                </nav>
+            </header>
+
+            <div class="card profile-info-card">
+                <h2><i class="fas fa-info-circle"></i> Account Information</h2>
+                <p><strong>Name:</strong> <span id="user-name">Loading...</span></p>
+                <p><strong>Email:</strong> <span id="user-email">Loading...</span></p>
+            </div>
+
+            <!-- MODIFIED: Resume Details Card with Tabs -->
+            <div class="card resume-details-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-address-card"></i> Your Resume Details</h2>
+                    <div class="form-actions">
+                        <button type="button" id="editResumeDetailsButton" class="btn primary-btn"><i class="fas fa-edit"></i> Edit</button>
+                        <button type="submit" form="edit-resume-details-form" id="saveResumeDetailsButton" class="btn primary-btn hidden"><i class="fas fa-save"></i> Save Changes</button>
+                        <button type="button" id="cancelEditDetailsButton" class="btn secondary-btn hidden"><i class="fas fa-times"></i> Cancel</button>
+                    </div>
+                </div>
+                <p class="section-description">For minor edits, use the tabs below. This directly updates the structured data used by our AI.</p>
+                
+                <div class="tab-container">
+                    <div class="tab-nav">
+                        <button type="button" class="tab-link active" data-tab="personal-info-tab"><i class="fas fa-user"></i> Personal</button>
+                        <button type="button" class="tab-link" data-tab="summary-tab"><i class="fas fa-bullseye"></i> Summary</button>
+                        <button type="button" class="tab-link" data-tab="skills-tab"><i class="fas fa-cogs"></i> Skills</button>
+                        <button type="button" class="tab-link" data-tab="projects-tab"><i class="fas fa-project-diagram"></i> Projects</button>
+                    </div>
+
+                    <form id="edit-resume-details-form">
+                        <!-- Personal Info Tab Pane -->
+                        <div class="tab-pane active" id="personal-info-tab">
+                            <div class="form-group"><label for="profileName">Name:</label><input type="text" id="profileName" placeholder="Your Full Name" disabled></div>
+                            <div class="form-group"><label for="profileEmail">Email:</label><input type="email" id="profileEmail" placeholder="your.email@example.com" disabled></div>
+                            <div class="form-group"><label for="profilePhone">Phone:</label><input type="tel" id="profilePhone" placeholder="+1 (555) 123-4567" disabled></div>
+                            <div class="form-group"><label for="profileLinkedin">LinkedIn:</label><input type="url" id="profileLinkedin" placeholder="https://linkedin.com/in/yourprofile" disabled></div>
+                            <div class="form-group"><label for="profileGithub">GitHub:</label><input type="url" id="profileGithub" placeholder="https://github.com/yourusername" disabled></div>
+                        </div>
+
+                        <!-- Summary Tab Pane -->
+                        <div class="tab-pane" id="summary-tab">
+                            <div class="form-group"><label for="profileSummary">Summary/Objective:</label><textarea id="profileSummary" rows="8" placeholder="A concise summary..." disabled></textarea></div>
+                        </div>
+
+                        <!-- Skills Tab Pane (NEW DYNAMIC INPUT) -->
+                        <div class="tab-pane" id="skills-tab">
+                            <div class="form-group">
+                                <label for="profileSkillsInput">Add a Skill:</label>
+                                <div class="skills-input-wrapper">
+                                    <input type="text" id="profileSkillsInput" placeholder="e.g., Python, then press Enter" disabled>
+                                    <div id="skills-container" class="skills-tags-container"></div>
+                                </div>
+                                <small>Type a skill and press Enter. Click a tag's 'x' to remove it.</small>
+                            </div>
+                        </div>
+
+                        <!-- Projects Tab Pane (NEW DYNAMIC LIST) -->
+                        <div class="tab-pane" id="projects-tab">
+                            <div id="projects-list-container">
+                                <!-- Project items will be dynamically inserted here by JS -->
+                            </div>
+                            <button type="button" id="addProjectButton" class="btn secondary-btn" disabled><i class="fas fa-plus"></i> Add Another Project</button>
+                        </div>
+                    </form>
+                </div>
+                <div id="details-update-status" class="status-message hidden"></div>
+            </div>
+
+            <!-- Upload New Resume Card -->
+            <div class="card upload-resume-card">
+                <h2><i class="fas fa-upload"></i> Upload New Resume File</h2>
+                <p class="section-description">To replace all data, upload a new PDF or DOCX. This is a destructive action.</p>
+                <form id="upload-resume-file-form">
+                    <div class="form-group file-upload-group">
+                        <input type="file" id="resumeFileInput" name="resume_file" accept=".pdf,.docx" required class="hidden">
+                        <label for="resumeFileInput" class="btn primary-btn file-upload-label"><i class="fas fa-folder-open"></i> Choose File</label>
+                        <span id="fileName" class="file-name-display">No file chosen</span>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" id="uploadResumeFileButton" class="btn primary-btn"><i class="fas fa-file-upload"></i> Upload & Process</button>
+                    </div>
+                </form>
+                <div id="file-upload-status" class="status-message hidden"></div>
+            </div>
+        </div>
+    </div>
+
+    
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="./script/auth.js"></script>
+    <script src="./script/profile.js"></script>
+</body>
+</html>

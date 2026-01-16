@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Generator - AI Career Coach</title>
+    <link rel="stylesheet" href="./style/portfolio_generator.css?v=2.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    
+    <!-- New Header with Back Button -->
+    <header class="page-header">
+        <div class="brand">
+            <i class="fas fa-robot"></i> AI Career Coach
+        </div>
+        <a href="home.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </header>
+
+    <!-- Main Content (Full Width) -->
+    <div class="container">
+        <!-- Upload Section -->
+        <div id="upload-section" class="section active">
+            <div class="glass-card">
+                <div class="card-header">
+                    <i class="fas fa-magic"></i>
+                    <h1>AI Portfolio Generator</h1>
+                    <p>Transform your resume into a stunning portfolio website</p>
+                </div>
+                
+                <div class="upload-area" id="upload-area">
+                    <div class="upload-content">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <h3>Drop your resume here</h3>
+                        <p>or click to browse files</p>
+                        <input type="file" id="resume-file" accept=".pdf,.doc,.docx,.txt" hidden>
+                    </div>
+                </div>
+                
+                <button class="generate-btn" id="generate-btn" disabled>
+                    <span>Generate Portfolio</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Loading Section -->
+        <div id="loading-section" class="section">
+            <div class="glass-card loading-card">
+                <div class="loading-animation">
+                    <div class="loading-spinner"></div>
+                    <h2>Creating your portfolio...</h2>
+                    <p id="loading-text">Analyzing your resume</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Preview Section -->
+        <div id="preview-section" class="section">
+            <!-- Controls Bar (Above Iframe) -->
+            <div class="preview-controls">
+                <button class="control-btn" id="publish-btn" style="background: #238636; border-color: #238636;">
+                    <i class="fab fa-github"></i> Publish to GitHub
+                </button>
+                <button class="control-btn" id="download-btn">
+                    <i class="fas fa-download"></i> Download HTML
+                </button>
+                <button class="control-btn" id="new-btn">
+                    <i class="fas fa-plus"></i> New Portfolio
+                </button>
+            </div>
+            <!-- Iframe Container -->
+            <div class="preview-container">
+                <iframe id="portfolio-preview" src=""></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="./script/firebase-config.js?v=2.0"></script>
+    <script src="./script/auth.js?v=2.0"></script>
+    <script src="./script/portfolio_generator.js?v=2.0"></script>
+</body>
+</html>

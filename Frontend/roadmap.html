@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roadmap Generator - AI Career Coach</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="./style/roadmap.css?v=3.3">
+    <link rel="icon" type="image/png" href="./assets/favicon.png">
+</head>
+
+<body>
+    <div class="background-glow"></div>
+
+    <div class="container-wrapper">
+        <div class="container">
+            <header class="page-header">
+                <h1><i class="fas fa-map-signs"></i> Elaborative Roadmap Generator</h1>
+                <nav class="header-nav">
+                    <a href="home.html" class="nav-link"><i class="fas fa-arrow-left"></i> Home</a>
+                    <a href="profile.html" class="nav-link"><i class="fas fa-user-circle"></i> Profile</a>
+                    <button id="logoutButton" class="nav-button"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                </nav>
+            </header>
+
+            <!-- SECTION 1: FORM FOR ROADMAP GENERATION -->
+            <div class="card" id="form-card">
+                <form id="roadmap-generation-form">
+                    <div class="input-grid">
+                        <div>
+                            <h3 class="form-section-heading"><i class="fas fa-play-circle"></i> Your Starting Point</h3>
+                            <div class="form-group">
+                                <label for="currentSkillsInput">Current Skills & Projects</label>
+                                <textarea id="currentSkillsInput" rows="6"
+                                    placeholder="e.g., Skills: Python, SQL...&#10;Projects: Built a portfolio website..."></textarea>
+                                <small>You can enter skills manually or they will be auto-filled from your
+                                    profile.</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="currentLevel">Current Proficiency</label>
+                                <select id="currentLevel">
+                                    <option value="Novice">Novice</option>
+                                    <option value="Proficient" selected>Proficient</option>
+                                    <option value="Expert">Expert</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="form-section-heading"><i class="fas fa-flag-checkered"></i> Your Destination</h3>
+                            <div class="form-group">
+                                <label for="goalInput">Job Description OR Desired Role</label>
+                                <textarea id="goalInput" rows="6"
+                                    placeholder="e.g., Senior Frontend Developer at Google..."></textarea>
+                            </div>
+                            <br><br><br>
+                            <div class="form-group">
+                                <label for="goalLevel">Desired Proficiency</label>
+                                <select id="goalLevel">
+                                    <option value="Proficient">Proficient</option>
+                                    <option value="Job-Ready" selected>Job-Ready</option>
+                                    <option value="Expert">Expert</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="form-section-heading" style="margin-top: 2rem;"><i class="fas fa-hourglass-half"></i>
+                        Your Timeline</h3>
+                    <div class="input-grid">
+                        <div class="form-group">
+                            <label for="duration">Timeframe</label>
+                            <select id="duration">
+                                <option value="3 months">3 Months</option>
+                                <option value="6 months" selected>6 Months</option>
+                                <option value="1 year">1 Year</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="studyHours">Study Hours / Month</label>
+                            <input type="number" id="studyHours" value="25" min="5">
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" id="generateRoadmapButton" class="btn primary-btn"><i
+                                class="fas fa-rocket"></i> Generate My Strategic Plan</button>
+                        <!-- <button type="button" id="imStuckButton" class="btn secondary-btn"><i class="fas fa-headset"></i> AI Assistant</button> -->
+                    </div>
+                </form>
+                <div id="roadmap-status" class="hidden"></div>
+            </div>
+
+            <!-- SECTION 2: LOADING INDICATOR -->
+            <div id="loading" class="hidden">
+                <div class="spinner"></div>
+                <p>Your AI strategist is building your plan...</p>
+            </div>
+            <!-- SECTION 3: ROADMAP RESULTS -->
+            <section id="results-section" class="hidden">
+                <div class="card">
+                    <h2><i class="fas fa-chart-line"></i> Your Strategic Action Plan</h2>
+
+                    <!-- NEW: Overall Progress Bar -->
+                    <div class="overall-progress-container">
+                        <div class="progress-label">Overall Progress: <span id="overall-progress-percentage">0%</span>
+                        </div>
+                        <div class="progress-bar-background">
+                            <div class="progress-bar" id="overall-progress-bar" style="width: 0%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="results-grid">
+                        <div class="result-card" id="score-card">
+                            <h3>Job Match Score</h3>
+                            <div class="score-container">
+                                <div class="score-circle"><span id="score-value">0%</span></div>
+                                <p id="score-summary"></p>
+                            </div>
+                        </div>
+                        <div class="result-card" id="summary-card">
+                            <h3><i class="fas fa-star"></i> Priority Skills</h3>
+                            <ul id="summary-list"></ul>
+                        </div>
+                    </div>
+                    <div class="result-card" id="timeline-card" style="margin-top: 2rem;">
+                        <h3><i class="fas fa-calendar-alt"></i> High-Level Timeline</h3>
+                        <div class="chart-container"><canvas id="timeline-chart"></canvas></div>
+                    </div>
+
+                    <!-- PERFORMANCE STANDING (Aligned with Dashboard) -->
+                    <div id="performance-section" class="card results-card">
+                        <h3 class="results-heading"><i class="fas fa-chart-line"></i> Performance Standing</h3>
+                        <div class="performance-stats-grid">
+                            <div class="stat-item clickable-card" onclick="openStatsModal('assessments')">
+                                <span class="stat-label">AVG ASSESSMENT <i
+                                        class="fas fa-external-link-alt toggle-icon"></i></span>
+                                <span class="stat-value" id="avg-assessment-val">0%</span>
+                            </div>
+                            <div class="stat-item clickable-card" onclick="openStatsModal('interviews')">
+                                <span class="stat-label">AVG INTERVIEW <i
+                                        class="fas fa-external-link-alt toggle-icon"></i></span>
+                                <span class="stat-value" id="avg-interview-val">0%</span>
+                            </div>
+                            <div class="stat-item clickable-card" onclick="openStatsModal('ats')">
+                                <span class="stat-label">LATEST ATS <i
+                                        class="fas fa-external-link-alt toggle-icon"></i></span>
+                                <span class="stat-value" id="latest-ats-val">0%</span>
+                            </div>
+                            <div class="stat-item clickable-card" onclick="openStatsModal('progress')">
+                                <span class="stat-label">COURSE PROGRESS <i
+                                        class="fas fa-external-link-alt toggle-icon"></i></span>
+                                <span class="stat-value" id="course-progress-val">0%</span>
+                            </div>
+                        </div>
+
+                        <div class="feedback-container">
+                            <div class="feedback-main">
+                                <i class="fas fa-lightbulb feedback-icon"></i>
+                                <p id="performance-feedback-text" class="feedback-text">Steady progress! Analyze your
+                                    stats to see where to focus next.</p>
+                            </div>
+                            <div id="performance-details" class="hidden">
+                                <hr class="reason-divider">
+                                <div class="performance-detail-grid">
+                                    <div class="detail-block">
+                                        <strong>Composite Talent Index</strong>
+                                        <span id="composite-score-val" class="score-highlight">0%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="roadmap-reason-container" class="feedback-reason hidden">
+                                <hr class="reason-divider">
+                                <p id="roadmap-reason-text" class="reason-text"></p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3><i class="fas fa-road"></i> Interactive Roadmap</h3>
+                    <div id="detailed-roadmap-container"></div>
+                </div>
+                <div class="card">
+                    <h3><i class="fas fa-project-diagram"></i> Suggested Projects</h3>
+                    <div id="projects-container"></div>
+                </div>
+                <div class="card">
+                    <h3><i class="fas fa-graduation-cap"></i> Recommended Courses</h3>
+                    <div id="courses-container"></div>
+                </div>
+                <!-- STATS DETAIL MODAL -->
+                <div id="stats-modal" class="modal hidden">
+                    <div class="modal-content glass-effect">
+                        <div class="modal-header">
+                            <h3 id="modal-title">Activity Details</h3>
+                            <button class="close-modal" onclick="closeStatsModal()">&times;</button>
+                        </div>
+                        <div class="modal-body" id="modal-details-container">
+                            <!-- Dynamic activity items will appear here -->
+                        </div>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" id="regenerateRoadmapButton" class="btn secondary-btn">
+                        <i class="fas fa-redo-alt"></i> Regenerate Roadmap
+                    </button>
+                    <button type="button" id="personalizeRoadmapBtn" class="btn primary-btn pulse-btn">
+                        <i class="fas fa-magic"></i> Personalize My Roadmap
+                    </button>
+                    <button id="syncToGoogleBtn" class="btn secondary-btn">
+                        <i class="fab fa-google"></i> Sync to Google
+                    </button>
+                </div>
+            </section>
+        </div>
+    </div>
+    <!-- MODALS AND CHATBOT (Unchanged) -->
+    <div id="tutor-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-topic-title"></h2>
+                <button class="close-button" id="closeTutorModalButton">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="tutor-loading-state" class="hidden">
+                    <div class="spinner"></div>
+                    <p style="text-align: center;">Thinking like a tutor...</p>
+                </div>
+                <div id="tutor-response-content" class="hidden">
+                    <div class="explanation-section">
+                        <h4><i class="fas fa-lightbulb"></i> Analogy</h4>
+                        <p id="analogy-text"></p>
+                    </div>
+                    <div class="explanation-section">
+                        <h4><i class="fas fa-book"></i> Technical Definition</h4>
+                        <div id="technical-definition-text"></div>
+                    </div>
+                    <div class="explanation-section">
+                        <h4><i class="fas fa-sitemap"></i> Prerequisites</h4>
+                        <ul id="prerequisites-list"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button id="chatbot-float-button" class="floating-button hidden"><i class="fas fa-robot"></i></button>
+    <div id="chatbot-window" class="hidden">
+        <div class="chatbot-header">
+            <h4><i class="fas fa-headset"></i> AI Career Assistant</h4>
+            <button id="close-chatbot-button" class="close-button">&times;</button>
+        </div>
+        <div class="chatbot-body" id="chat-messages"></div>
+        <div class="chatbot-footer">
+            <form id="chatbot-form" class="chat-input-form">
+                <input type="text" id="chat-input" placeholder="Ask about your plan..." required>
+                <button type="submit" id="send-chat-button" class="btn primary-btn"><i
+                        class="fas fa-paper-plane"></i></button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="./script/auth.js"></script>
+    <script src="./script/roadmap.js"></script>
+</body>
+
+</html>

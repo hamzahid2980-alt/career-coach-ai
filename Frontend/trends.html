@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Market Trends - AI Career Coach</title>
+    <link rel="stylesheet" href="./style/home.css" />
+    <link rel="stylesheet" href="./style/trends.css" /> 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="icon" type="image/png" href="./assets/favicon.png">
+</head>
+
+<body>
+    <div class="background-glow"></div>
+    <div class="particles-container" id="particles"></div>
+
+    <div class="container" style="max-width: 1400px; margin: 0 auto; padding: 20px;">
+        <header class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+            <div class="header-left">
+                 <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 0;">Market Trends</h1>
+            </div>
+            <nav class="header-nav" style="display: flex; gap: 15px; align-items: center;">
+                 <a href="home.html" class="btn" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); color: var(--text-light); width: auto; margin: 0; padding: 0.8rem 1.5rem; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-arrow-left"></i> Back to Dashboard
+                </a>
+            </nav>
+        </header>
+
+        <!-- Main Content Wrapper (formerly main) -->
+        <div class="dashboard-container" style="margin-top: 0;">
+             <section class="hero-section" style="text-align: center; margin-bottom: 2rem;">
+                <h1 style="font-size: 2.5rem; background: linear-gradient(90deg, #EAEBF0, #c5c7d3); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Global Skills Market</h1>
+                <p style="color: var(--text-muted); font-size: 1.1rem;">Real-time demand analysis & personalized AI learning recommendations.</p>
+            </section>
+
+        <div class="container-fluid" style="padding: 2rem;">
+            <!-- Chart Card -->
+            <div class="chart-section">
+                <div class="chart-container">
+                    <canvas id="skillsChart"></canvas>
+                </div>
+                <p id="statusMsg" class="loading"><i class="fas fa-circle-notch fa-spin"></i> Fetching live market data...</p>
+            </div>
+
+            <!-- Long-Term Viability Section -->
+            <div class="viability-section settings-card" style="margin-bottom: 2rem;">
+                <h2><i class="fas fa-history"></i> Long-Term Viability (5-Year Analysis)</h2>
+                <div class="viability-header">
+                     <p>AI-driven analysis of historical data to identify future-proof skills vs. short-term buzzwords.</p>
+                     <button id="syncBtn" class="btn primary-gradient-btn" style="width: auto; padding: 0.5rem 1rem; font-size: 0.9rem;">
+                        <i class="fas fa-sync-alt"></i> Sync History (Admin)
+                     </button>
+                </div>
+                <div id="viabilityGrid" class="viability-grid">
+                    <div class="loading"><i class="fas fa-database fa-pulse"></i> Querying BigQuery for historical insights...</div>
+                </div>
+            </div>
+
+            <!-- Insights Section -->
+            <div class="insights-section">
+                <h2><i class="fas fa-bullseye"></i> Your AI Intelligence Report</h2>
+                <div id="insightsGrid" class="insights-grid">
+                    <div class="loading"><i class="fas fa-brain fa-pulse"></i> Analyzing your skills against market trends...</div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="./script/auth.js"></script>
+    <script src="./script/trends.js"></script>
+</body>
+</html>

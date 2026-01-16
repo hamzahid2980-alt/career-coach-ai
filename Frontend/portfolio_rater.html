@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Portfolio Rater - AI Career Coach</title>
+    <!-- Main Theme Styles -->
+    <link rel="stylesheet" href="./style/home.css?v=1.3" />
+    <!-- Feature Specific Styles -->
+    <link rel="stylesheet" href="./style/portfolio_rater.css" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="icon" type="image/png" href="./assets/favicon.png">
+</head>
+
+<body>
+    <div class="background-glow"></div>
+    <div class="particles-container" id="particles"></div>
+
+    <!-- Sidebar removed as per request -->
+
+    <main class="main-content">
+        <header class="dashboard-header" style="justify-content: flex-start; gap: 1rem;">
+            <a href="home.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        </header>
+
+        <!-- Main Feature Content -->
+        <div class="rater-wrapper">
+            <div class="rater-header">
+                <div class="rater-badge">AI Recruiter Simulation</div>
+                <h1>Portfolio Auditor</h1>
+                <p>Paste your portfolio link to see a hiring manager's perspective.</p>
+            </div>
+
+            <div class="search-bar">
+                <input type="text" id="urlInput" placeholder="https://your-portfolio.com (e.g. GitHub, Vercel link)">
+                <button onclick="auditSite()" id="btn">Analyze Portfolio</button>
+            </div>
+            <p id="statusMsg"></p>
+
+            <div id="dashboard" class="hidden fade-in">
+                
+                <div class="rater-grid">
+                    <div class="rater-card score-card">
+                        <h3>Hireability Score</h3>
+                        <div class="circular-chart">
+                            <span id="scoreText">0</span>
+                            <small>out of 100</small>
+                        </div>
+                        <div class="role-tag" id="roleTag">Detecting Role...</div>
+                    </div>
+
+                    <div class="rater-card overview-card">
+                        <h3>👤 Recruiter Overview</h3>
+                        <p id="overviewText">...</p>
+                        
+                        <div class="mini-metrics">
+                            <div class="metric">
+                                <span>Clarity</span>
+                                <div class="progress"><div id="barClarity" style="width:0%"></div></div>
+                            </div>
+                            <div class="metric">
+                                <span>Skills</span>
+                                <div class="progress"><div id="barEvidence" style="width:0%"></div></div>
+                            </div>
+                            <div class="metric">
+                                <span>Culture</span>
+                                <div class="progress"><div id="barCulture" style="width:0%"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rater-grid">
+                    <div class="rater-card list-card success">
+                        <h4>✅ Why they would hire you</h4>
+                        <ul id="goodList"></ul>
+                    </div>
+                    <div class="rater-card list-card danger">
+                        <h4>🚩 Why they might pass</h4>
+                        <ul id="badList"></ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Dependencies -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="./script/auth.js"></script>
+
+    <!-- Feature Script -->
+    <script src="./script/portfolio_rater.js"></script>
+</body>
+
+</html>

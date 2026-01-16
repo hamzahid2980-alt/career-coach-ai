@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Leaderboard - AI Career Coach</title>
+    <link rel="stylesheet" href="./style/home.css" />
+    <link rel="stylesheet" href="./style/leaderboard.css" /> <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="icon" type="image/png" href="./assets/favicon.png">
+</head>
+
+<body>
+    <div class="background-glow"></div>
+    <div class="particles-container" id="particles"></div>
+
+    <div class="container" style="max-width: 1400px; margin: 0 auto; padding: 20px;">
+        <header class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+            <div class="header-left">
+                 <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 0;">Leaderboard</h1>
+            </div>
+            <nav class="header-nav" style="display: flex; gap: 15px; align-items: center;">
+                 <a href="home.html" class="btn" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); color: var(--text-light); width: auto; margin: 0; padding: 0.8rem 1.5rem; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-arrow-left"></i> Back to Dashboard
+                </a>
+            </nav>
+        </header>
+
+        <!-- Main Content Wrapper (formerly main) -->
+        <div class="dashboard-container" style="margin-top: 0;">
+            <section class="hero-section" style="text-align: center; margin-bottom: 3rem;">
+                <h1 style="font-size: 2.5rem; background: linear-gradient(90deg, #EAEBF0, #c5c7d3); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Community Leaderboard</h1>
+                <p style="color: var(--text-muted); font-size: 1.1rem; max-width: 800px; margin: 1rem auto;">See who's leading the charge in career development. Earn points by generating roadmaps, taking assessments, and optimizing your resume!</p>
+            </section>
+
+        <div class="podium-container" id="podium-container">
+            </div>
+
+        <div class="leaderboard-list-container">
+            <div class="filter-container">
+                <div class="search-wrapper">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="skill-filter" placeholder="Filter by skill (e.g., Python, React)...">
+                </div>
+                <!-- NEW: Compare Button -->
+                <button id="compare-btn" class="compare-btn" disabled>
+                    <i class="fas fa-balance-scale"></i> Compare Selected (0/2)
+                </button>
+            </div>
+
+            <h3><i class="fas fa-list-ol"></i> Top Contenders</h3>
+            <div class="table-responsive">
+                <table class="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>Select</th> <!-- NEW Column -->
+                            <th>Rank</th>
+                            <th>User</th>
+                            <th>Total Score</th>
+                            <th>Roadmaps</th>
+                            <th>Assessments</th>
+                            <th>Contact</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboard-body">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <!-- NEW: Comparison Modal -->
+    <div id="comparison-modal" class="modal-overlay">
+        <div class="modal-content comparison-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-balance-scale"></i> Comparison Result</h2>
+                <button class="close-modal-btn" id="close-comparison">&times;</button>
+            </div>
+            <div class="modal-body" id="comparison-body">
+                <!-- Content injected by JS -->
+                <div class="loading-spinner">
+                    <i class="fas fa-circle-notch fa-spin"></i> Analyzing profiles with AI...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="./script/auth.js"></script>
+    <script src="./script/leaderboard.js"></script>
+</body>
+</html>
