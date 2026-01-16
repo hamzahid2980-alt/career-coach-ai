@@ -36,8 +36,24 @@ class GoogleSuiteService:
     @staticmethod
     def get_auth_flow(redirect_uri):
         """Creates an OAuth flow instance."""
+        
+        # 1. Try Environment Variable (Render/Production)
+        client_secret_env = os.environ.get("GOOGLE_CLIENT_SECRET")
+        if client_secret_env:
+            try:
+                client_config = json.loads(client_secret_env)
+                flow = Flow.from_client_config(
+                    client_config,
+                    scopes=SCOPES,
+                    redirect_uri=redirect_uri
+                )
+                return flow
+            except json.JSONDecodeError:
+                print("❌ Error: GOOGLE_CLIENT_SECRET is not valid JSON.")
+        
+        # 2. Fallback to Local File
         if not CREDENTIALS_FILE.exists():
-            raise FileNotFoundError(f"Client secrets file not found at {CREDENTIALS_FILE}")
+            raise FileNotFoundError(f"Client secrets file not found at {CREDENTIALS_FILE} and GOOGLE_CLIENT_SECRET env var is missing.")
             
         flow = Flow.from_client_secrets_file(
             str(CREDENTIALS_FILE),
