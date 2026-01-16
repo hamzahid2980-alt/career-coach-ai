@@ -1,6 +1,6 @@
 const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') 
     ? 'http://localhost:8000' 
-    : 'https://your-backend-app.onrender.com'; // Update if your backend is hosted elsewhere
+    : 'https://career-coach-ai-3xap.onrender.com';
 
 document.addEventListener('DOMContentLoaded', () => {
     const API_URL = `${API_BASE_URL}/api/interview`;

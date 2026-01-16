@@ -1,6 +1,6 @@
 const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') 
     ? 'http://localhost:8000' 
-    : 'https://your-backend-app.onrender.com'; // Update this if your backend is hosted elsewhere
+    : 'https://career-coach-ai-3xap.onrender.com';
 
 // Get references to all the HTML elements on this page
 const fileInput = document.getElementById("resume_file");
