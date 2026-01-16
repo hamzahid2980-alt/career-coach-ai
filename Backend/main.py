@@ -47,7 +47,11 @@ app = FastAPI(title="AI Career Coach API", version="2.0.0")
 # --- CORS (Fixes 'Failed to fetch') ---
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], 
+    allow_origins=[
+        "http://localhost:8080",
+        "http://127.0.0.1:8000",
+        "https://ai-career-coach-hackwins.vercel.app"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
