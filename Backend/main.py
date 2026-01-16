@@ -69,6 +69,34 @@ app.mount("/generated_portfolios", StaticFiles(directory="generated_portfolios")
 # Include Routers
 # ------------------------------
 # Ensure 'portfolio.py' exists in the 'routers' folder!
+@app.get("/api/debug-auth")
+async def debug_auth():
+    """
+    Temporary endpoint to diagnose Firebase Auth issues on Render.
+    """
+    import os
+    import json
+    
+    # 1. Check Env Var
+    creds_env = os.environ.get("FIREBASE_CREDENTIALS")
+    env_status = "Missing"
+    if creds_env:
+        try:
+            json.loads(creds_env)
+            env_status = f"Present (Valid JSON, Length: {len(creds_env)})"
+        except json.JSONDecodeError:
+            env_status = "Present (INVALID JSON)"
+            
+    # 2. Check Initialization
+    is_initialized = bool(firebase_admin._apps)
+    
+    return {
+        "firebase_admin_initialized": is_initialized,
+        "environment_variable_status": env_status,
+        "backend_pid": os.getpid(),
+        "python_version": sys.version
+    }
+
 from routers import auth, resume, roadmap, user, joblisting, assessment, interview, portfolio, career_mail, portfolio_rater
 
 # Register the routes
