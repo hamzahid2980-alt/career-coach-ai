@@ -16,3 +16,4 @@ pandas
 pytrends
 numpy
 google-cloud-bigquery
+beautifulsoup4
