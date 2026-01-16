@@ -1,5 +1,5 @@
 const firebaseConfig = {
-    apiKey: "AIzaSyDtuYr4icwQf2HsvByrCZeqbEex28lL6GI", // <--- IMPORTANT: Replace with your actual Firebase API key
+    apiKey: "AIzaSyBD9ChoveaB_T2Oin5qeoo3GYZLiakzDUk", // <--- IMPORTANT: Replace with your actual Firebase API key
     authDomain: "genaihack-240d7.firebaseapp.com",
     projectId: "genaihack-240d7",
     storageBucket: "genaihack-240d7.firebasestorage.app",
