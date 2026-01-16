@@ -16,6 +16,7 @@ class GroqHandler:
 
     def _initialize(self):
         self.api_keys = []
+        self.current_index = 0
         self.model_name = "llama-3.3-70b-versatile"
         
         # 1. Try new comma-separated format
@@ -36,13 +37,18 @@ class GroqHandler:
 
     def call_groq(self, prompt: str, is_chat: bool = False, history: List = None) -> Optional[Any]:
         """
-        Executes a Groq API call with key rotation.
+        Executes a Groq API call with stateful key rotation.
         """
         if not self.api_keys:
             print("❌ Groq Client not configured.")
             return None
 
-        for i, key in enumerate(self.api_keys):
+        num_keys = len(self.api_keys)
+        
+        for i in range(num_keys):
+            idx = (self.current_index + i) % num_keys
+            key = self.api_keys[idx]
+            
             try:
                 # Initialize client with current key
                 client = Groq(api_key=key)
@@ -68,10 +74,15 @@ class GroqHandler:
                     def __init__(self, text):
                         self.text = text
                 
+                # Update pointer if we moved
+                if i > 0:
+                    print(f"✅ Groq Key index {idx} worked. Updating pointer.")
+                    self.current_index = idx
+                    
                 return MockResponse(completion.choices[0].message.content)
 
             except Exception as e:
-                print(f"⚠️ Groq Key #{i+1} Failed: {e}. Rotating...")
+                print(f"⚠️ Groq Key index {idx} Failed: {e}. Rotating...")
                 continue
         
         print("❌ All Groq keys exhausted.")
