@@ -21,6 +21,7 @@ env/
 Backend/firebase-credentials.json
 Backend/client_secret.json
 Backend/service-account.json
+Backend/vision-credentials.json
 
 # Test Scripts (contain keys)
 Backend/test.py

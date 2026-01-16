@@ -43,6 +43,33 @@ if not firebase_admin._apps:
 else:
     print("ℹ️ Firebase Admin SDK already initialized.")
 
+# ------------------------------
+# Vision API / Google Cloud Credentials Setup
+# ------------------------------
+# PRIORITIZE: If VISION_CREDENTIALS env var exists (Render), use it.
+# OTHERWISE: Check for local 'vision-credentials.json' (Local Dev).
+vision_creds_env = os.environ.get("VISION_CREDENTIALS")
+vision_cred_path = Path(__file__).parent / "vision-credentials.json"
+
+if vision_creds_env:
+    # On Render: Write the env var content to a temporary file so Google Client libraries can read it
+    import tempfile
+    # Create a temp file to store the credentials
+    # We use a fixed path or handled via tempfile to ensure it persists during process lifetime
+    # But simple os.environ setting often requires a file path for GOOGLE_APPLICATION_CREDENTIALS
+    with open("google_vision_creds_temp.json", "w") as f:
+        f.write(vision_creds_env)
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.path.abspath("google_vision_creds_temp.json")
+    print("✅ Configured Google Cloud Credentials from VISION_CREDENTIALS env var.")
+
+elif vision_cred_path.exists():
+    # Local message
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = str(vision_cred_path)
+    print(f"✅ Configured Google Cloud Credentials from local file: {vision_cred_path}")
+
+else:
+    print("ℹ️ No specific Vision API credentials found. Defaulting to standard environment.")
+
 from routers import auth, resume, roadmap, user, joblisting, assessment, interview, leaderboard, trends # <--- Added trends
 # ------------------------------
 # FastAPI App Setup
