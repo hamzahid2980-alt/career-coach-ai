@@ -10,12 +10,27 @@ from dependencies import get_current_user
 router = APIRouter()
 
 # --- CONFIG ---
-# Use the same API key logic as the main app (assuming it's in os.environ)
-api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
+# Enhanced API Key Logic: Supports single key or comma-separated list (GEMINI_API_KEYS)
+api_key = None
+
+# 1. Try list of keys first (from Render/Env)
+keys_list_str = os.getenv("GEMINI_API_KEYS")
+if keys_list_str:
+    # Take the first key from the list (or implement rotation here if needed)
+    keys = [k.strip() for k in keys_list_str.split(',') if k.strip()]
+    if keys:
+        api_key = keys[0]
+
+# 2. Fallback to singular keys
+if not api_key:
+    api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
+
 MODEL_NAME = "gemini-2.5-flash" 
 
 if api_key:
     genai.configure(api_key=api_key)
+else:
+    print("⚠️ Warning: No valid Gemini/Google API Key found (checked GEMINI_API_KEYS, GOOGLE_API_KEY). Portfolio Rater will fail.")
 
 class RateRequest(BaseModel):
     url: str
@@ -27,6 +42,9 @@ async def rate_portfolio(req: RateRequest, user: dict = Depends(get_current_user
     Requires user authentication.
     """
     try:
+        if not api_key:
+             raise HTTPException(status_code=500, detail="Server Error: GOOGLE_API_KEY is missing from environment variables.")
+
         # 1. Scrape Content
         headers = {'User-Agent': 'Mozilla/5.0'}
         try:
