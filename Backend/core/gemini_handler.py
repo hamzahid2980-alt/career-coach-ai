@@ -27,7 +27,7 @@ class GeminiHandler:
         self.api_keys = []
         self.current_index = 0  # <--- Fix: Initialize stateful pointer
         # Updated to 'lite' model which often has better availability/quota limits in EAP
-        self.model_name = "models/gemini-2.5-flash"
+        self.model_name = "gemini-1.5-flash"
 
         # 1. Try new comma-separated format
         keys_str = os.getenv("GEMINI_API_KEYS")
@@ -60,7 +60,7 @@ class GeminiHandler:
             
             try:
                 genai.configure(api_key=key)
-                model = genai.GenerativeModel('gemini-1.5-flash')
+                model = genai.GenerativeModel(self.model_name)
                 
                 safety_settings = [
                     { "category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE" },
