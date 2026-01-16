@@ -1,7 +1,7 @@
 
 const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') 
     ? 'http://127.0.0.1:8000/api/career-mail' 
-    : 'https://career-guider-backend.onrender.com/api/career-mail';
+    : 'https://career-coach-ai-3xap.onrender.com/api/career-mail';
 let currentUser = null;
 
 // Initialize when auth works

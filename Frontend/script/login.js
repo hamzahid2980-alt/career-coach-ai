@@ -14,7 +14,7 @@ const provider = new firebase.auth.GoogleAuthProvider();
 // IMPORTANT: Ensure this matches your running backend URL (127.0.0.1 is safer than localhost)
 const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') 
     ? 'http://127.0.0.1:8000' 
-    : 'https://career-guider-backend.onrender.com'; 
+    : 'https://career-coach-ai-3xap.onrender.com'; 
 
 // --- DOM Element References ---
 const loginFormContainer = document.getElementById('login-form-container');

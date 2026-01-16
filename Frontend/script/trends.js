@@ -1,6 +1,6 @@
 const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') 
     ? 'http://127.0.0.1:8000/api' 
-    : 'https://career-guider-backend.onrender.com/api';
+    : 'https://career-coach-ai-3xap.onrender.com/api';
 
 document.addEventListener('DOMContentLoaded', () => {
     // Auth check handled by auth.js

@@ -1,6 +1,6 @@
 const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') 
     ? 'http://127.0.0.1:8000/api/portfolio-rater' 
-    : 'https://career-guider-backend.onrender.com/api/portfolio-rater';
+    : 'https://career-coach-ai-3xap.onrender.com/api/portfolio-rater';
 
 
 // Global user variable to store the authenticated Firebase user
