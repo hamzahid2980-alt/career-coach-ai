@@ -7,10 +7,10 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 import firebase_admin
 from firebase_admin import credentials, initialize_app
-from routers import auth, resume, roadmap, user, joblisting, assessment, interview, leaderboard, trends # <--- Added trends
 # ------------------------------
 # Firebase Admin SDK Initialization
 # ------------------------------
+# MOVED TO TOP: Must run before imports to prevent db_core from auto-initializing with wrong creds
 if not firebase_admin._apps:
     try:
         firebase_creds = os.environ.get("FIREBASE_CREDENTIALS")
@@ -43,6 +43,7 @@ if not firebase_admin._apps:
 else:
     print("ℹ️ Firebase Admin SDK already initialized.")
 
+from routers import auth, resume, roadmap, user, joblisting, assessment, interview, leaderboard, trends # <--- Added trends
 # ------------------------------
 # FastAPI App Setup
 # ------------------------------
