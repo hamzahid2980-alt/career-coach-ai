@@ -15,56 +15,67 @@ class GroqHandler:
         return cls._instance
 
     def _initialize(self):
-        self.api_key = os.getenv("GROQ_API_KEY")
-        self.client = None
-        self.model_name = "llama-3.3-70b-versatile" # High performance model
+        self.api_keys = []
+        self.model_name = "llama-3.3-70b-versatile"
         
-        if self.api_key:
-            try:
-                self.client = Groq(api_key=self.api_key)
-                print("✅ GroqHandler initialized successfully.")
-            except Exception as e:
-                print(f"❌ Failed to initialize Groq client: {e}")
+        # 1. Try new comma-separated format
+        keys_str = os.getenv("GROQ_API_KEYS")
+        if keys_str:
+            self.api_keys = [k.strip() for k in keys_str.split(',') if k.strip()]
+        
+        # 2. Fallback to single key
+        if not self.api_keys:
+            single = os.getenv("GROQ_API_KEY")
+            if single:
+                self.api_keys.append(single)
+                
+        if self.api_keys:
+            print(f"✅ GroqHandler initialized with {len(self.api_keys)} keys.")
         else:
-            print("❌ GROQ_API_KEY not found in .env")
+            print("❌ No GROQ_API_KEYS found in .env")
 
     def call_groq(self, prompt: str, is_chat: bool = False, history: List = None) -> Optional[Any]:
         """
-        Executes a Groq API call.
-        Returns an object compatible with the expected response structure (response.text).
+        Executes a Groq API call with key rotation.
         """
-        if not self.client:
-            print("❌ Groq Client not available.")
+        if not self.api_keys:
+            print("❌ Groq Client not configured.")
             return None
 
-        try:
-            # Construct messages
-            messages = []
-            if history:
-                # limited history support for now, simple transformation
-                for h in history:
-                    role = "user" if h.get("role") == "user" else "assistant"
-                    messages.append({"role": role, "content": h.get("parts", [""])[0]})
-            
-            messages.append({"role": "user", "content": prompt})
+        for i, key in enumerate(self.api_keys):
+            try:
+                # Initialize client with current key
+                client = Groq(api_key=key)
+                
+                # Construct messages
+                messages = []
+                if history:
+                    for h in history:
+                        role = "user" if h.get("role") == "user" else "assistant"
+                        messages.append({"role": role, "content": h.get("parts", [""])[0]})
+                
+                messages.append({"role": "user", "content": prompt})
 
-            completion = self.client.chat.completions.create(
-                messages=messages,
-                model=self.model_name,
-                temperature=0.3,
-                max_tokens=2048,
-            )
-            
-            # Wrap response to match Gemini's 'response.text' interface
-            class MockResponse:
-                def __init__(self, text):
-                    self.text = text
-            
-            return MockResponse(completion.choices[0].message.content)
+                completion = client.chat.completions.create(
+                    messages=messages,
+                    model=self.model_name,
+                    temperature=0.3,
+                    max_tokens=2048,
+                )
+                
+                # Mock Wrapper for Compatibility
+                class MockResponse:
+                    def __init__(self, text):
+                        self.text = text
+                
+                return MockResponse(completion.choices[0].message.content)
 
-        except Exception as e:
-            print(f"❌ Groq API Error: {e}")
-            return None
+            except Exception as e:
+                print(f"⚠️ Groq Key #{i+1} Failed: {e}. Rotating...")
+                continue
+        
+        print("❌ All Groq keys exhausted.")
+        return None
 
 # Singleton instance
 groq_client = GroqHandler()

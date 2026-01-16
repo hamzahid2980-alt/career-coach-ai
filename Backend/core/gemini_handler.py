@@ -84,11 +84,8 @@ class GeminiHandler:
                 return response
 
             except google_exceptions.ResourceExhausted as e:
-                # RATE LIMIT HIT: Wait properly before rotating
-                wait_time = 5 # Wait 5 seconds to let quota recover slightly
-                print(f"⚠️ API Key #{i + 1} Rate Limited (ResourceExhausted). Cooling down for {wait_time}s...")
-                time.sleep(wait_time) 
-                print(f"🔄 Rotating to next key...")
+                # RATE LIMIT HIT: Rotate immediately (Removed 5s wait as requested)
+                print(f"⚠️ API Key #{i + 1} Rate Limited. Rotating immediately...")
                 continue 
 
             except (google_exceptions.PermissionDenied, 
@@ -101,8 +98,16 @@ class GeminiHandler:
                 print(f"⚠️ Unexpected Error with Key #{i + 1}: {e}. Rotating...")
                 continue
 
-        print("❌ All Gemini keys exhausted or failed. Request failed.")
-        return None
+        print("❌ All Gemini keys exhausted or failed. Attempting Fallback to Groq...")
+        
+        # FALLBACK TO GROQ
+        try:
+            from core.groq_handler import groq_client
+            print("🔄 Switching to Groq Llama-3...")
+            return groq_client.call_groq(prompt, is_chat, history)
+        except Exception as e:
+            print(f"❌ Fallback to Groq failed: {e}")
+            return None
 
 # Singleton instance for easy import
 gemini_client = GeminiHandler()
