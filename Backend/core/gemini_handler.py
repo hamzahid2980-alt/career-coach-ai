@@ -25,6 +25,7 @@ class GeminiHandler:
         or falls back to legacy single keys.
         """
         self.api_keys = []
+        self.current_index = 0  # <--- Fix: Initialize stateful pointer
         # Updated to 'lite' model which often has better availability/quota limits in EAP
         self.model_name = "models/gemini-2.5-flash"
 
