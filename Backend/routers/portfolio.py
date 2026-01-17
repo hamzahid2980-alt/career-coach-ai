@@ -125,7 +125,9 @@ async def publish_portfolio_endpoint(payload: dict, user: dict = Depends(get_cur
     # payload matches the structure of portfolioData primarily.
     
     # 1. Generate HTML (Reuse logic)
-    html_code = PortfolioGenerator.generate_html(payload)
+    # Extract template from payload, default to 'creative' if missing
+    selected_template = payload.get("template", "creative")
+    html_code = PortfolioGenerator.generate_html(payload, template=selected_template)
     
     if not html_code:
         raise HTTPException(status_code=500, detail="Failed to regenerate portfolio HTML.")

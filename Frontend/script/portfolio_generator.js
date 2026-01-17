@@ -328,7 +328,10 @@ class PortfolioGenerator {
             // Use name as base slug
             const slug = publisher.generateSlugFromName(this.portfolioData.personalInfo.name || "portfolio");
             
-            const result = await publisher.publishPortfolio(this.portfolioData, slug);
+            const result = await publisher.publishPortfolio({
+                ...this.portfolioData,
+                template: this.selectedTemplate
+            }, slug);
             
             this.showPublishSuccess(result);
             this.showSection("preview");
