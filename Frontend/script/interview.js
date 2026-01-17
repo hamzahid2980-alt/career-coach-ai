@@ -352,9 +352,16 @@ document.addEventListener('DOMContentLoaded', () => {
         showSpinner("Generating performance summary...");
         interviewCard.style.display = 'none';
         try {
+            const user = firebase.auth().currentUser;
+            if (!user) throw new Error("User not authenticated");
+            const token = await user.getIdToken();
+
             const res = await fetch(`${API_URL}/summarize`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
                 body: JSON.stringify({ 
                     job_description: jobDescription, chat_history: chatHistory,
                     proctoring_data: { tab_switch_count: tabSwitchCount, phone_detection_count: phoneDetectionCount, no_person_warnings: noPersonWarningCount, multiple_person_warnings: multiplePeopleWarningCount, ...extraData }
