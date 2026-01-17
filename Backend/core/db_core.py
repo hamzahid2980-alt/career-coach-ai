@@ -624,16 +624,6 @@ class DatabaseManager:
             roadmap_reason = "Welcome! Start an activity to see your career performance trends."
             
             if roadmap:
-                if 'last_adjustment_reason' in roadmap and roadmap['last_adjustment_reason']:
-                    roadmap_reason = roadmap['last_adjustment_reason']
-                elif composite_score > 0:
-                    # Fallback Trend Text if AI reason hasn't been generated yet but stats exist
-                    roadmap_reason = f"Your current performance index is {int(composite_score)}%. "
-                    if avg_assessment < 50: roadmap_reason += "Focus on improving your assessment scores."
-                    elif avg_interview < 50: roadmap_reason += "Try more mock interviews to boost confidence."
-                    elif latest_ats < 60: roadmap_reason += "Your resume optimization could use some work."
-                    else: roadmap_reason += "You are on a great track! Keep completing roadmap tasks."
-                
                 if 'detailed_roadmap' in roadmap:
                     all_completed = []
                     for phase in roadmap['detailed_roadmap']:
@@ -660,6 +650,17 @@ class DatabaseManager:
             # --- Composite Score Calculation (General) ---
             # Weights: Progress (30%), Assessment (25%), Interview (25%), ATS (20%)
             composite_score = (completion_rate * 0.30) + (avg_assessment * 0.25) + (avg_interview * 0.25) + (latest_ats * 0.20)
+
+            if roadmap: # Re-check roadmap for reason after composite_score is calculated
+                if 'last_adjustment_reason' in roadmap and roadmap['last_adjustment_reason']:
+                    roadmap_reason = roadmap['last_adjustment_reason']
+                elif composite_score > 0:
+                    # Fallback Trend Text if AI reason hasn't been generated yet but stats exist
+                    roadmap_reason = f"Your current performance index is {int(composite_score)}%. "
+                    if avg_assessment < 50: roadmap_reason += "Focus on improving your assessment scores."
+                    elif avg_interview < 50: roadmap_reason += "Try more mock interviews to boost confidence."
+                    elif latest_ats < 60: roadmap_reason += "Your resume optimization could use some work."
+                    else: roadmap_reason += "You are on a great track! Keep completing roadmap tasks."
 
 
             return _convert_firestore_timestamps({
