@@ -403,32 +403,68 @@ body::before {
 
 /* Preview Section */
 /* Browser Window Header */
-.preview-container::before {
-  content: '•••';
-  font-size: 32px;
-  letter-spacing: -2px;
-  color: #ff5f56;
-  /* Mac close button red */
-  text-shadow: 20px 0 #ffbd2e, 40px 0 #27c93f;
-  /* Mac yellow and green buttons */
-  display: block;
-  height: 40px;
-  background: #f1f3f4;
-  width: 100%;
-  padding-left: 20px;
+/* Browser Window Header */
+.browser-header {
+  height: 48px;
+  background: #f0f0f0;
+  border-bottom: 1px solid #dcdcdc;
   display: flex;
   align-items: center;
-  border-bottom: 1px solid #dcdcdc;
-  font-family: monospace;
-  line-height: 0;
+  padding: 0 1rem;
+  gap: 1rem;
+}
+
+.window-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.window-control {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.control-close {
+  background: #ff5f56;
+  border: 1px solid #e0443e;
+}
+
+.control-minimize {
+  background: #ffbd2e;
+  border: 1px solid #dea123;
+}
+
+.control-maximize {
+  background: #27c93f;
+  border: 1px solid #1aab29;
+}
+
+.address-bar {
+  flex: 1;
+  background: white;
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  color: #666;
+  border: 1px solid #dcdcdc;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.address-bar i {
+  font-size: 0.7rem;
+  margin-right: 8px;
+  color: #888;
 }
 
 .preview-container {
   width: 100%;
-  max-width: 1280px;
-  /* Limit width for realistic browser look */
+  max-width: 95%;
+  /* Wider view */
   margin: 0 auto;
-  /* Center it */
   height: 85vh;
   background: white;
   border-radius: 12px;
