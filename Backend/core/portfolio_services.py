@@ -195,8 +195,10 @@ class PortfolioGenerator:
                 {f'<a href="{contact.get("linkedin")}" target="_blank"><i class="fab fa-linkedin"></i> LinkedIn</a>' if contact.get("linkedin") else ''}
                 {f'<a href="{contact.get("github")}" target="_blank"><i class="fab fa-github"></i> GitHub</a>' if contact.get("github") else ''}
             </div>
-            <div class="scroll-down">
-                <i class="fas fa-chevron-down"></i>
+            <div class="scroll-indicator">
+                <div class="mouse">
+                    <div class="wheel"></div>
+                </div>
             </div>
         </div>
         <div class="hero-bg">
@@ -280,7 +282,7 @@ class PortfolioGenerator:
             .experience-item h3 { color: var(--accent); margin-bottom: 0.5rem; font-size: 1.5rem; }
             .experience-item h4 { color: #888; margin-bottom: 1rem; font-size: 1rem; }
             
-            .skills-grid { display: flex; flex-wrap: wrap; gap: 1rem; }
+            .skills-grid { display: flex; flex-wrap: wrap; gap: 1.5rem; }
             .skill-tag { background: rgba(255, 0, 255, 0.1); border: 1px solid var(--accent); color: var(--accent); padding: 0.5rem 1rem; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; }
             
             .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
@@ -294,6 +296,10 @@ class PortfolioGenerator:
             
             footer { padding: 4rem; text-align: center; color: #555; background: #000; border-top: 1px solid #222; }
             .social-links a { color: #fff; margin: 0 1rem; font-size: 1.5rem; }
+            /* Scroll Indicator - Neon */
+            .mouse { width: 30px; height: 50px; border: 2px solid var(--accent); border-radius: 20px; position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); }
+            .wheel { width: 4px; height: 8px; background: var(--accent); border-radius: 2px; position: absolute; top: 10px; left: 50%; transform: translateX(-50%); animation: scroll 1.5s infinite; }
+            @keyframes scroll { 0% { opacity: 1; top: 10px; } 100% { opacity: 0; top: 30px; } }
             """
         
         elif template == 'modern':
@@ -374,6 +380,9 @@ class PortfolioGenerator:
                 .hero-title { font-size: 3.5rem; }
                 .hero { padding: 4rem 5%; min-height: auto; }
             }
+            .mouse { width: 30px; height: 50px; border: 2px solid black; border-radius: 20px; position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); }
+            .wheel { width: 4px; height: 8px; background: black; border-radius: 2px; position: absolute; top: 10px; left: 50%; transform: translateX(-50%); animation: scroll 1.5s infinite; }
+            @keyframes scroll { 0% { opacity: 1; top: 10px; } 100% { opacity: 0; top: 30px; } }
             """
 
         elif template == 'professional':
@@ -429,6 +438,7 @@ class PortfolioGenerator:
             footer { padding: 5rem 0; text-align: center; font-family: 'Inter', sans-serif; font-size: 0.8rem; color: #888; text-transform: uppercase; letter-spacing: 1px; }
             
             @media (max-width: 768px) { .experience-item { grid-template-columns: 1fr; gap: 1rem; } .hero-title { font-size: 3rem; } }
+            .scroll-indicator { display: none; } /* Hide on professional */
             """
         
         return base_css

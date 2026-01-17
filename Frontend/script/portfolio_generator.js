@@ -367,7 +367,8 @@ class PortfolioGenerator {
     resetGenerator() {
       this.resumeFile = null;
       this.portfolioHTML = null;
-  
+      this.portfolioData = null;
+
       // Reset upload area
       const uploadArea = document.getElementById("upload-area");
       const uploadContent = uploadArea.querySelector(".upload-content");
