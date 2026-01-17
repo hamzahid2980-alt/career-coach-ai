@@ -5,6 +5,7 @@ from pytrends.request import TrendReq
 from dependencies import get_db_manager, get_current_user
 from core.db_core import DatabaseManager
 from core.ai_core import generate_skill_trends_analysis
+from core.bigquery_client import BigQueryClient
 import logging
 
 router = APIRouter()

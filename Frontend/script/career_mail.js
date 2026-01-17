@@ -756,7 +756,10 @@ document.getElementById('submitFeedbackBtn').addEventListener('click', async () 
                 
                 // Update advice
                 const adviceText = document.getElementById('cumulativeAdviceText');
-                if (adviceText) adviceText.textContent = "Analysis updated. Keep going!"; 
+                if (adviceText) {
+                    adviceText.textContent = data.aggregate.cumulative_advice || "Analysis updated. Keep going!";
+                    adviceText.style.fontStyle = 'normal';
+                } 
             } else {
                  loadAnalysis(); // Fallback
             }
