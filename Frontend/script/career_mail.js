@@ -486,14 +486,46 @@ function renderStats(data) {
 }
 
 function renderChart(data) {
-    document.getElementById('chartContainer').classList.remove('hidden');
+    const chartContainer = document.getElementById('chartContainer');
     const ctx = document.getElementById('topicsChart').getContext('2d');
     
     // Check if chart instance exists
     if(window.mainTopicsChart) window.mainTopicsChart.destroy();
 
-    // Mock data based on recurring topics counts (we only have list of strings, so we count occurrences)
     const topics = data.recurring_topics || [];
+    
+    // UI Fix: specific handling for empty data to prevent layout collapse
+    if (topics.length === 0) {
+        chartContainer.classList.remove('hidden');
+        // Check if existing placeholder is there, if not add it
+        if (!document.getElementById('chartPlaceholder')) {
+            // Hide canvas
+            document.getElementById('topicsChart').style.display = 'none';
+            
+            const placeholder = document.createElement('div');
+            placeholder.id = 'chartPlaceholder';
+            placeholder.style.textAlign = 'center';
+            placeholder.style.padding = '30px 10px';
+            placeholder.style.color = 'var(--text-muted)';
+            placeholder.innerHTML = `
+                <div style="font-size: 2rem; margin-bottom: 10px; opacity: 0.3;"><i class="fa-solid fa-chart-pie"></i></div>
+                <p style="font-size: 0.85rem; margin: 0;">No topics analyzed yet.<br>Complete interviews to see trends.</p>
+            `;
+            chartContainer.appendChild(placeholder);
+        } else {
+             document.getElementById('chartPlaceholder').style.display = 'block';
+             document.getElementById('topicsChart').style.display = 'none';
+        }
+        return;
+    }
+
+    // Has Data: Reset View
+    chartContainer.classList.remove('hidden');
+    document.getElementById('topicsChart').style.display = 'block';
+    if(document.getElementById('chartPlaceholder')) {
+        document.getElementById('chartPlaceholder').style.display = 'none';
+    }
+
     const counts = {};
     topics.forEach(t => counts[t] = (counts[t] || 0) + 1);
     
@@ -510,7 +542,10 @@ function renderChart(data) {
         options: {
             responsive: true,
             plugins: {
-                legend: { position: 'right', labels: { color: 'white' } }
+                legend: { position: 'right', labels: { color: 'white', font: {size: 10}, boxWidth: 10 } }
+            },
+            layout: {
+                padding: { left: 0, right: 0, top: 0, bottom: 0 }
             }
         }
     });
