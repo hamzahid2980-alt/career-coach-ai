@@ -1215,29 +1215,34 @@ def evaluate_and_adjust_roadmap(current_roadmap: dict, performance_summary: dict
 def generate_skill_trends_analysis(user_skills: List[str], market_data: List[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
     """
     Analyzes user skills against market trends to provide actionable insights.
+    Updated to match Frontend 'trends.js' expectations.
     """
     try:
+        # If no user skills, provide generic advice
+        skills_text = ', '.join(user_skills) if user_skills else "General Software Engineering"
+
         prompt = f'''
         You are an expert career strategist. Analyze the following user skills against current market trend data.
         
-        **User Skills:** {', '.join(user_skills)}
+        **User Skills:** {skills_text}
         
         **Market Trend Data:**
         {json.dumps(market_data, indent=2)}
         
         **Task:**
-        1. Identify which user skills are high-demand vs. declining.
-        2. Suggest 2-3 complimentary skills to learn based on the high-demand trends.
-        3. Provide a brief "Market Viability" score (0-100) and reasoning.
+        1. create a concise "Analysis Summary" (2 sentences) about how the user's skills align with the market.
+        2. Identify 3 specific "Recommendations" for skills to learn or improve.
         
         **Output JSON Format (Strict):**
         {{
-            "skill_analysis": [
-                {{"skill": "Skill Name", "status": "High/Moderate/Low Demand", "trend": "Rising/Stable/Declining"}}
-            ],
-            "recommended_skills": ["Skill 1", "Skill 2"],
-            "market_viability_score": 85,
-            "market_viability_reasoning": "Strong foundation in..."
+            "analysis_summary": "Your skills in X are strong, but the market is shifting towards Y...",
+            "recommendations": [
+                {{
+                    "skill": "Skill Name", 
+                    "trend_relevance": "Why this is hot (e.g., 'High demand in AI roles')", 
+                    "learning_path": "How to start (e.g., 'Build a project using framework Z')"
+                }}
+            ]
         }}
         '''
         

@@ -185,3 +185,39 @@ async def get_long_term_viability():
     except Exception as e:
         logger.error(f"Viability query failed: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/personal-insights")
+async def get_personal_trends_insights(user=Depends(get_current_user)):
+    """
+    Generates personalized market insights based on user's skills.
+    """
+    try:
+        # Get user skills (handle list or string format)
+        user_skills = user.get('skills', []) 
+        if isinstance(user_skills, str): 
+            user_skills = [s.strip() for s in user_skills.split(',') if s.strip()]
+            
+        # Get market data context (reuse market trends logic)
+        market_data = []
+        try:
+            market_res = await get_market_trends()
+            if market_res.get('success'):
+                market_data = market_res.get('data', [])
+        except:
+            pass # Non-critical if fails, AI can still generate based on skills
+            
+        # Call AI Analysis
+        analysis = generate_skill_trends_analysis(user_skills, market_data)
+        
+        if not analysis:
+             # Fallback if AI fails
+             return {
+                 "success": False, 
+                 "message": "AI analysis unavailable."
+             }
+            
+        return {"success": True, "data": analysis}
+        
+    except Exception as e:
+        logger.error(f"Personal insights failed: {e}")
+        return {"success": False, "message": str(e)}
