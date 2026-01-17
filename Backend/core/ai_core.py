@@ -24,7 +24,7 @@ from google.api_core import exceptions as google_exceptions
 # =========================
 
 API_KEYS = []
-MODEL_NAME = "models/gemini-2.5-flash"
+MODEL_NAME = "gemini-2.5-flash"
 
 def setup_api_keys():
     """Loads all available Gemini API keys from environment variables."""
@@ -64,7 +64,8 @@ def setup_api_keys():
         # However, the user might prefer an exit to catch config errors early.
         # I'll keep the exit but make it more descriptive.
         print("Please ensure your .env file exists in the Backend folder and contains GOOGLE_API_KEY.")
-        sys.exit(1)
+        # sys.exit(1) # DISABLED: Don't crash the entire server if AI keys are missing; just let AI fail later.
+        pass
     
     print(f"Successfully loaded {len(API_KEYS)} Gemini API key(s).")
 
