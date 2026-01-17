@@ -1,6 +1,6 @@
 // Frontend integration for portfolio publishing (Merged Logic)
 class PortfolioPublisher {
-  constructor(apiBaseUrl = "http://127.0.0.1:8000/api/portfolio") {
+  constructor(apiBaseUrl = "https://career-coach-ai-3xap.onrender.com/api/portfolio") {
     this.apiBaseUrl = apiBaseUrl;
   }
 
@@ -49,7 +49,7 @@ class PortfolioGenerator {
     constructor() {
       this.resumeFile = null;
       this.portfolioData = null;
-      this.apiBaseUrl = "http://127.0.0.1:8000/api/portfolio";
+      this.apiBaseUrl = "https://career-coach-ai-3xap.onrender.com/api/portfolio";
       this.init();
     }
   
