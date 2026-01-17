@@ -176,8 +176,9 @@ async def ping():
 # ------------------------------
 # Keep-Alive Service
 # ------------------------------
-from keep_alive import start_keep_alive
-start_keep_alive()
+# Disabled for Render (using UptimeRobot instead)
+# from keep_alive import start_keep_alive
+# start_keep_alive()
 
 
 # ------------------------------

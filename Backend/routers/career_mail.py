@@ -440,15 +440,27 @@ async def _background_sync_process(user_id: str, creds_json: str, db):
         # Process in chunks of 5 to avoid overwhelming quotas
         chunk_size = 5
         all_results = []
+        total_batches = (len(new_emails) + chunk_size - 1) // chunk_size
         
         for i in range(0, len(new_emails), chunk_size):
+            batch_num = i // chunk_size + 1
+            SYNC_STATE[user_id]['message'] = f"Analyzing batch {batch_num}/{total_batches} ({chunk_size} emails)..."
+            
             chunk = new_emails[i:i + chunk_size]
-            SYNC_STATE[user_id]['message'] = f"Analyzing batch {i//chunk_size + 1}..."
             tasks = [_process_single_email(email, google_service, db, user_id, events_ref, tasks_log_ref, None) for email in chunk]
             chunk_results = await asyncio.gather(*tasks)
             all_results.extend(chunk_results)
+            
+            # Optional: Update intermediate event count
+            processed_in_batch = 0
+            for res in chunk_results:
+                processed_in_batch += len(res['events']) + len(res['tasks'])
+            
+            if processed_in_batch > 0:
+                 SYNC_STATE[user_id]['message'] = f"Batch {batch_num}/{total_batches}: Found {processed_in_batch} items."
 
         # 5. Batch Write to DB
+        SYNC_STATE[user_id]['message'] = "Saving results to database..."
         batch = db.db.batch()
         batch_count = 0 
         
@@ -468,11 +480,15 @@ async def _background_sync_process(user_id: str, creds_json: str, db):
         if batch_count > 0:
             try:
                 batch.commit()
+                SYNC_STATE[user_id]['message'] = f"Sync complete. Saved {batch_count} items."
             except Exception as batch_error:
                 print(f"Batch commit error: {batch_error}")
+                SYNC_STATE[user_id]['message'] = "Error saving results."
+        else:
+             SYNC_STATE[user_id]['message'] = "Sync complete. No relevant events found in emails."
 
         SYNC_STATE[user_id]['status'] = 'completed'
-        SYNC_STATE[user_id]['message'] = 'Sync complete.'
+
         
     except Exception as e:
         print(f"Background Sync Error: {e}")
