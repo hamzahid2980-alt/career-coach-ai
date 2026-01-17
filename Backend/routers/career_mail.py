@@ -5,20 +5,23 @@ from services.google_suite import GoogleSuiteService
 from core.ai_core import extract_event_details
 import json
 import datetime
+import asyncio
 
 router = APIRouter()
 
 @router.get("/auth-url")
-async def get_google_auth_url(redirect_uri: str):
+async def get_google_auth_url(redirect_uri: str, user=Depends(get_current_user)):
     """
     Generates the Google OAuth authorization URL.
     """
     try:
         flow = GoogleSuiteService.get_auth_flow(redirect_uri)
+        # Use user's email as login_hint to streamline the auth flow
         authorization_url, state = flow.authorization_url(
             access_type='offline',
             include_granted_scopes='true',
-            prompt='consent'
+            prompt='consent',
+            login_hint=user.get('email') 
         )
         return {"auth_url": authorization_url, "state": state}
     except Exception as e:
@@ -346,9 +349,48 @@ SYNC_STATE = {}
 
 from fastapi import BackgroundTasks
 
+async def _process_single_email(email, google_service, db, user_id, events_ref, tasks_log_ref, batch):
+    """Helper to process a single email asynchronously."""
+    # Run CPU/Sync-bound AI extraction in a separate thread to not block the event loop
+    loop = asyncio.get_event_loop()
+    event_details = await loop.run_in_executor(None, extract_event_details, email['subject'], email['body'], email.get('date'))
+    
+    results = {'events': [], 'tasks': []}
+    
+    if event_details and event_details.get('is_event'):
+        event_details['source_email_id'] = email['id']
+        event_details['source_subject'] = email['subject']
+        event_details['id'] = email['id'] # Use email ID as Event ID for idempotency
+        
+        # Create Calendar Event (Sync Call)
+        cal_link = await loop.run_in_executor(None, google_service.create_calendar_event, event_details)
+        
+        if cal_link:
+            event_details['calendar_link'] = cal_link
+            results['events'].append(event_details)
+        
+        # Create Tasks
+        if event_details.get('preparation_tasks'):
+            for task_txt in event_details['preparation_tasks']:
+                # Create Task (Sync Call)
+                tid = await loop.run_in_executor(None, google_service.create_task, f"Prep: {task_txt}", f"For event: {event_details.get('event_title')} (Source: {email['subject']})")
+                
+                if tid:
+                    task_obj = {
+                        "id": tid, 
+                        "title": task_txt, 
+                        "source_event": event_details.get('event_title'),
+                        "source_email": email['subject'],
+                        "status": "needsAction"
+                    }
+                    results['tasks'].append(task_obj)
+                    
+    return results
+
 async def _background_sync_process(user_id: str, creds_json: str, db):
     """
     The actual heavy-lifting sync function running in background.
+    Optimized with "Redis-like" caching (skipping processed IDs) and Parallel Processing.
     """
     global SYNC_STATE
     SYNC_STATE[user_id] = { "status": "running", "events": [], "tasks": [], "message": "Starting sync..." }
@@ -360,81 +402,82 @@ async def _background_sync_process(user_id: str, creds_json: str, db):
         # Check Auth
         if not google_service.is_authenticated():
              if google_service.refresh_credentials():
-                 # Update DB with new tokens - simplified here, assuming it works or we skip
+                 # Update DB with new tokens - simplified here
                  pass
              else:
                  SYNC_STATE[user_id]['status'] = 'failed'
                  SYNC_STATE[user_id]['message'] = 'Auth expired'
                  return
 
-        emails = google_service.fetch_career_emails()
-        SYNC_STATE[user_id]['message'] = f"Found {len(emails)} emails. Analyzing..."
-        
+        # 1. Fetch Processed IDs ("Redis-like" check)
         events_ref = db.db.collection('users').document(user_id).collection('career_events')
         tasks_log_ref = db.db.collection('users').document(user_id).collection('career_tasks_log')
+        
+        # Optimized: Select only IDs
+        # Note: If filtering strictly by event ID derived from email ID.
+        try:
+             existing_docs = events_ref.select([]).stream() 
+             processed_ids = {doc.id for doc in existing_docs}
+        except:
+             # Fallback if select([]) not supported in this client version
+             existing_docs = events_ref.stream()
+             processed_ids = {doc.id for doc in existing_docs}
+        
+        # 2. Fetch Emails
+        emails = google_service.fetch_career_emails(max_results=30) 
+        
+        # 3. Filter New Emails
+        new_emails = [e for e in emails if e['id'] not in processed_ids]
+        
+        if not new_emails:
+            SYNC_STATE[user_id]['status'] = 'completed'
+            SYNC_STATE[user_id]['message'] = 'Sync complete. No new emails found.'
+            return
+
+        SYNC_STATE[user_id]['message'] = f"Found {len(new_emails)} new emails. Analyzing..."
+        
+        # 4. Parallel Processing
+        # Process in chunks of 5 to avoid overwhelming quotas
+        chunk_size = 5
+        all_results = []
+        
+        for i in range(0, len(new_emails), chunk_size):
+            chunk = new_emails[i:i + chunk_size]
+            SYNC_STATE[user_id]['message'] = f"Analyzing batch {i//chunk_size + 1}..."
+            tasks = [_process_single_email(email, google_service, db, user_id, events_ref, tasks_log_ref, None) for email in chunk]
+            chunk_results = await asyncio.gather(*tasks)
+            all_results.extend(chunk_results)
+
+        # 5. Batch Write to DB
         batch = db.db.batch()
         batch_count = 0 
-
-        for email in emails:
-            # Update status lightly
-            # SYNC_STATE[user_id]['message'] = f"Processing: {email['subject'][:20]}..."
-            
-            event_details = extract_event_details(email['subject'], email['body'], email.get('date'))
-            
-            if event_details and event_details.get('is_event'):
-                event_details['source_email_id'] = email['id']
-                event_details['source_subject'] = email['subject']
+        
+        for res in all_results:
+            for evt in res['events']:
+                doc_ref = events_ref.document(evt['id'])
+                batch.set(doc_ref, evt)
+                SYNC_STATE[user_id]['events'].append(evt)
+                batch_count += 1
                 
-                # Create Calendar Event
-                cal_link = google_service.create_calendar_event(event_details)
-                if cal_link:
-                    event_details['calendar_link'] = cal_link
-                    
-                    # Update State Real-time
-                    # Add ID for frontend key
-                    event_details['id'] = email['id'] 
-                    SYNC_STATE[user_id]['events'].append(event_details)
-                    
-                    # DB Persist
-                    doc_ref = events_ref.document(email['id'])
-                    batch.set(doc_ref, event_details)
-                    batch_count += 1
-                
-                # Create Tasks
-                if event_details.get('preparation_tasks'):
-                    for task_txt in event_details['preparation_tasks']:
-                        tid = google_service.create_task(
-                            title=f"Prep: {task_txt}",
-                            notes=f"For event: {event_details.get('event_title')} (Source: {email['subject']})"
-                        )
-                        if tid:
-                            task_obj = {
-                                "id": tid, 
-                                "title": task_txt, 
-                                "source_event": event_details.get('event_title'),
-                                "source_email": email['subject'],
-                                "status": "needsAction"
-                            }
-                            SYNC_STATE[user_id]['tasks'].append(task_obj)
-                            
-                            # DB Persist
-                            t_ref = tasks_log_ref.document(tid)
-                            batch.set(t_ref, task_obj)
-                            batch_count += 1
-            
-            if batch_count > 400:
-                batch.commit()
-                batch = db.db.batch()
-                batch_count = 0
+            for tsk in res['tasks']:
+                t_ref = tasks_log_ref.document(tsk['id'])
+                batch.set(t_ref, tsk)
+                SYNC_STATE[user_id]['tasks'].append(tsk)
+                batch_count += 1
         
         if batch_count > 0:
-            batch.commit()
+            try:
+                batch.commit()
+            except Exception as batch_error:
+                print(f"Batch commit error: {batch_error}")
 
         SYNC_STATE[user_id]['status'] = 'completed'
         SYNC_STATE[user_id]['message'] = 'Sync complete.'
         
     except Exception as e:
         print(f"Background Sync Error: {e}")
+        import traceback
+        traceback.print_exc()
         SYNC_STATE[user_id]['status'] = 'failed'
         SYNC_STATE[user_id]['message'] = str(e)
 
