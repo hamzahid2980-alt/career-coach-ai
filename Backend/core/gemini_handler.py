@@ -25,9 +25,9 @@ class GeminiHandler:
         or falls back to legacy single keys.
         """
         self.api_keys = []
-        self.current_index = 0  # <--- Fix: Initialize stateful pointer
+        self.current_index = 0  # <--- Fix: Initialize pointer
         # Updated to 'lite' model which often has better availability/quota limits in EAP
-        self.model_name = "gemini-1.5-flash"
+        self.model_name = "gemini-2.5-flash"
 
         # 1. Try new comma-separated format
         keys_str = os.getenv("GEMINI_API_KEYS")

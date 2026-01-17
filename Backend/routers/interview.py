@@ -4,6 +4,9 @@ from typing import List, Dict, Optional
 
 # Corrected imports from ai_core
 from core.ai_core import get_interview_chat_response, get_interview_summary, process_audio_answer
+from core.db_core import DatabaseManager
+from dependencies import get_db_manager, get_current_user
+from fastapi import Depends
 
 router = APIRouter(
     tags=["Mock Interview"]
@@ -81,7 +84,9 @@ async def analyze_video_answer(
     return feedback_data
 
 @router.post("/summarize", response_model=SummaryResponse, summary="Summarize the interview performance")
-async def summarize_interview(request: SummarizeRequest):
+async def summarize_interview(request: SummarizeRequest,
+                              user: dict = Depends(get_current_user),
+                              db: DatabaseManager = Depends(get_db_manager)):
     # *** THIS IS THE CORE FIX ***
     # We now check if the history is empty. If it is, we ONLY proceed if
     # there is a valid termination_reason. Otherwise, we raise an error.
@@ -100,5 +105,7 @@ async def summarize_interview(request: SummarizeRequest):
     
     if not summary_data:
         raise HTTPException(status_code=500, detail="AI failed to generate an interview summary.")
+        
+    db.save_interview_result(user['uid'], summary_data)
         
     return summary_data

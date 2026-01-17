@@ -228,6 +228,20 @@ async def upload_and_process_resume(
                 "overall_assessment": "Failed to generate a comprehensive analysis report."
             }
 
+        # --- NEW: Save ATS Score to History ---
+        if full_analysis_report:
+            try:
+                ats_score = full_analysis_report.get('ats_optimization_score', 0)
+                # Ensure it's an int
+                if isinstance(ats_score, str): 
+                     if ats_score.isdigit(): ats_score = int(ats_score)
+                     else: ats_score = 0
+                
+                job_role = full_analysis_report.get('job_role_context', job_description or "General")
+                db.save_ats_score_history(uid, ats_score, job_role)
+            except Exception as e:
+                print(f"ERROR: Failed to save ATS score history: {e}")
+
         print(f"DEBUG: Responding to frontend with full analysis report (Overall Score: {full_analysis_report.get('overall_resume_score')}).")
         return JSONResponse(content={
             "message": "Resume processed successfully!",

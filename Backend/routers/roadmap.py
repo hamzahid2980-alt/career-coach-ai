@@ -311,16 +311,23 @@ async def check_auto_personalize_endpoint(user: dict = Depends(get_current_user)
         if not roadmap:
             return {"is_updated": False, "reason": "No roadmap found."}
         
-        last_upd_str = roadmap.get('last_personalized_at')
-        if last_upd_str:
-            last_upd = datetime.fromisoformat(last_upd_str)
-            if datetime.now() - last_upd < timedelta(days=7):
-                return {"is_updated": False, "reason": "Updated less than 7 days ago."}
-        
         # Trigger same logic as evaluate_and_update
         performance_summary = await db.get_user_performance_summary(uid)
         trend_data = await db.get_performance_history(uid)
         
+        # --- SMART BYPASS: If the user has a real score (>0) but the system thinks it's too early, force it.
+        # This fixes the issue where a user starts with 0%, does tasks, but is stuck with the "0%" message for a week.
+        current_composite = trend_data.get('composite_score', 0) if trend_data else 0
+        
+        last_upd_str = roadmap.get('last_personalized_at')
+        if last_upd_str and current_composite == 0: # Only enforce 7-day wait if score is still 0 (or low)
+             last_upd = datetime.fromisoformat(last_upd_str)
+             # Use timezone-aware comparison if needed, or simple naive if stored is naive
+             if last_upd.tzinfo is None: last_upd = last_upd.replace(tzinfo=None) # Ensure naive
+             if datetime.now() - last_upd < timedelta(days=7):
+                 return {"is_updated": False, "reason": "Updated less than 7 days ago."}
+        
+        # If we are here, we are either > 7 days OR we have a >0 score that needs to be shown.
         adjustment_result = evaluate_and_adjust_roadmap(roadmap, performance_summary, trend_data=trend_data)
         
         if adjustment_result and adjustment_result.get('is_updated'):
@@ -350,6 +357,24 @@ async def check_auto_personalize_endpoint(user: dict = Depends(get_current_user)
                 "feedback": adjustment_result.get('performance_feedback', ""),
                 "roadmap": roadmap
             }
+        
+        # Even if structure isn't updated (is_updated: False), we might have new FEEDBACK (insights).
+        # We should save this feedback if it's different from the last one.
+        if adjustment_result:
+            new_feedback = adjustment_result.get('performance_feedback', "")
+            if new_feedback and new_feedback != roadmap.get('last_adjustment_reason'):
+                 # Save just the feedback/timestamp without changing the whole roadmap structure
+                 roadmap['last_adjustment_reason'] = new_feedback
+                 # We don't necessarily update 'last_personalized_at' to avoid resetting the 7-day timer for *structural* changes
+                 await db.save_user_roadmap(uid, roadmap) 
+                 # We force is_updated: True so the Frontend actually displays the new feedback text.
+                 # Otherwise, it might ignore the response assuming nothing changed.
+                 return {
+                    "is_updated": True, 
+                    "message": "Your insights have been updated based on your latest activity.",
+                    "feedback": new_feedback,
+                    "roadmap": roadmap
+                 }
         
         return {"is_updated": False}
     except Exception as e:

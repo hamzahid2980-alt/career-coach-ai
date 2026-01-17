@@ -4,7 +4,7 @@ import sys
 import json
 import re
 from typing import Optional, Tuple, Dict, Any, List
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from fastapi.params import Query
@@ -779,7 +779,7 @@ class DatabaseManager:
         3. Total (Collective): Overall averages.
         """
         try:
-            now = datetime.now()
+            now = datetime.now(timezone.utc)
             one_week_ago = now - timedelta(days=7)
             user_ref = self.db.collection('users').document(uid)
 
@@ -829,6 +829,8 @@ class DatabaseManager:
                             if comp_at_str:
                                 try:
                                     comp_at = datetime.fromisoformat(comp_at_str)
+                                    if comp_at.tzinfo is None:
+                                        comp_at = comp_at.replace(tzinfo=timezone.utc)
                                     if comp_at > one_week_ago:
                                         rec_progress += 1
                                     else:

@@ -2,9 +2,10 @@ const API_BASE_URL = (window.location.hostname === 'localhost' || window.locatio
     ? 'http://localhost:8000' 
     : 'https://career-coach-ai-3xap.onrender.com'; // Update this if your backend is hosted elsewhere
 
+
 // Declare global variables with 'let' or without initial assignment.
 // They will be assigned their DOM element references *inside* onUserLoggedIn/DOMContentLoaded.
-let currentUser = null; 
+let currentUser = null;
 
 let welcomeMessage;
 let statsRoadmapsP;
@@ -47,11 +48,14 @@ function onUserLoggedIn(user) {
     fetchAndDisplayStats();
     loadPerformanceSummary(); // New: Fetch Performance Standing
 
+    // NEW: Silent check for weekly auto-personalization to ensure insights are fresh
+    checkAutoPersonalize();
+
     // --- Handle Logout ---
     const handleLogout = async () => {
         try {
             // 'auth' object is global from firebase-auth-compat.js
-            await auth.signOut(); 
+            await auth.signOut();
             // console.log('User signed out successfully.');
             // window.location.href = "index.html";
             // auth.js onAuthStateChanged listener handles redirection
@@ -85,26 +89,26 @@ function createParticles() {
         return;
     }
     particlesContainer.innerHTML = ''; // Clear existing particles if function called multiple times
-    const particleCount = 40; 
-    
+    const particleCount = 40;
+
     for (let i = 0; i < particleCount; i++) {
         const particle = document.createElement('div');
         particle.classList.add('particle');
-        
-        const size = Math.random() * 6 + 2; 
+
+        const size = Math.random() * 6 + 2;
         particle.style.width = `${size}px`;
         particle.style.height = `${size}px`;
-        
+
         particle.style.left = `${Math.random() * 100}vw`;
         particle.style.top = `${Math.random() * 100}vh`;
-        
+
         const duration = Math.random() * 10 + 15;
         particle.style.animationDuration = `${duration}s`;
         particle.style.animationDelay = `${Math.random() * 15}s`;
-        
+
         const translateX = (Math.random() - 0.5) * 200;
         particle.style.setProperty('--translateX', `${translateX}px`);
-        
+
         particlesContainer.appendChild(particle);
     }
 }
@@ -116,7 +120,7 @@ function setupScrollAnimations() {
         console.warn("No feature cards found for scroll animation.");
         return;
     }
-    
+
     const observer = new IntersectionObserver((entries) => {
         entries.forEach((entry, index) => {
             if (entry.isIntersecting) {
@@ -126,7 +130,7 @@ function setupScrollAnimations() {
             }
         });
     }, { threshold: 0.1 });
-    
+
     animatedFeatureCards.forEach(element => {
         element.style.animationPlayState = 'paused';
         observer.observe(element);
@@ -210,7 +214,7 @@ async function loadPerformanceSummary() {
         });
         if (!response.ok) return;
         const stats = await response.json();
-        
+
         recentActivities = stats.recent_activities || {};
 
         // DOM Elements for Stats
@@ -219,7 +223,7 @@ async function loadPerformanceSummary() {
         const latestAtsVal = document.getElementById('latest-ats-val');
         const courseProgressVal = document.getElementById('course-progress-val');
         const feedbackText = document.getElementById('performance-feedback-text');
-        
+
         if (avgAssessmentVal) avgAssessmentVal.textContent = `${Math.round(stats.avg_assessment || 0)}%`;
         if (avgInterviewVal) avgInterviewVal.textContent = `${Math.round(stats.avg_interview || 0)}%`;
         if (latestAtsVal) latestAtsVal.textContent = `${Math.round(stats.latest_ats || 0)}%`;
@@ -228,15 +232,19 @@ async function loadPerformanceSummary() {
         // Update Reasoning/Feedback
         const reasonContainer = document.getElementById('roadmap-reason-container');
         const reasonText = document.getElementById('roadmap-reason-text');
-        
+
+        // ALWAYS update the main feedback text (removing "Loading...")
+        if (feedbackText) {
+            // If we have a short feedback string from the backend, use it. Otherwise generate one.
+            if (stats.composite_score < 30) feedbackText.textContent = "Getting Started: Build your foundation.";
+            else if (stats.composite_score < 70) feedbackText.textContent = "Good progress! Keep optimizing.";
+            else feedbackText.textContent = "Excellent standing! Ready for top roles.";
+        }
+
+        // Then show the detailed reason if available
         if (stats.roadmap_reason && reasonText) {
-             reasonText.textContent = stats.roadmap_reason;
-             if(reasonContainer) reasonContainer.classList.remove('hidden');
-        } else if (feedbackText) {
-            // Fallback feedback if no specific reason
-             if(stats.composite_score < 30) feedbackText.textContent = "Start taking assessments to build your profile.";
-             else if(stats.composite_score < 70) feedbackText.textContent = "Good progress! Keep optimizing your skills.";
-             else feedbackText.textContent = "Excellent standing! You are ready for top roles.";
+            reasonText.textContent = stats.roadmap_reason;
+            if (reasonContainer) reasonContainer.classList.remove('hidden');
         }
 
     } catch (err) {
@@ -248,7 +256,7 @@ async function loadPerformanceSummary() {
  * Modal Logic for Stats Detail
  */
 // Make functions global so HTML onclick attributes can find them
-window.openStatsModal = function(category) {
+window.openStatsModal = function (category) {
     const modal = document.getElementById('stats-modal');
     const title = document.getElementById('modal-title');
     const container = document.getElementById('modal-details-container');
@@ -284,7 +292,7 @@ window.openStatsModal = function(category) {
     document.body.style.overflow = 'hidden';
 };
 
-window.closeStatsModal = function() {
+window.closeStatsModal = function () {
     const modal = document.getElementById('stats-modal');
     if (modal) modal.classList.add('hidden');
     document.body.style.overflow = '';
@@ -299,5 +307,45 @@ window.addEventListener('click', (event) => {
 });
 
 
+/**
+ * Silent check for weekly auto-personalization.
+ * This ensures the dashboard reflects the latest AI insights even if the user hasn't visited the roadmap page.
+ */
+async function checkAutoPersonalize() {
+    if (!currentUser) return;
+    try {
+        const idToken = await currentUser.getIdToken();
+        const response = await fetch(`${API_BASE_URL}/api/roadmap/check_auto_personalize`, {
+            method: "POST",
+            headers: { Authorization: `Bearer ${idToken}` }
+        });
+
+        if (!response.ok) return;
+        const result = await response.json();
+
+        if (result.is_updated) {
+            // If updated, the backend has already saved the new feedback to the DB.
+            // We can now update the UI directly with the returned feedback
+            const feedbackText = document.getElementById('performance-feedback-text');
+            const reasonText = document.getElementById('roadmap-reason-text');
+            const reasonContainer = document.getElementById('roadmap-reason-container');
+
+            if (result.feedback) {
+                // Update feedback text
+                if (reasonText) {
+                    reasonText.textContent = result.feedback;
+                    if (reasonContainer) reasonContainer.classList.remove('hidden');
+                } else if (feedbackText) {
+                    feedbackText.textContent = result.feedback;
+                }
+
+                // Also reload the stats summary to get any other derived changes
+                loadPerformanceSummary();
+            }
+        }
+    } catch (err) {
+        console.error("Silent personalization check failed (Home):", err);
+    }
+}
 
 

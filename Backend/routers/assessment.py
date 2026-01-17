@@ -85,6 +85,8 @@ async def submit_assessment_endpoint(
             raise HTTPException(status_code=500, detail="AI failed to evaluate assessment answers.")
         
         
+        db.save_assessment_result(uid, results_output)
+        
         return results_output
     except Exception as e:
         print(f"Error submitting assessment for user {uid}: {e}")
