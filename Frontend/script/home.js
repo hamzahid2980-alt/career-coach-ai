@@ -1,7 +1,4 @@
-const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') 
-    ? 'http://localhost:8000' 
-    : 'https://career-coach-ai-3xap.onrender.com'; // Update this if your backend is hosted elsewhere
-
+const API_BASE_URL = 'http://localhost:8000'; // Update this if your backend is hosted elsewhere
 
 // Declare global variables with 'let' or without initial assignment.
 // They will be assigned their DOM element references *inside* onUserLoggedIn/DOMContentLoaded.
@@ -46,10 +43,9 @@ function onUserLoggedIn(user) {
 
     // --- Fetch and Display Dynamic Statistics ---
     fetchAndDisplayStats();
-    loadPerformanceSummary(); // New: Fetch Performance Standing
 
-    // NEW: Silent check for weekly auto-personalization to ensure insights are fresh
-    checkAutoPersonalize();
+    // --- NEW: Fetch and Display Performance Standings ---
+    loadPerformanceStanding();
 
     // --- Handle Logout ---
     const handleLogout = async () => {
@@ -79,7 +75,187 @@ function onUserLoggedIn(user) {
     // After elements are initialized and event listeners set, run animations
     createParticles();
     setupScrollAnimations();
+
+    // Setup click handlers for expandable cards to open modal
+    document.getElementById('performance-card-assessments')?.addEventListener('click', () => openStatsModal('assessments'));
+    document.getElementById('performance-card-interviews')?.addEventListener('click', () => openStatsModal('interviews'));
+    document.getElementById('performance-card-ats')?.addEventListener('click', () => openStatsModal('ats'));
+    document.getElementById('performance-card-progress')?.addEventListener('click', () => openStatsModal('progress'));
+
+    // Close modal button
+    document.querySelector('.close-button')?.addEventListener('click', closeStatsModal);
 }
+
+/**
+ * Fetches and displays the performance standings (expandable cards).
+ */
+// Global variable to store recent activities for the modal
+let recentActivities = {};
+
+// Helper to update Performance UI
+function updatePerformanceUI(stats) {
+    recentActivities = stats.recent_activities || {};
+
+    // Update stats on dashboard
+    if (document.getElementById('avg-assessment-val'))
+        document.getElementById('avg-assessment-val').textContent = `${Math.round(stats.avg_assessment || 0)}%`;
+    if (document.getElementById('avg-interview-val'))
+        document.getElementById('avg-interview-val').textContent = `${Math.round(stats.avg_interview || 0)}%`;
+    if (document.getElementById('latest-ats-val'))
+        document.getElementById('latest-ats-val').textContent = `${Math.round(stats.latest_ats || 0)}%`;
+    if (document.getElementById('course-progress-val'))
+        document.getElementById('course-progress-val').textContent = `${Math.round(stats.completion_rate || 0)}%`;
+
+    // Update Feedback and Roadmap Reasoning
+    const feedbackText = document.getElementById('performance-feedback-text');
+    if (feedbackText && stats.composite_score !== undefined) {
+        feedbackText.textContent = `Your overall performance index is ${Math.round(stats.composite_score)}%. Keeping a consistent pace is key to meeting your career goals.`;
+    }
+
+    const reasonContainer = document.getElementById('roadmap-reason-container');
+    const reasonText = document.getElementById('roadmap-reason-text');
+    if (reasonContainer && reasonText && stats.roadmap_reason) {
+        reasonText.textContent = stats.roadmap_reason;
+        reasonContainer.classList.remove('hidden');
+    }
+}
+
+async function loadPerformanceStanding() {
+    console.log("📊 Loading performance standing...");
+    const user = currentUser || firebase.auth().currentUser;
+    if (!user) return;
+
+    // --- CACHE IMPLEMENTATION ---
+    const cacheKey = `performance_standing_${user.uid}`;
+    const cachedData = localStorage.getItem(cacheKey);
+
+    if (cachedData) {
+        console.log("⚡ Loaded performance stats from cache.");
+        try {
+            const parsedData = JSON.parse(cachedData);
+            updatePerformanceUI(parsedData);
+        } catch (e) {
+            console.error("Error parsing cached performance data:", e);
+        }
+    }
+    // ----------------------------
+
+    try {
+        const idToken = await user.getIdToken();
+        const response = await fetch(`${API_BASE_URL}/api/roadmap/performance`, {
+            method: "GET",
+            headers: { Authorization: `Bearer ${idToken}` }
+        });
+
+        if (!response.ok) {
+            console.error("❌ Failed to fetch performance stats form server.");
+            return;
+        }
+
+        const stats = await response.json();
+        console.log("✅ Performance stats received from server:", stats);
+        
+        // Update Cache
+        localStorage.setItem(cacheKey, JSON.stringify(stats));
+        
+        // Update UI with fresh data
+        updatePerformanceUI(stats);
+
+    } catch (err) {
+        console.error("❌ Error loading performance standing:", err);
+    }
+}
+
+// Modal Logic
+function openStatsModal(category) {
+    const modal = document.getElementById('stats-modal');
+    const title = document.getElementById('modal-title');
+    const container = document.getElementById('modal-details-container');
+
+    if (!modal || !container) return;
+
+    const categoryNames = {
+        'assessments': 'Recent Assessments',
+        'interviews': 'Mock Interviews',
+        'ats': 'ATS Score History',
+        'progress': 'Roadmap Progress'
+    };
+
+    title.textContent = categoryNames[category] || 'Activity Details';
+
+    const items = recentActivities[category] || [];
+    if (items.length === 0) {
+        container.innerHTML = `<div class="activity-item"><p class="activity-feedback">No recent ${category} found.</p></div>`;
+    } else {
+        container.innerHTML = items.map(item => `
+            <div class="activity-item">
+                <div class="activity-header">
+                    <span class="activity-name">${item.name}</span>
+                    <span class="activity-rating">${item.score}${category === 'progress' ? '' : '%'}</span>
+                </div>
+                <p class="activity-feedback">${item.feedback}</p>
+                <div class="activity-improvement">${item.improvement}</div>
+            </div>
+        `).join('');
+    }
+
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeStatsModal() {
+    const modal = document.getElementById('stats-modal');
+    if (modal) modal.classList.add('hidden');
+    document.body.style.overflow = '';
+}
+
+// Close modal on outside click
+window.addEventListener('click', (event) => {
+    const modal = document.getElementById('stats-modal');
+    if (event.target == modal) {
+        closeStatsModal();
+    }
+});
+
+
+
+// NEW: Smart refresh - Update stats when user returns to this tab
+window.addEventListener('focus', () => {
+    if (currentUser) {
+        fetchAndDisplayStats();
+        loadPerformanceStanding();
+    }
+});
+
+/**
+ * Renders activity history into the detail containers.
+ */
+function renderActivityDetails(activities) {
+    const categories = ['assessments', 'interviews', 'ats', 'progress'];
+
+    categories.forEach(cat => {
+        const container = document.getElementById(`details-${cat}`);
+        if (!container) return;
+
+        const items = activities[cat] || [];
+        if (items.length === 0) {
+            container.innerHTML = '<div class="activity-item"><p class="activity-feedback">No recent activities found.</p></div>';
+            return;
+        }
+
+        container.innerHTML = items.map(item => `
+            <div class="activity-item">
+                <div class="activity-header">
+                    <span class="activity-name">${item.name}</span>
+                    <span class="activity-rating">${item.score}${cat === 'progress' ? '' : '%'}</span>
+                </div>
+                <p class="activity-feedback">${item.feedback}</p>
+                <div class="activity-improvement">${item.improvement}</div>
+            </div>
+        `).join('');
+    });
+}
+
 
 // --- Particle Animation (moved outside onUserLoggedIn, but called by it) ---
 function createParticles() {
@@ -138,6 +314,14 @@ function setupScrollAnimations() {
 }
 
 
+// Helper to update Stats Cards UI
+function updateStatsUI(stats) {
+    if (statsRoadmapsP) statsRoadmapsP.textContent = stats.roadmaps_generated || "✨";
+    if (statsResumesP) statsResumesP.textContent = stats.resumes_optimized || "✨";
+    if (statsAssessmentsP) statsAssessmentsP.textContent = stats.assessments_taken || "✨";
+    if (statsJobsP) statsJobsP.textContent = stats.jobs_matched || "✨";
+}
+
 /**
  * Fetches user-specific statistics from the backend and updates the UI.
  */
@@ -152,6 +336,21 @@ async function fetchAndDisplayStats() {
         return;
     }
 
+    // --- CACHE IMPLEMENTATION ---
+    const cacheKey = `user_stats_${currentUser.uid}`;
+    const cachedStats = localStorage.getItem(cacheKey);
+
+    if (cachedStats) {
+        console.log("⚡ Loaded user stats from cache.");
+        try {
+            const parsedStats = JSON.parse(cachedStats);
+            updateStatsUI(parsedStats);
+        } catch (e) {
+            console.error("Error parsing cached stats:", e);
+        }
+    }
+    // ----------------------------
+
     try {
         const idToken = await currentUser.getIdToken();
         const response = await fetch(`${API_BASE_URL}/api/user/stats`, {
@@ -165,187 +364,34 @@ async function fetchAndDisplayStats() {
         if (!response.ok) {
             const errorData = await response.json();
             console.error('Failed to fetch user statistics:', errorData.detail || errorData.message);
-            // Fallback: Display N/A on error
-            if (statsRoadmapsP) statsRoadmapsP.textContent = '✨';
-            if (statsResumesP) statsResumesP.textContent = '✨';
-            if (statsAssessmentsP) statsAssessmentsP.textContent = '✨';
-            if (statsJobsP) statsJobsP.textContent = '✨';
+            // Fallback: If no cache and error, show placeholder. If cache exists, we keep showing it (better UX).
+            if (!cachedStats) {
+                if (statsRoadmapsP) statsRoadmapsP.textContent = '✨';
+                if (statsResumesP) statsResumesP.textContent = '✨';
+                if (statsAssessmentsP) statsAssessmentsP.textContent = '✨';
+                if (statsJobsP) statsJobsP.textContent = '✨';
+            }
             return;
         }
 
         const stats = await response.json();
         // console.log("Fetched user stats:", stats);
 
-        // Update DOM elements with fetched data (add null checks for safety)
-        if (statsRoadmapsP) statsRoadmapsP.textContent = stats.roadmaps_generated || "✨";
-        if (statsResumesP) statsResumesP.textContent = stats.resumes_optimized || "✨";
-        if (statsAssessmentsP) statsAssessmentsP.textContent = stats.assessments_taken || "✨";
-        if (statsJobsP) statsJobsP.textContent = stats.jobs_matched || "✨";
+        // Update Cache
+        localStorage.setItem(cacheKey, JSON.stringify(stats));
+
+        // Update DOM elements with fetched data
+        updateStatsUI(stats);
 
     } catch (error) {
         console.error('Network error or unexpected response when fetching user statistics:', error);
-        // Fallback or error message for the user
-        if (statsRoadmapsP) statsRoadmapsP.textContent = '✨';
-        if (statsResumesP) statsResumesP.textContent = '✨';
-        if (statsAssessmentsP) statsAssessmentsP.textContent = '✨';
-        if (statsJobsP) statsJobsP.textContent = '✨';
+        // Fallback or error message for the user, only if no cache
+        if (!cachedStats) {
+            if (statsRoadmapsP) statsRoadmapsP.textContent = '✨';
+            if (statsResumesP) statsResumesP.textContent = '✨';
+            if (statsAssessmentsP) statsAssessmentsP.textContent = '✨';
+            if (statsJobsP) statsJobsP.textContent = '✨';
+        }
     }
-
 
 }
-
-// ==========================================
-// NEW: Performance Standing Logic (Ported)
-// ==========================================
-
-let recentActivities = {};
-
-/**
- * Fetches the user's detailed performance metrics from the backend.
- * Populates the "Your Performance Standing" card.
- */
-async function loadPerformanceSummary() {
-    if (!currentUser) return;
-    try {
-        const idToken = await currentUser.getIdToken();
-        const response = await fetch(`${API_BASE_URL}/api/roadmap/performance`, {
-            method: "GET",
-            headers: { Authorization: `Bearer ${idToken}` }
-        });
-        if (!response.ok) return;
-        const stats = await response.json();
-
-        recentActivities = stats.recent_activities || {};
-
-        // DOM Elements for Stats
-        const avgAssessmentVal = document.getElementById('avg-assessment-val');
-        const avgInterviewVal = document.getElementById('avg-interview-val');
-        const latestAtsVal = document.getElementById('latest-ats-val');
-        const courseProgressVal = document.getElementById('course-progress-val');
-        const feedbackText = document.getElementById('performance-feedback-text');
-
-        if (avgAssessmentVal) avgAssessmentVal.textContent = `${Math.round(stats.avg_assessment || 0)}%`;
-        if (avgInterviewVal) avgInterviewVal.textContent = `${Math.round(stats.avg_interview || 0)}%`;
-        if (latestAtsVal) latestAtsVal.textContent = `${Math.round(stats.latest_ats || 0)}%`;
-        if (courseProgressVal) courseProgressVal.textContent = `${Math.round(stats.completion_rate || 0)}%`;
-
-        // Update Reasoning/Feedback
-        const reasonContainer = document.getElementById('roadmap-reason-container');
-        const reasonText = document.getElementById('roadmap-reason-text');
-
-        // ALWAYS update the main feedback text (removing "Loading...")
-        if (feedbackText) {
-            // If we have a short feedback string from the backend, use it. Otherwise generate one.
-            if (stats.composite_score < 30) feedbackText.textContent = "Getting Started: Build your foundation.";
-            else if (stats.composite_score < 70) feedbackText.textContent = "Good progress! Keep optimizing.";
-            else feedbackText.textContent = "Excellent standing! Ready for top roles.";
-        }
-
-        // Then show the detailed reason if available
-        if (stats.roadmap_reason && reasonText) {
-            reasonText.textContent = stats.roadmap_reason;
-            if (reasonContainer) reasonContainer.classList.remove('hidden');
-        }
-
-    } catch (err) {
-        console.error("Error loading performance summary:", err);
-    }
-}
-
-/**
- * Modal Logic for Stats Detail
- */
-// Make functions global so HTML onclick attributes can find them
-window.openStatsModal = function (category) {
-    const modal = document.getElementById('stats-modal');
-    const title = document.getElementById('modal-title');
-    const container = document.getElementById('modal-details-container');
-
-    if (!modal || !container) return;
-
-    const categoryNames = {
-        'assessments': 'Recent Assessments',
-        'interviews': 'Mock Interviews',
-        'ats': 'ATS Score History',
-        'progress': 'Roadmap Progress'
-    };
-
-    title.textContent = categoryNames[category] || 'Activity Details';
-
-    const items = recentActivities[category] || [];
-    if (items.length === 0) {
-        container.innerHTML = `<div class="activity-item"><p class="activity-feedback">No recent ${category} found.</p></div>`;
-    } else {
-        container.innerHTML = items.map(item => `
-            <div class="activity-item">
-                <div class="activity-header">
-                    <span class="activity-name">${item.name}</span>
-                    <span class="activity-rating">${item.score}${category === 'progress' ? '' : '%'}</span>
-                </div>
-                <p class="activity-feedback">${item.feedback}</p>
-                <div class="activity-improvement">${item.improvement}</div>
-            </div>
-        `).join('');
-    }
-
-    modal.classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-};
-
-window.closeStatsModal = function () {
-    const modal = document.getElementById('stats-modal');
-    if (modal) modal.classList.add('hidden');
-    document.body.style.overflow = '';
-};
-
-// Close modal on outside click
-window.addEventListener('click', (event) => {
-    const modal = document.getElementById('stats-modal');
-    if (event.target == modal) {
-        window.closeStatsModal();
-    }
-});
-
-
-/**
- * Silent check for weekly auto-personalization.
- * This ensures the dashboard reflects the latest AI insights even if the user hasn't visited the roadmap page.
- */
-async function checkAutoPersonalize() {
-    if (!currentUser) return;
-    try {
-        const idToken = await currentUser.getIdToken();
-        const response = await fetch(`${API_BASE_URL}/api/roadmap/check_auto_personalize`, {
-            method: "POST",
-            headers: { Authorization: `Bearer ${idToken}` }
-        });
-
-        if (!response.ok) return;
-        const result = await response.json();
-
-        if (result.is_updated) {
-            // If updated, the backend has already saved the new feedback to the DB.
-            // We can now update the UI directly with the returned feedback
-            const feedbackText = document.getElementById('performance-feedback-text');
-            const reasonText = document.getElementById('roadmap-reason-text');
-            const reasonContainer = document.getElementById('roadmap-reason-container');
-
-            if (result.feedback) {
-                // Update feedback text
-                if (reasonText) {
-                    reasonText.textContent = result.feedback;
-                    if (reasonContainer) reasonContainer.classList.remove('hidden');
-                } else if (feedbackText) {
-                    feedbackText.textContent = result.feedback;
-                }
-
-                // Also reload the stats summary to get any other derived changes
-                loadPerformanceSummary();
-            }
-        }
-    } catch (err) {
-        console.error("Silent personalization check failed (Home):", err);
-    }
-}
-
-
