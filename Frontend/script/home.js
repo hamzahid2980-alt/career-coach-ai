@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:8000'; // Update this if your backend is hosted elsewhere
+const API_BASE_URL = 'https://career-coach-ai-3xap.onrender.com'; // Updated for Production
 
 // Declare global variables with 'let' or without initial assignment.
 // They will be assigned their DOM element references *inside* onUserLoggedIn/DOMContentLoaded.
