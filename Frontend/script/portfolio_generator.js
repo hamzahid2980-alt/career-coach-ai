@@ -390,6 +390,14 @@ class PortfolioGenerator {
         section.classList.remove("active");
       });
       document.getElementById(`${sectionName}-section`).classList.add("active");
+
+      // Handle Container Width
+      const container = document.querySelector(".container");
+      if (sectionName === "preview") {
+          container.classList.add("wide-mode");
+      } else {
+          container.classList.remove("wide-mode");
+      }
     }
   
     updateLoadingText(text) {
