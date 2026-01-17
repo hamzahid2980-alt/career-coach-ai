@@ -243,6 +243,11 @@ async def upload_and_process_resume(
                 print(f"ERROR: Failed to save ATS score history: {e}")
 
         print(f"DEBUG: Responding to frontend with full analysis report (Overall Score: {full_analysis_report.get('overall_resume_score')}).")
+        
+        # NEW: Record this as an optimization/analysis event so the Dashboard stats update.
+        # The button says "Analyze & Optimize", so users expect this to count.
+        db.record_resume_optimization(uid)
+
         return JSONResponse(content={
             "message": "Resume processed successfully!",
             "user_uid": uid,

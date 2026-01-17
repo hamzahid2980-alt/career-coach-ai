@@ -626,6 +626,13 @@ class DatabaseManager:
             if roadmap:
                 if 'last_adjustment_reason' in roadmap and roadmap['last_adjustment_reason']:
                     roadmap_reason = roadmap['last_adjustment_reason']
+                elif composite_score > 0:
+                    # Fallback Trend Text if AI reason hasn't been generated yet but stats exist
+                    roadmap_reason = f"Your current performance index is {int(composite_score)}%. "
+                    if avg_assessment < 50: roadmap_reason += "Focus on improving your assessment scores."
+                    elif avg_interview < 50: roadmap_reason += "Try more mock interviews to boost confidence."
+                    elif latest_ats < 60: roadmap_reason += "Your resume optimization could use some work."
+                    else: roadmap_reason += "You are on a great track! Keep completing roadmap tasks."
                 
                 if 'detailed_roadmap' in roadmap:
                     all_completed = []
