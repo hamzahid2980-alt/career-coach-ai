@@ -56,6 +56,7 @@ async def publish_json_portfolio(payload: PublishRequest, user: dict = Depends(g
 @router.post("/upload-resume")
 async def upload_resume(file: UploadFile = File(...), user: dict = Depends(get_current_user)):
     file_bytes = await file.read()
+    print(f"DEBUG: upload_resume hit. Filename: {file.filename}, Size: {len(file_bytes)} bytes")
     ext = os.path.splitext(file.filename)[1].lower()
     raw_text = extract_text_auto(file_bytes, ext)
     if not raw_text:
@@ -70,6 +71,7 @@ async def upload_resume(file: UploadFile = File(...), user: dict = Depends(get_c
 class GenerateFromTextRequest(BaseModel):
     content: str
     filename: str
+    template: str = "creative" # Default to creative
 
 @router.post("/generate-from-text")
 async def generate_from_text_endpoint(payload: GenerateFromTextRequest, request: Request, user: dict = Depends(get_current_user)):
@@ -80,7 +82,7 @@ async def generate_from_text_endpoint(payload: GenerateFromTextRequest, request:
         raise HTTPException(status_code=500, detail=f"AI Failed: {str(e)}")
 
     # 2. Generate HTML
-    html_code = PortfolioGenerator.generate_html(portfolio_data)
+    html_code = PortfolioGenerator.generate_html(portfolio_data, template=payload.template)
 
     # 3. Save
     unique_id = uuid.uuid4().hex[:8]
@@ -100,6 +102,21 @@ async def generate_from_text_endpoint(payload: GenerateFromTextRequest, request:
         "experience_count": len(portfolio_data.get('experience', [])),
         "projects_count": len(portfolio_data.get('projects', []))
     }
+
+class RenderTemplateRequest(BaseModel):
+    data: dict
+    template: str
+
+@router.post("/render-template")
+async def render_template_endpoint(payload: RenderTemplateRequest):
+    """
+    Lightweight endpoint to purely re-render HTML with a different CSS template.
+    Does NOT call AI.
+    """
+    html_code = PortfolioGenerator.generate_html(payload.data, template=payload.template)
+    if not html_code:
+        raise HTTPException(status_code=500, detail="Failed to render template")
+    return {"html_content": html_code}
 
 @router.post("/publish-portfolio")
 async def publish_portfolio_endpoint(payload: dict, user: dict = Depends(get_current_user)):

@@ -31,7 +31,7 @@ def get_db_manager() -> DatabaseManager:
 # --- Authentication Dependency ---
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/token") 
 
-async def get_current_user(token: str = Depends(oauth2_scheme)) -> Dict[str, Any]:
+def get_current_user(token: str = Depends(oauth2_scheme)) -> Dict[str, Any]:
     """A dependency that verifies the Firebase ID token on protected endpoints."""
     try:
         decoded_token = auth.verify_id_token(token)

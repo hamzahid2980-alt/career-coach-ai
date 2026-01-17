@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zahid Hamdule - Aspiring AI/ML Engineer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;700&family=Inter:wght@400;600&family=Playfair+Display:ital,wght@0,400;1,400&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { overflow-x: hidden; width: 100%; }
+        
+        /* Animations */
+        .reveal { opacity: 0; transform: translateY(30px); animation: reveal 0.8s forwards; }
+        @keyframes reveal { to { opacity: 1; transform: translateY(0); } }
+        
+        /* Font Awesome Fix */
+        i { margin-right: 8px; }
+        
+            /* SWISS MINIMAL - STARK BLACK & WHITE */
+            :root { --bg: #ffffff; --text: #000000; --gray: #f4f4f4; }
+            body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; }
+            
+            .navbar { padding: 2rem 5%; border-bottom: 4px solid black; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: white; z-index: 100; }
+            .nav-logo { font-size: 1.5rem; font-weight: 900; letter-spacing: -1px; background: black; color: white; padding: 0.5rem 1rem; }
+            .nav-menu { display: flex; gap: 2rem; list-style: none; }
+            .nav-menu a { color: black; text-decoration: none; font-weight: 600; text-transform: uppercase; font-size: 0.9rem; }
+            
+            .hero { padding: 8rem 5%; min-height: 80vh; display: flex; flex-direction: column; justify-content: center; }
+            .hero-title { font-size: 6rem; font-weight: 900; letter-spacing: -4px; line-height: 0.9; margin-bottom: 2rem; max-width: 900px; }
+            .hero-subtitle { font-size: 2rem; font-weight: 400; color: #555; max-width: 600px; line-height: 1.4; border-left: 4px solid black; padding-left: 2rem; }
+            
+            .section { padding: 6rem 5%; }
+            .container { display: grid; grid-template-columns: 250px 1fr; gap: 4rem; border-top: 4px solid black; padding-top: 4rem; }
+            h2 { grid-column: 1; font-size: 3rem; font-weight: 900; text-transform: uppercase; line-height: 1; }
+            
+            .skills-grid, .experience-list, .projects-grid, .education-list { grid-column: 2; }
+            
+            .skill-tag { border: 2px solid black; padding: 0.8rem 1.5rem; display: inline-block; margin-right: 0.8rem; margin-bottom: 0.8rem; border-radius: 50px; font-weight: 600; font-size: 0.9rem; background: white; color: black; transition: 0.2s; }
+            .skill-tag:hover { background: black; color: white; }
+            
+            .experience-item { margin-bottom: 5rem; }
+            .experience-item h3 { font-size: 2.5rem; margin-bottom: 0.5rem; font-weight: 800; letter-spacing: -1px; }
+            .exp-header { margin-bottom: 1rem; display: block; }
+            .experience-item h4 { font-size: 1.2rem; font-weight: 500; border-bottom: 2px solid #eee; padding-bottom: 0.5rem; margin-bottom: 1.5rem; display: inline-block; }
+            
+            .project-card { background: var(--gray); padding: 3rem; margin-bottom: 3rem; transition: 0.3s; }
+            .project-card:hover { background: black; color: white; transform: scale(1.02); }
+            .project-card h3 { font-size: 2rem; font-weight: 800; margin-bottom: 1rem; }
+            .project-card:hover .tech-tag { border-color: white; color: white; }
+            .tech-tag { border: 1px solid black; padding: 0.4rem 0.8rem; display: inline-block; margin-right: 0.5rem; border-radius: 4px; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; }
+            
+            .project-link { display: inline-block; margin-top: 2rem; color: inherit; text-decoration: underline; font-weight: 800; font-size: 1.1rem; }
+            
+            footer { padding: 6rem 5%; background: black; color: white; text-align: left; }
+            .social-links a { color: white; margin-right: 2rem; font-size: 2rem; }
+            
+            @media (max-width: 768px) { .container { grid-template-columns: 1fr; } .hero-title { font-size: 4rem; } }
+            
+    </style>
+</head>
+<body class="template-modern">
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">Zahid Hamdule</div>
+            <ul class="nav-menu">
+                <li><a href="#hero">Home</a></li>
+                
+                <li><a href="#experience">Experience</a></li>
+                <li><a href="#projects">Projects</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <header id="hero" class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">Zahid Hamdule</h1>
+            <h2 class="hero-subtitle">Aspiring AI/ML Engineer</h2>
+            <p class="hero-description">Results-driven Engineer, passionately solving real-world problems with technology and a keen interest in AI/ML. Leveraging hands-on Android development, DSA, Python, Java, and C to innovate for social and environmental impact.</p>
+            <div class="contact-links">
+                <a href="mailto:zahidhamdule12@gmail.com"><i class="fas fa-envelope"></i> Contact Me</a>
+                <a href="linkedin.com/in/zahidhamdule" target="_blank"><i class="fab fa-linkedin"></i> LinkedIn</a>
+                
+            </div>
+            <div class="scroll-down">
+                <i class="fas fa-chevron-down"></i>
+            </div>
+        </div>
+        <div class="hero-bg">
+            <div class="blob blob-1"></div>
+            <div class="blob blob-2"></div>
+        </div>
+    </header>
+
+    <main>
+        <section id="skills" class="section"><div class="container"><h2><i class="fas fa-laptop-code"></i> Skills & Expertise</h2>
+                    <div class="skill-category">
+                        <h3>Frontend</h3>
+                        <div class="skills-grid"><span class="skill-tag"><i class="fab fa-js"></i> JavaScript (ES6+)</span><span class="skill-tag"><i class="fas fa-code"></i> TypeScript</span><span class="skill-tag"><i class="fab fa-js"></i> Next.js 15</span><span class="skill-tag"><i class="fab fa-js"></i> React.js</span><span class="skill-tag"><i class="fab fa-css3-alt"></i> Tailwind CSS</span><span class="skill-tag"><i class="fas fa-code"></i> Socket.io (Client)</span><span class="skill-tag"><i class="fas fa-code"></i> Chrome Extension API</span><span class="skill-tag"><i class="fab fa-html5"></i> HTML5/CSS3</span><span class="skill-tag"><i class="fab fa-android"></i> Android Studio</span><span class="skill-tag"><i class="fab fa-android"></i> Android SDK</span><span class="skill-tag"><i class="fas fa-code"></i> Activity Lifecycle</span><span class="skill-tag"><i class="fas fa-code"></i> Intent-based Navigation</span><span class="skill-tag"><i class="fas fa-brain"></i> XML UI Design</span></div>
+                    </div>
+                    
+                    <div class="skill-category">
+                        <h3>Backend</h3>
+                        <div class="skills-grid"><span class="skill-tag"><i class="fab fa-python"></i> Python (FastAPI, Flask)</span><span class="skill-tag"><i class="fab fa-java"></i> Java</span><span class="skill-tag"><i class="fas fa-code"></i> C</span><span class="skill-tag"><i class="fab fa-js"></i> MERN Stack (MongoDB, Express.js, Node.js)</span><span class="skill-tag"><i class="fas fa-code"></i> Socket.io (Server)</span><span class="skill-tag"><i class="fas fa-code"></i> Multi-Agent Systems</span><span class="skill-tag"><i class="fas fa-code"></i> Computer Vision (OpenCV)</span><span class="skill-tag"><i class="fas fa-code"></i> Local LLM Integration (Ollama/MedLLaMa2)</span><span class="skill-tag"><i class="fas fa-brain"></i> Generative AI APIs (Gemini, Groq)</span><span class="skill-tag"><i class="fas fa-code"></i> Sentiment Classification</span><span class="skill-tag"><i class="fas fa-code"></i> Natural Language Processing (NLP)</span><span class="skill-tag"><i class="fab fa-git-alt"></i> Git/GitHub</span><span class="skill-tag"><i class="fas fa-code"></i> Firebase</span><span class="skill-tag"><i class="fas fa-code"></i> Redis</span><span class="skill-tag"><i class="fas fa-code"></i> JWT</span><span class="skill-tag"><i class="fas fa-code"></i> bcrypt (Security)</span><span class="skill-tag"><i class="fas fa-cloud"></i> Cloudinary</span><span class="skill-tag"><i class="fab fa-aws"></i> AWS Academy Data Engineering</span><span class="skill-tag"><i class="fas fa-brain"></i> Data Structures & Algorithms (DSA)</span><span class="skill-tag"><i class="fas fa-code"></i> System Architecture</span><span class="skill-tag"><i class="fas fa-code"></i> API Integration</span><span class="skill-tag"><i class="fas fa-code"></i> Technical Mentorship</span><span class="skill-tag"><i class="fas fa-code"></i> Content Strategy</span></div>
+                    </div>
+                    </div></section>
+        
+            <section id="experience" class="section">
+                <div class="container">
+                    <h2><i class="fas fa-briefcase"></i> Work Experience</h2>
+                    <div class="experience-list">
+                <div class="experience-item">
+                    <div class="exp-header">
+                        <h3>Content Head</h3>
+                        <span class="duration"><i class="far fa-calendar-alt"></i> September 2024 – Present</span>
+                    </div>
+                    <h4>Coders Club, A. P. Shah Institute of Technology</h4>
+                    <p>• Led content strategy for DSA curriculum development.
+• Mentored juniors, fostering problem-solving culture.</p>
+                </div>
+                </div>
+                </div>
+            </section>
+            
+        
+            <section id="projects" class="section">
+                <div class="container">
+                    <h2><i class="fas fa-rocket"></i> Featured Projects</h2>
+                    <div class="projects-grid">
+                <div class="project-card">
+                    <div class="card-content">
+                        <h3>Carbon Footprint Tracker</h3>
+                        <p>Developed Android app tracking personal carbon emissions from lifestyle metrics.</p>
+                        <div class="tech-stack"><span class="tech-tag">Android SDK</span><span class="tech-tag">XML</span><span class="tech-tag">Authentication</span><span class="tech-tag">Session Management</span></div>
+                    </div>
+                    
+                </div>
+                
+                <div class="project-card">
+                    <div class="card-content">
+                        <h3>ConsultAI Health Platform</h3>
+                        <p>Engineered MERN stack platform; AI-driven health consultation via MedLLaMa2.</p>
+                        <div class="tech-stack"><span class="tech-tag">MERN Stack</span><span class="tech-tag">MedLLaMa2</span><span class="tech-tag">Ollama</span><span class="tech-tag">Socket.io</span></div>
+                    </div>
+                    
+                </div>
+                
+                <div class="project-card">
+                    <div class="card-content">
+                        <h3>Sentry-AI Fraud Detection</h3>
+                        <p>Built real-time fraud detection with FastAPI, Chrome Extension, and LLMs.</p>
+                        <div class="tech-stack"><span class="tech-tag">Python</span><span class="tech-tag">FastAPI</span><span class="tech-tag">Chrome Extension API</span><span class="tech-tag">Groq</span></div>
+                    </div>
+                    
+                </div>
+                
+                <div class="project-card">
+                    <div class="card-content">
+                        <h3>InboxZeroAI Management</h3>
+                        <p>Advanced productivity platform automates inbox management via multi-agent AI system.</p>
+                        <div class="tech-stack"><span class="tech-tag">Next.js</span><span class="tech-tag">TypeScript</span><span class="tech-tag">Multi-Agent AI</span><span class="tech-tag">Groq</span></div>
+                    </div>
+                    
+                </div>
+                
+                <div class="project-card">
+                    <div class="card-content">
+                        <h3>Attendance & Education Platform</h3>
+                        <p>Full-stack educational platform automates attendance, material distribution, and tracking.</p>
+                        <div class="tech-stack"><span class="tech-tag">Flask</span><span class="tech-tag">MongoDB</span><span class="tech-tag">Google Gemini API</span><span class="tech-tag">OpenCV</span></div>
+                    </div>
+                    
+                </div>
+                
+                <div class="project-card">
+                    <div class="card-content">
+                        <h3>SpaceScope Terminal</h3>
+                        <p>Immersive space portal centralizing NASA data for AR/VR visualization.</p>
+                        <div class="tech-stack"><span class="tech-tag">NASA Open APIs</span><span class="tech-tag">AR/VR</span><span class="tech-tag">Browser Local Storage</span><span class="tech-tag">Tailwind CSS</span></div>
+                    </div>
+                    
+                </div>
+                
+                <div class="project-card">
+                    <div class="card-content">
+                        <h3>AI Career Coach</h3>
+                        <p>Intelligent career advisory platform providing AI-driven professional roadmaps.</p>
+                        <div class="tech-stack"><span class="tech-tag">FastAPI</span><span class="tech-tag">Vanilla JavaScript</span><span class="tech-tag">Google Gemini 1.5 Flash</span></div>
+                    </div>
+                    
+                </div>
+                </div>
+                </div>
+            </section>
+            
+        
+            <section id="education" class="section">
+                <div class="container">
+                    <h2>Education</h2>
+                    <div class="education-list">
+                <div class="education-item">
+                    <div class="edu-icon"><i class="fas fa-graduation-cap"></i></div>
+                    <div class="edu-details">
+                        <h3>Bachelor of Engineering (B.E.) in Computer Engineering</h3>
+                        <h4>A. P. Shah Institute of Technology - Thane</h4>
+                        <span class="year">2027</span>
+                    </div>
+                </div>
+                </div>
+                </div>
+            </section>
+            
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="social-links">
+                 <a href="linkedin.com/in/zahidhamdule" target="_blank"><i class="fab fa-linkedin"></i></a>
+                 
+                 <a href="mailto:zahidhamdule12@gmail.com"><i class="fas fa-envelope"></i></a>
+            </div>
+            <p>&copy; 2026 Zahid Hamdule. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

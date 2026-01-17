@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zahid Hamdule - Results-driven Engineer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;700&family=Inter:wght@400;600&family=Playfair+Display:ital,wght@0,400;1,400&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { overflow-x: hidden; width: 100%; }
+        
+        /* Animations */
+        .reveal { opacity: 0; transform: translateY(30px); animation: reveal 0.8s forwards; }
+        @keyframes reveal { to { opacity: 1; transform: translateY(0); } }
+        
+        /* Font Awesome Fix */
+        i { margin-right: 8px; }
+        
+            /* SWISS MINIMAL - STARK BLACK & WHITE */
+            :root { --bg: #ffffff; --text: #000000; --gray: #f4f4f4; }
+            body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; padding: 0 0 5rem 0; }
+            
+            /* Container Padding */
+            .container, main { width: 95%; max-width: 1400px; margin: 0 auto; padding: 0 1rem; }
+            
+            /* Animations */
+            @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+            @keyframes scaleIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+            
+            .navbar { padding: 2rem 5%; border-bottom: 4px solid black; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: white; z-index: 100; }
+            .nav-logo { font-size: 1.5rem; font-weight: 900; letter-spacing: -1px; background: black; color: white; padding: 0.5rem 1rem; }
+            .nav-menu { display: flex; gap: 2rem; list-style: none; }
+            .nav-menu a { color: black; text-decoration: none; font-weight: 600; text-transform: uppercase; font-size: 0.9rem; transition: 0.3s; }
+            .nav-menu a:hover { text-decoration: underline; text-underline-offset: 4px; }
+            
+            .hero { padding: 5rem 5%; min-height: 70vh; display: flex; flex-direction: column; justify-content: center; } /* Reduced padding/height */
+            .hero-title { font-size: 5rem; font-weight: 900; letter-spacing: -3px; line-height: 1; margin-bottom: 1.5rem; max-width: 1000px; animation: slideUp 0.8s ease-out; }
+            .hero-subtitle { font-size: 1.5rem; font-weight: 400; color: #555; max-width: 600px; line-height: 1.4; border-left: 4px solid black; padding-left: 1.5rem; animation: slideUp 0.8s ease-out 0.2s backwards; }
+            
+            /* Logos & Contact Links (Modern Pill Style) */
+            .contact-links { display: flex; justify-content: flex-start; gap: 1rem; margin-top: 2.5rem; flex-wrap: wrap; animation: slideUp 0.8s ease-out 0.4s backwards; }
+            .contact-links a { 
+                background: #000; color: white; padding: 1rem 2.5rem; border-radius: 50px; text-decoration: none; font-weight: 600; transition: 0.3s; 
+                display: flex; align-items: center; gap: 10px; font-size: 1rem;
+            }
+            .contact-links a i { font-size: 1.1rem; }
+            .contact-links a:hover { transform: translateY(-3px); box-shadow: 0 8px 16px rgba(0,0,0,0.15); background: #333; }
+
+            .section { padding: 4rem 5%; } /* Reduced padding */
+            /* Grid Layout - Fixed width for header to prevent overlap */
+            .container { display: grid; grid-template-columns: 220px 1fr; gap: 3rem; border-top: 4px solid black; padding-top: 3rem; }
+            h2 { grid-column: 1; font-size: 2.5rem; font-weight: 900; text-transform: uppercase; line-height: 1; margin-bottom: 2rem; } /* Removed sticky */
+            
+            .skills-grid, .experience-list, .projects-grid, .education-list, .skill-category { grid-column: 2; }
+            
+            /* Fixed Skills Grid - Modern */
+            .skill-category { margin-bottom: 2rem; }
+            .skill-category h3 { font-size: 1.2rem; margin-bottom: 1rem; font-weight: 700; border-bottom: 2px solid #eee; padding-bottom: 0.5rem; color: #444; }
+            .skills-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+            .skill-tag { 
+                border: 2px solid black; padding: 0.6rem 1.4rem; display: inline-flex; align-items: center; gap: 8px;
+                border-radius: 100px; font-weight: 700; font-size: 0.9rem; background: white; color: black; transition: 0.2s; 
+            }
+            .skill-tag i { font-size: 1rem; }
+            .skill-tag:hover { background: black; color: white; transform: scale(1.05); cursor: default; }
+            
+            .experience-item { margin-bottom: 4rem; animation: scaleIn 0.5s ease-out; }
+            .experience-item h3 { font-size: 2.2rem; margin-bottom: 0.4rem; font-weight: 800; letter-spacing: -1px; }
+            .experience-item h4 { font-size: 1.1rem; font-weight: 500; border-bottom: 2px solid #eee; padding-bottom: 0.5rem; margin-bottom: 1rem; display: inline-block; color: #555; }
+            .experience-item p { font-size: 1.1rem; line-height: 1.6; color: #333; max-width: 800px; }
+            
+            .project-card { background: var(--gray); padding: 3rem; margin-bottom: 2.5rem; transition: 0.3s; border-radius: 24px; animation: scaleIn 0.5s ease-out; }
+            .project-card:hover { background: black; color: white; transform: scale(1.01); }
+            .project-card h3 { font-size: 2rem; font-weight: 800; margin-bottom: 0.8rem; letter-spacing: -1px; }
+            .project-card p { font-size: 1.1rem; margin-bottom: 1.5rem; }
+            .project-card:hover .tech-tag { border-color: white; color: white; }
+            .project-card:hover .project-link { color: white; }
+            
+            .tech-stack { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 1.5rem; }
+            .tech-tag { border: 2px solid black; padding: 0.4rem 0.8rem; display: inline-block; border-radius: 6px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; }
+            
+            .project-link { display: inline-flex; align-items: center; gap: 8px; margin-top: 0.5rem; color: black; text-decoration: none; font-weight: 900; font-size: 1rem; text-transform: uppercase; border-bottom: 3px solid currentColor; padding-bottom: 2px; }
+            
+            footer { padding: 6rem 5%; background: black; color: white; text-align: left; }
+            .social-links { display: flex; gap: 1.5rem; margin-bottom: 1.5rem; }
+            .social-links a { color: white; font-size: 2rem; transition: 0.3s; }
+            .social-links a:hover { color: #888; transform: scale(1.1); }
+            
+            @media (max-width: 1100px) { 
+                .container { grid-template-columns: 1fr; gap: 2rem; } 
+                h2 { margin-bottom: 1.5rem; border-bottom: 1px solid #000; padding-bottom: 1rem; display: inline-block; }
+                .hero-title { font-size: 3.5rem; }
+                .hero { padding: 4rem 5%; min-height: auto; }
+            }
+            
+    </style>
+</head>
+<body class="template-modern">
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">Zahid Hamdule</div>
+            <ul class="nav-menu">
+                <li><a href="#hero">Home</a></li>
+                
+                <li><a href="#experience">Experience</a></li>
+                <li><a href="#projects">Projects</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <header id="hero" class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">Zahid Hamdule</h1>
+            <h2 class="hero-subtitle">Results-driven Engineer</h2>
+            <p class="hero-description">Results-driven Engineer with strong foundation in AI/ML and web development. Passionate about solving real-world problems using technology.</p>
+            <div class="contact-links">
+                <a href="mailto:zahidhamdule12@gmail.com"><i class="fas fa-envelope"></i> Contact Me</a>
+                <a href="linkedin.com/in/zahidhamdule" target="_blank"><i class="fab fa-linkedin"></i> LinkedIn</a>
+                
+            </div>
+            <div class="scroll-down">
+                <i class="fas fa-chevron-down"></i>
+            </div>
+        </div>
+        <div class="hero-bg">
+            <div class="blob blob-1"></div>
+            <div class="blob blob-2"></div>
+        </div>
+    </header>
+
+    <main>
+        <section id="skills" class="section"><div class="container"><h2><i class="fas fa-laptop-code"></i> Skills & Expertise</h2>
+                    <div class="skill-category">
+                        <h3>Frontend</h3>
+                        <div class="skills-grid"><span class="skill-tag"><i class="fab fa-js"></i> Next.js</span><span class="skill-tag"><i class="fab fa-js"></i> React.js</span><span class="skill-tag"><i class="fab fa-html5"></i> HTML5/CSS3</span></div>
+                    </div>
+                    
+                    <div class="skill-category">
+                        <h3>Backend</h3>
+                        <div class="skills-grid"><span class="skill-tag"><i class="fab fa-python"></i> Python</span><span class="skill-tag"><i class="fab fa-java"></i> Java</span><span class="skill-tag"><i class="fab fa-js"></i> Node.js</span></div>
+                    </div>
+                    </div></section>
+        
+            <section id="experience" class="section">
+                <div class="container">
+                    <h2><i class="fas fa-briefcase"></i> Work Experience</h2>
+                    <div class="experience-list">
+                <div class="experience-item">
+                    <div class="exp-header">
+                        <h3>Content Head</h3>
+                        <span class="duration"><i class="far fa-calendar-alt"></i> 09/2024 - Current</span>
+                    </div>
+                    <h4>Coders Club, A. P. Shah Institute of Technology</h4>
+                    <p>• Led content strategy
+• Mentored juniors</p>
+                </div>
+                </div>
+                </div>
+            </section>
+            
+        
+            <section id="projects" class="section">
+                <div class="container">
+                    <h2><i class="fas fa-rocket"></i> Featured Projects</h2>
+                    <div class="projects-grid">
+                <div class="project-card">
+                    <div class="card-content">
+                        <h3>Carbon</h3>
+                        <p>Tracks carbon emissions</p>
+                        <div class="tech-stack"><span class="tech-tag">Android</span><span class="tech-tag">Java</span></div>
+                    </div>
+                    
+                </div>
+                
+                <div class="project-card">
+                    <div class="card-content">
+                        <h3>Consult</h3>
+                        <p>AI-powered health platform</p>
+                        <div class="tech-stack"><span class="tech-tag">MERN</span><span class="tech-tag">Socket.io</span></div>
+                    </div>
+                    
+                </div>
+                
+                <div class="project-card">
+                    <div class="card-content">
+                        <h3>Sentry</h3>
+                        <p>Real-time fraud detection</p>
+                        <div class="tech-stack"><span class="tech-tag">Python</span><span class="tech-tag">FastAPI</span></div>
+                    </div>
+                    
+                </div>
+                
+                <div class="project-card">
+                    <div class="card-content">
+                        <h3>Inbox</h3>
+                        <p>Autonomous email manager</p>
+                        <div class="tech-stack"><span class="tech-tag">Next.js</span><span class="tech-tag">TypeScript</span></div>
+                    </div>
+                    
+                </div>
+                
+                <div class="project-card">
+                    <div class="card-content">
+                        <h3>Space</h3>
+                        <p>Space exploration portal</p>
+                        <div class="tech-stack"><span class="tech-tag">Flask</span><span class="tech-tag">MongoDB</span></div>
+                    </div>
+                    
+                </div>
+                
+                <div class="project-card">
+                    <div class="card-content">
+                        <h3>Coach</h3>
+                        <p>AI career advisor</p>
+                        <div class="tech-stack"><span class="tech-tag">FastAPI</span><span class="tech-tag">JavaScript</span></div>
+                    </div>
+                    
+                </div>
+                </div>
+                </div>
+            </section>
+            
+        
+            <section id="education" class="section">
+                <div class="container">
+                    <h2>Education</h2>
+                    <div class="education-list">
+                <div class="education-item">
+                    <div class="edu-icon"><i class="fas fa-graduation-cap"></i></div>
+                    <div class="edu-details">
+                        <h3>Bachelor of Engineering (B.E.)</h3>
+                        <h4>A. P. Shah Institute of Technology</h4>
+                        <span class="year">2027</span>
+                    </div>
+                </div>
+                </div>
+                </div>
+            </section>
+            
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="social-links">
+                 <a href="linkedin.com/in/zahidhamdule" target="_blank"><i class="fab fa-linkedin"></i></a>
+                 
+                 <a href="mailto:zahidhamdule12@gmail.com"><i class="fas fa-envelope"></i></a>
+            </div>
+            <p>&copy; 2026 Zahid Hamdule. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

@@ -222,6 +222,8 @@ def extract_text_auto(file_content: bytes, file_extension: str) -> Optional[str]
                         cells_for_chunk = [cell.text for cell in row.cells if _norm(cell.text)]
                         if cells_for_chunk: chunks.append(" | ".join(cells_for_chunk))
             return "\n".join(chunks)
+        elif file_extension == ".txt":
+             return file_content.decode('utf-8', errors='ignore')
         else:
             return None
     except Exception as e:

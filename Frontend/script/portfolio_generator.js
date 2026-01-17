@@ -49,7 +49,9 @@ class PortfolioGenerator {
     constructor() {
       this.resumeFile = null;
       this.portfolioData = null;
-      this.apiBaseUrl = "https://career-coach-ai-3xap.onrender.com/api/portfolio";
+      this.selectedTemplate = "creative"; // Default
+      // CHANGED: Point to PRODUCTION backend for deployment
+      this.apiBaseUrl = "https://career-coach-ai-3xap.onrender.com/api/portfolio"; 
       this.init();
     }
   
@@ -61,6 +63,8 @@ class PortfolioGenerator {
       // File upload events
       const uploadArea = document.getElementById("upload-area");
       const fileInput = document.getElementById("resume-file");
+      const uploadNextBtn = document.getElementById("upload-next-btn");
+      const backToUploadBtn = document.getElementById("back-to-upload");
       const generateBtn = document.getElementById("generate-btn");
   
       // Upload area click
@@ -86,6 +90,33 @@ class PortfolioGenerator {
         uploadArea.classList.remove("dragover");
         this.handleFileSelect(e.dataTransfer.files[0]);
       });
+
+      // Navigation Buttons
+      if(uploadNextBtn) {
+          uploadNextBtn.addEventListener("click", () => this.showSection("template"));
+      }
+
+      if(backToUploadBtn) {
+          backToUploadBtn.addEventListener("click", () => this.showSection("upload"));
+      }
+  
+      // Template Selection
+      document.querySelectorAll(".template-option").forEach(option => {
+          option.addEventListener("click", () => {
+              // Remove selected class from all
+              document.querySelectorAll(".template-option").forEach(opt => opt.classList.remove("selected"));
+              // Add to clicked
+              option.classList.add("selected");
+              // Update state
+              this.selectedTemplate = option.dataset.template;
+              console.log("Selected Template:", this.selectedTemplate);
+              
+              // NEW: Auto-refresh if data exists
+              if(this.portfolioData) {
+                  this.refreshPreview();
+              }
+          });
+      });
   
       // Generate button
       generateBtn.addEventListener("click", () => this.generatePortfolio());
@@ -94,14 +125,14 @@ class PortfolioGenerator {
       const publishBtn = document.getElementById("publish-btn");
       if(publishBtn) publishBtn.addEventListener("click", () => this.publishPortfolio());
       
-      const editBtn = document.getElementById("edit-btn");
-      if(editBtn) editBtn.addEventListener("click", () => this.showSection("upload"));
-      
       const downloadBtn = document.getElementById("download-btn");
       if(downloadBtn) downloadBtn.addEventListener("click", () => this.downloadPortfolio());
       
       const newBtn = document.getElementById("new-btn");
       if(newBtn) newBtn.addEventListener("click", () => this.resetGenerator());
+
+      const refreshBtn = document.getElementById("refresh-btn");
+      if(refreshBtn) refreshBtn.addEventListener("click", () => this.refreshPreview());
     }
   
     handleFileSelect(file) {
@@ -121,7 +152,7 @@ class PortfolioGenerator {
   
       this.resumeFile = file;
       this.updateUploadArea();
-      this.updateGenerateButton();
+      this.updateNextButton();
     }
   
     updateUploadArea() {
@@ -138,11 +169,34 @@ class PortfolioGenerator {
       }
     }
   
-    updateGenerateButton() {
-      const generateBtn = document.getElementById("generate-btn");
-      generateBtn.disabled = !this.resumeFile;
+    updateNextButton() {
+      const btn = document.getElementById("upload-next-btn");
+      if(btn) btn.disabled = !this.resumeFile;
     }
   
+    async refreshPreview() {
+      try {
+          console.log("Refreshing preview with template:", this.selectedTemplate);
+          const response = await fetch(`${this.apiBaseUrl}/render-template`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                  data: this.portfolioData,
+                  template: this.selectedTemplate
+              })
+          });
+          
+          if (!response.ok) throw new Error("Failed to render template");
+          
+          const result = await response.json();
+          this.showPortfolioPreview(result.html_content);
+          
+      } catch (error) {
+          console.error("Preview refresh failed:", error);
+          // Don't show full error UI, just log it, as it's a background update
+      }
+    }
+
     async generatePortfolio() {
       try {
         const idToken = await firebase.auth().currentUser.getIdToken();
@@ -185,6 +239,7 @@ class PortfolioGenerator {
             body: JSON.stringify({
               content: uploadResult.extracted_text,
               filename: uploadResult.filename,
+              template: this.selectedTemplate // Pass selected template
             }),
           }
         );
