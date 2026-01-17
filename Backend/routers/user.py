@@ -93,7 +93,7 @@ async def get_user_stats(
 ):
     """Fetches dynamic statistics for the authenticated user."""
     uid = user['uid']
-    user_doc = db.db.collection('users').document(uid).get()
+    user_doc = db.db.collection('users').document(uid).get(field_paths=['stats'])
 
     if not user_doc.exists:
         raise HTTPException(status_code=404, detail="User profile not found.")

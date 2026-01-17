@@ -393,8 +393,9 @@ class DatabaseManager:
         """
         try:
             users_ref = self.db.collection('users')
-            # Fetch all users to sort in Python (efficient for hackathon/SMB scale)
-            docs = users_ref.stream()
+            # Fetch all users but ONLY necessary fields to keep it lightweight
+            # This drastically reduces bandwidth by ignoring large 'resume_text' fields
+            docs = users_ref.select(['name', 'email', 'stats', 'categorized_skills', 'linkedin', 'github']).stream()
             
             leaderboard_data = []
             for doc in docs:
@@ -548,15 +549,19 @@ class DatabaseManager:
                     if val is not None and isinstance(val, (int, float)): return val
                 return 0
 
-            # 1. Assessments - Fetch all and sort in Python (to handle docs missing timestamp)
-            assessments_list = [doc.to_dict() for doc in user_ref.collection('assessments').stream()]
-            print(f"DEBUG: Fetched {len(assessments_list)} raw assessments for user {uid}")
+            # 1. Assessments - Fetch Top 6 (extra one to check for more) using Query
+            # We use 'limit(6)' to fetch just what we need.
+            assessments_ref = user_ref.collection('assessments')
+            # Order by timestamp descending
+            query = assessments_ref.order_by('timestamp', direction=firestore.Query.DESCENDING).limit(6)
+            assessments_list = [doc.to_dict() for doc in query.stream()]
             
-            # Sort by timestamp (newest first), treating missing timestamps as very old
+            # If for some reason timestamp is missing, our order_by might drop them.
+            # But we save timestamp on creation, so this should remain robust for new data.
+            # Fallback sort in python just in case some docs were returned out of order or if we want to be safe
             assessments_list.sort(key=lambda x: str(x.get('timestamp', '0')), reverse=True)
             
             assessment_scores = [get_score(data) for data in assessments_list[:5]]
-            print(f"DEBUG: Top assessment scores for mean: {assessment_scores}")
             assessment_stats = calculate_stats(assessment_scores)
             avg_assessment = assessment_stats['mean']
             
@@ -570,13 +575,14 @@ class DatabaseManager:
                     'timestamp': data.get('timestamp')
                 })
 
-            # 2. Interviews - Fetch all and sort in Python
-            interviews_list = [doc.to_dict() for doc in user_ref.collection('interviews').stream()]
-            print(f"DEBUG: Fetched {len(interviews_list)} raw interviews for user {uid}")
+            # 2. Interviews - Fetch Top 6
+            interviews_ref = user_ref.collection('interviews')
+            query = interviews_ref.order_by('timestamp', direction=firestore.Query.DESCENDING).limit(6)
+            interviews_list = [doc.to_dict() for doc in query.stream()]
+            
             interviews_list.sort(key=lambda x: str(x.get('timestamp', '0')), reverse=True)
             
             interview_scores = [get_score(data) for data in interviews_list[:5]]
-            print(f"DEBUG: Top interview scores for mean: {interview_scores}")
             interview_stats = calculate_stats(interview_scores)
             avg_interview = interview_stats['mean']
             
@@ -590,9 +596,11 @@ class DatabaseManager:
                     'timestamp': data.get('timestamp')
                 })
 
-            # 3. Latest ATS Score and History (last 3).
-            ats_list = [doc.to_dict() for doc in user_ref.collection('ats_history').stream()]
-            print(f"DEBUG: Fetched {len(ats_list)} raw ATS records for user {uid}")
+            # 3. Latest ATS Score and History - Fetch Top 6
+            ats_ref = user_ref.collection('ats_history')
+            query = ats_ref.order_by('timestamp', direction=firestore.Query.DESCENDING).limit(6)
+            ats_list = [doc.to_dict() for doc in query.stream()]
+            
             ats_list.sort(key=lambda x: str(x.get('timestamp', '0')), reverse=True)
             
             latest_ats = get_score(ats_list[0], primary_key='score') if ats_list else 0
@@ -786,7 +794,9 @@ class DatabaseManager:
             def aggregate_scores(collection_name, field='overall_score'):
                 recent = []
                 prior = []
-                docs = user_ref.collection(collection_name).stream()
+                # Query Optimization: Only fetch timestamp and the score field
+                # This prevents downloading huge feedback/analysis text logs.
+                docs = user_ref.collection(collection_name).select(['timestamp', field]).stream()
                 for doc in docs:
                     data = doc.to_dict()
                     ts = data.get('timestamp')
