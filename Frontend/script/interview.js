@@ -45,9 +45,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const MAX_WARNINGS = 3;
     let tabSwitchCount = 0;
     let phoneDetectionCount = 0;
+
     let noPersonWarningCount = 0;
     let multiplePeopleWarningCount = 0;
+    let loudNoiseWarningCount = 0;
     let isInterviewActive = false;
+    let audioContext, analyser, microphone, pcmData;
     let objectDetectionModel = null;
     let proctoringAlertCooldown = false;
 
@@ -154,8 +157,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const predictions = await objectDetectionModel.detect(videoPreview);
         let personCount = 0, phoneDetected = false;
         for (let p of predictions) {
-            if (p.class === 'person' && p.score > 0.6) personCount++;
-            if (p.class === 'cell phone' && p.score > 0.65) phoneDetected = true;
+            if (p.class === 'person' && p.score > 0.5) personCount++;
+            if (p.class === 'cell phone' && p.score > 0.5) phoneDetected = true;
         }
 
         if (phoneDetected) {
@@ -169,7 +172,32 @@ document.addEventListener('DOMContentLoaded', () => {
             handleWarning("Multiple People", "More than one person was detected.");
         }
 
-        setTimeout(runObjectDetection, 1000);
+        setTimeout(runObjectDetection, 500);
+    };
+
+    const setupAudioDetection = async (stream) => {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        analyser = audioContext.createAnalyser();
+        microphone = audioContext.createMediaStreamSource(stream);
+        microphone.connect(analyser);
+        analyser.fftSize = 256;
+        pcmData = new Uint8Array(analyser.frequencyBinCount);
+        runAudioAnalysis();
+    };
+
+    const runAudioAnalysis = () => {
+        if (!isInterviewActive) return;
+        analyser.getByteFrequencyData(pcmData);
+        let sum = 0;
+        for (let i = 0; i < pcmData.length; i++) { sum += pcmData[i]; }
+        const average = sum / pcmData.length;
+        
+        // Threshold: 100/255 is roughly 40% volume - fairly loud
+        if (average > 100) {
+            loudNoiseWarningCount++;
+            handleWarning("Loud Noise", "High background noise detected.");
+        }
+        requestAnimationFrame(runAudioAnalysis); // Audio needs faster sampling
     };
 
     // --- Core Workflow ---
@@ -229,6 +257,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
             videoPreview.srcObject = stream;
             videoPreview.addEventListener('playing', runObjectDetection);
+            setupAudioDetection(stream); // Start Audio Analysis
             const options = { mimeType: 'video/webm; codecs=vp8,opus' };
             mediaRecorder = new MediaRecorder(stream, MediaRecorder.isTypeSupported(options.mimeType) ? options : undefined);
             mediaRecorder.ondataavailable = (event) => { if (event.data.size > 0) recordedChunks.push(event.data); };
@@ -364,7 +393,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify({ 
                     job_description: jobDescription, chat_history: chatHistory,
-                    proctoring_data: { tab_switch_count: tabSwitchCount, phone_detection_count: phoneDetectionCount, no_person_warnings: noPersonWarningCount, multiple_person_warnings: multiplePeopleWarningCount, ...extraData }
+                    proctoring_data: { tab_switch_count: tabSwitchCount, phone_detection_count: phoneDetectionCount, no_person_warnings: noPersonWarningCount, multiple_person_warnings: multiplePeopleWarningCount, loud_noise_warnings: loudNoiseWarningCount, ...extraData }
                 }),
             });
             if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);

@@ -33,6 +33,7 @@ class ProctoringData(BaseModel):
     phone_detection_count: int = 0
     no_person_warnings: int = 0
     multiple_person_warnings: int = 0
+    loud_noise_warnings: int = 0
     termination_reason: Optional[str] = None
 
 class SummarizeRequest(BaseModel):
