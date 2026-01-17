@@ -16,26 +16,39 @@ class BigQueryClient:
 
     def _get_client(self):
         # 1. Try Environment Variable (Production / Deployment)
-        creds_json_str = os.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON")
+        # Check specific BigQuery var first, then generic JSON var
+        creds_json_str = os.getenv("BIGQUERY_SERVICE_ACCOUNT_JSON") or os.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON")
+        
         if creds_json_str:
             try:
                 creds_dict = json.loads(creds_json_str)
                 credentials = service_account.Credentials.from_service_account_info(creds_dict)
+                print("✅ BigQuery Client initialized via Environment Variable.")
                 return bigquery.Client(credentials=credentials, project=self.project_id)
             except json.JSONDecodeError:
-                print("Error: GOOGLE_APPLICATION_CREDENTIALS_JSON is not valid JSON.")
+                print("❌ Error: BIGQUERY_SERVICE_ACCOUNT_JSON contain invalid JSON.")
+                return None
+            except Exception as e:
+                print(f"❌ Error initializing BigQuery from Env Var: {e}")
                 return None
 
         # 2. Fallback to local file (Development)
-        current_dir = Path(__file__).parent.parent
+        current_dir = Path(__file__).parent.parent # Backend/
         creds_path = current_dir / "service-account.json"
         
         if not creds_path.exists():
-            print(f"Warning: service-account.json not found at {creds_path} and no Env Var set.")
+            print(f"⚠️ Warning: BigQuery credentials not found.")
+            print(f"   - Local: Missing 'service-account.json' in {current_dir}")
+            print(f"   - Remote: 'BIGQUERY_SERVICE_ACCOUNT_JSON' env var not set.")
             return None
             
-        credentials = service_account.Credentials.from_service_account_file(str(creds_path))
-        return bigquery.Client(credentials=credentials, project=self.project_id)
+        try:
+            credentials = service_account.Credentials.from_service_account_file(str(creds_path))
+            print("✅ BigQuery Client initialized via local 'service-account.json'.")
+            return bigquery.Client(credentials=credentials, project=self.project_id)
+        except Exception as e:
+            print(f"❌ Error initializing BigQuery from local file: {e}")
+            return None
 
     def load_data(self, df: pd.DataFrame):
         """Loads a pandas DataFrame into BigQuery."""

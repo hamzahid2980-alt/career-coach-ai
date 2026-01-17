@@ -155,6 +155,27 @@ async function loadPerformanceStanding() {
         const stats = await response.json();
         console.log("✅ Performance stats received from server:", stats);
         
+        // --- SMART CACHE UPDATE & PRESERVATION (PERFORMANCE) ---
+        let shouldUseCache = false;
+        
+        if (cachedData) {
+            try {
+                const parsedCache = JSON.parse(cachedData);
+                // If server says 0 composite score (empty), but cache had a real score...
+                if (stats.composite_score === 0 && parsedCache.composite_score > 0) {
+                     console.warn("⚠️ Server returned 0 performance score, but cache has data. Preserving cache.");
+                     shouldUseCache = true;
+                }
+            } catch (e) {
+                // Ignore parse error, proceed with update
+            }
+        }
+        
+        if (shouldUseCache) {
+             // Do nothing, UI already showing cached data.
+             return; 
+        }
+
         // Update Cache
         localStorage.setItem(cacheKey, JSON.stringify(stats));
         
@@ -316,10 +337,10 @@ function setupScrollAnimations() {
 
 // Helper to update Stats Cards UI
 function updateStatsUI(stats) {
-    if (statsRoadmapsP) statsRoadmapsP.textContent = stats.roadmaps_generated || "✨";
-    if (statsResumesP) statsResumesP.textContent = stats.resumes_optimized || "✨";
-    if (statsAssessmentsP) statsAssessmentsP.textContent = stats.assessments_taken || "✨";
-    if (statsJobsP) statsJobsP.textContent = stats.jobs_matched || "✨";
+    if (statsRoadmapsP) statsRoadmapsP.textContent = (stats.roadmaps_generated !== undefined) ? stats.roadmaps_generated : "0";
+    if (statsResumesP) statsResumesP.textContent = (stats.resumes_optimized !== undefined) ? stats.resumes_optimized : "0";
+    if (statsAssessmentsP) statsAssessmentsP.textContent = (stats.assessments_taken !== undefined) ? stats.assessments_taken : "0";
+    if (statsJobsP) statsJobsP.textContent = (stats.jobs_matched !== undefined) ? stats.jobs_matched : "0";
 }
 
 /**
@@ -328,23 +349,24 @@ function updateStatsUI(stats) {
 async function fetchAndDisplayStats() {
     if (!currentUser) {
         console.warn("fetchAndDisplayStats: No current user found.");
-        // Set to N/A for visual feedback if user not logged in or currentUser is null
-        if (statsRoadmapsP) statsRoadmapsP.textContent = '✨';
-        if (statsResumesP) statsResumesP.textContent = '✨';
-        if (statsAssessmentsP) statsAssessmentsP.textContent = '✨';
-        if (statsJobsP) statsJobsP.textContent = '✨';
+        // Defaults to 0/N/A
+        if (statsRoadmapsP) statsRoadmapsP.textContent = '0';
+        if (statsResumesP) statsResumesP.textContent = '0';
+        if (statsAssessmentsP) statsAssessmentsP.textContent = '0';
+        if (statsJobsP) statsJobsP.textContent = '0';
         return;
     }
 
     // --- CACHE IMPLEMENTATION ---
     const cacheKey = `user_stats_${currentUser.uid}`;
-    const cachedStats = localStorage.getItem(cacheKey);
+    const cachedStatsStr = localStorage.getItem(cacheKey);
+    let cachedStats = null;
 
-    if (cachedStats) {
-        console.log("⚡ Loaded user stats from cache.");
+    if (cachedStatsStr) {
+        // console.log("⚡ Loaded user stats from cache.");
         try {
-            const parsedStats = JSON.parse(cachedStats);
-            updateStatsUI(parsedStats);
+            cachedStats = JSON.parse(cachedStatsStr);
+            updateStatsUI(cachedStats);
         } catch (e) {
             console.error("Error parsing cached stats:", e);
         }
@@ -364,12 +386,9 @@ async function fetchAndDisplayStats() {
         if (!response.ok) {
             const errorData = await response.json();
             console.error('Failed to fetch user statistics:', errorData.detail || errorData.message);
-            // Fallback: If no cache and error, show placeholder. If cache exists, we keep showing it (better UX).
+            // Fallback: If no cache, show 0s.
             if (!cachedStats) {
-                if (statsRoadmapsP) statsRoadmapsP.textContent = '✨';
-                if (statsResumesP) statsResumesP.textContent = '✨';
-                if (statsAssessmentsP) statsAssessmentsP.textContent = '✨';
-                if (statsJobsP) statsJobsP.textContent = '✨';
+                updateStatsUI({roadmaps_generated: 0, resumes_optimized: 0, assessments_taken: 0, jobs_matched: 0});
             }
             return;
         }
@@ -377,20 +396,43 @@ async function fetchAndDisplayStats() {
         const stats = await response.json();
         // console.log("Fetched user stats:", stats);
 
-        // Update Cache
-        localStorage.setItem(cacheKey, JSON.stringify(stats));
+        // --- SMART CACHE UPDATE & PRESERVATION ---
+        // Logic: If the server returns "clean slate" (all 0s), but we have meaningful history in cache,
+        // we assume the user prefers to see their history (or the DB connection was temporary glitched).
+        // This prevents the "blanking out" effect.
+        
+        let shouldUseCache = false;
 
-        // Update DOM elements with fetched data
-        updateStatsUI(stats);
+        if (cachedStats) {
+            const isServerEmpty = (stats.roadmaps_generated === 0 && stats.resumes_optimized === 0 && 
+                                   stats.assessments_taken === 0 && stats.jobs_matched === 0);
+            
+            const isCacheHasData = (cachedStats.roadmaps_generated > 0 || cachedStats.resumes_optimized > 0 || 
+                                    cachedStats.assessments_taken > 0 || cachedStats.jobs_matched > 0);
+
+            if (isServerEmpty && isCacheHasData) {
+                console.warn("⚠️ Server returned empty stats, but cache has data. Preserving cache as per user preference.");
+                shouldUseCache = true;
+            }
+        }
+
+        if (shouldUseCache && cachedStats) {
+            // Do NOT overwrite localStorage.
+            // visual update checks handled by 'cachedStats' load earlier, but we can re-enforce if needed.
+            // In fact, we already updated UI with cache at start. So we just RETURN.
+            // But if we want to be sure, we can update UI again just in case.
+            updateStatsUI(cachedStats);
+        } else {
+            // Normal behavior: Update Cache with fresh data (even if 0, if cache was also 0 or empty)
+            localStorage.setItem(cacheKey, JSON.stringify(stats));
+            updateStatsUI(stats);
+        }
 
     } catch (error) {
         console.error('Network error or unexpected response when fetching user statistics:', error);
         // Fallback or error message for the user, only if no cache
         if (!cachedStats) {
-            if (statsRoadmapsP) statsRoadmapsP.textContent = '✨';
-            if (statsResumesP) statsResumesP.textContent = '✨';
-            if (statsAssessmentsP) statsAssessmentsP.textContent = '✨';
-            if (statsJobsP) statsJobsP.textContent = '✨';
+            updateStatsUI({roadmaps_generated: 0, resumes_optimized: 0, assessments_taken: 0, jobs_matched: 0});
         }
     }
 
