@@ -28,6 +28,11 @@ class GeminiHandler:
         self.current_index = 0  # <--- Fix: Initialize pointer
         # Updated to 'lite' model which often has better availability/quota limits in EAP
         self.model_name = "gemini-2.5-flash"
+        
+        # Circuit Breaker state
+        self.circuit_open = False
+        self.circuit_open_time = 0
+        self.circuit_breaker_timeout = 3600 # 1 hour timeout (Keep fallback active for longer)
 
         # 1. Try new comma-separated format
         keys_str = os.getenv("GEMINI_API_KEYS")
@@ -45,7 +50,26 @@ class GeminiHandler:
         else:
             print("❌ No Gemini API keys found in .env")
 
+    def _call_groq_fallback(self, prompt, is_chat, history):
+        try:
+            from core.groq_handler import groq_client
+            print("🔄 Switching to Groq Llama-3...")
+            return groq_client.call_groq(prompt, is_chat, history)
+        except Exception as e:
+            print(f"❌ Fallback to Groq failed: {e}")
+            return None
+
     def call_gemini(self, prompt: str, image_data: str = None, is_chat: bool = False, history: List = None) -> Optional[Any]:
+        # CIRCUIT BREAKER CHECK
+        # If Gemini failed recently (all keys exhausted), skip meaningful attempts and go straight to fallback.
+        if self.circuit_open:
+            if time.time() - self.circuit_open_time < self.circuit_breaker_timeout:
+                print(f"⚠️ Gemini Circuit Open (Skipping Gemini). Directing to Groq...")
+                return self._call_groq_fallback(prompt, is_chat, history)
+            else:
+                print("Checking Gemini Circuit Reset (Timeout passed)...")
+                self.circuit_open = False # Try again after timeout
+
         if not self.api_keys:
             print("❌ Gemini keys not configured.")
             return None
@@ -89,8 +113,6 @@ class GeminiHandler:
 
             except google_exceptions.ResourceExhausted as e:
                 print(f"⚠️ Key index {idx} Rate Limited. Rotating to next...")
-                # We simply continue loop; the next iteration will check the next key.
-                # Pointer will be updated effectively when a later key works.
                 continue 
 
             except (google_exceptions.PermissionDenied, 
@@ -103,16 +125,13 @@ class GeminiHandler:
                 print(f"⚠️ Unexpected Error with Key index {idx}: {e}. Rotating...")
                 continue
 
-        print("❌ All Gemini keys exhausted or failed. Attempting Fallback to Groq...")
+        print("❌ All Gemini keys exhausted or failed. OPENING CIRCUIT and Fallback to Groq...")
         
-        # FALLBACK TO GROQ
-        try:
-            from core.groq_handler import groq_client
-            print("🔄 Switching to Groq Llama-3...")
-            return groq_client.call_groq(prompt, is_chat, history)
-        except Exception as e:
-            print(f"❌ Fallback to Groq failed: {e}")
-            return None
+        # TRIP THE CIRCUIT
+        self.circuit_open = True
+        self.circuit_open_time = time.time()
+        
+        return self._call_groq_fallback(prompt, is_chat, history)
 
 # Singleton instance for easy import
 gemini_client = GeminiHandler()
