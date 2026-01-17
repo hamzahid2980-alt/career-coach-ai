@@ -1261,20 +1261,28 @@ def extract_event_details(subject: str, body: str, date: Any = None) -> Dict[str
     """
     prompt = f"""
     Analyze the following email to extract event details for a developer's schedule.
-    Identify if it's an 'Interview' or a 'Hackathon'. If neither, return null.
-    
+    **Goal:** Identify any 'Interview', 'Hackathon', 'Meeting', or 'Deadline' mentioned.
+    If the email is generic (e.g., newsletter, job alert, receipt), return null.
+
     Email Subject: {subject}
     Email Body: {body}
     Reference Date: {date if date else 'Today'}
 
-    Output strictly in JSON format:
+    **Instructions:**
+    1.  **Strict JSON Output:** Return ONLY a valid JSON object.
+    2.  **Type:** Must be one of ["Interview", "Hackathon", "Meeting", "Deadline"].
+    3.  **Start/End Time:** Infer the best guess datetime. If no time is specified, assume 9:00 AM for start and 1 hour duration.
+    4.  **Description:** Create a clean summary.
+
+    Output strictly in JSON format (or null if no event):
     {{
+        "is_event": true,
         "title": "Short event title (e.g., 'Interview with Google', 'HackMIT 2025')",
-        "type": "Interview" or "Hackathon",
-        "start_time": "ISO 8601 datetime string (YYYY-MM-DDTHH:MM:SS) or null if not found",
-        "end_time": "ISO 8601 datetime string or null (assume 1 hour for interviews if not specified)",
-        "description": "Brief summary of the event",
-        "preparation_tasks": ["List of 2-3 key topics to prep for this specific event"]
+        "event_type": "Interview", 
+        "start_time": "ISO 8601 datetime string (YYYY-MM-DDTHH:MM:SS)",
+        "end_time": "ISO 8601 datetime string",
+        "description": "Brief summary",
+        "preparation_tasks": ["List of 2-3 key topics to prep"]
     }}
     """
     try:
@@ -1282,7 +1290,11 @@ def extract_event_details(subject: str, body: str, date: Any = None) -> Dict[str
         text_content = response.text if response and hasattr(response, 'text') else str(response)
         # Clean specific markdown wrapping if present
         clean_text = text_content.replace("```json", "").replace("```", "").strip()
-        return json.loads(clean_text)
+        if "null" in clean_text.lower() and len(clean_text) < 10: return {}
+        
+        data = json.loads(clean_text)
+        if data: data['is_event'] = True # Ensure this flag is set if data exists
+        return data
     except Exception as e:
         print(f"Error extracting event details: {e}")
         return {}

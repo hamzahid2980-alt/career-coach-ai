@@ -336,6 +336,19 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     const generateSummary = async (extraData = {}) => {
+        if (chatHistory.length === 0 && !extraData.termination_reason) {
+            summaryContent.innerHTML = `
+                <div class="empty-state" style="text-align: center; padding: 2rem;">
+                    <i class="fas fa-video-slash" style="font-size: 2rem; color: var(--text-secondary);"></i>
+                    <p style="margin-top: 1rem;">No interview data recorded.</p>
+                    <p class="text-muted small">Complete at least one question to get a summary.</p>
+                    <button onclick="window.location.reload()" class="btn primary-btn" style="margin-top: 1rem;">Start New Interview</button>
+                </div>`;
+            summaryCard.style.display = 'block';
+            interviewCard.style.display = 'none';
+            return;
+        }
+
         showSpinner("Generating performance summary...");
         interviewCard.style.display = 'none';
         try {
@@ -353,7 +366,12 @@ document.addEventListener('DOMContentLoaded', () => {
             summaryCard.style.display = 'block';
         } catch (error) {
             console.error("Summary Error:", error);
-            summaryContent.innerHTML = `<p>An error occurred generating feedback.</p>`;
+            summaryContent.innerHTML = `<div class="error-state" style="text-align: center; padding: 2rem;">
+                <i class="fas fa-exclamation-circle" style="font-size: 2rem; color: var(--danger);"></i>
+                <p style="margin-top: 1rem;">Unable to generate summary.</p>
+                <p class="text-muted small">${error.message}</p>
+                <button onclick="window.location.reload()" class="btn secondary-btn" style="margin-top: 1rem;">Try Again</button>
+            </div>`;
             summaryCard.style.display = 'block';
         } finally {
             hideSpinner();

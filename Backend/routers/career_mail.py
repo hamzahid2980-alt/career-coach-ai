@@ -362,6 +362,10 @@ async def _process_single_email(email, google_service, db, user_id, events_ref, 
         event_details['source_subject'] = email['subject']
         event_details['id'] = email['id'] # Use email ID as Event ID for idempotency
         
+        # Ensure title exists (map from new AI schema)
+        if 'event_title' not in event_details and 'title' in event_details:
+             event_details['event_title'] = event_details['title']
+        
         # Create Calendar Event (Sync Call)
         cal_link = await loop.run_in_executor(None, google_service.create_calendar_event, event_details)
         
@@ -387,7 +391,7 @@ async def _process_single_email(email, google_service, db, user_id, events_ref, 
                     
     return results
 
-async def _background_sync_process(user_id: str, creds_json: str, db):
+async def _background_sync_process(user_id: str, creds_json: str, db, force_sync: bool = False):
     """
     The actual heavy-lifting sync function running in background.
     Optimized with "Redis-like" caching (skipping processed IDs) and Parallel Processing.
@@ -402,28 +406,33 @@ async def _background_sync_process(user_id: str, creds_json: str, db):
         # Check Auth
         if not google_service.is_authenticated():
              if google_service.refresh_credentials():
-                 # Update DB with new tokens - simplified here
                  pass
              else:
                  SYNC_STATE[user_id]['status'] = 'failed'
                  SYNC_STATE[user_id]['message'] = 'Auth expired'
                  return
 
-        # 1. Fetch Processed IDs ("Redis-like" check)
         events_ref = db.db.collection('users').document(user_id).collection('career_events')
         tasks_log_ref = db.db.collection('users').document(user_id).collection('career_tasks_log')
-        
-        # Optimized: Select only IDs
-        # Note: If filtering strictly by event ID derived from email ID.
-        try:
-             existing_docs = events_ref.select([]).stream() 
-             processed_ids = {doc.id for doc in existing_docs}
-        except:
-             # Fallback if select([]) not supported in this client version
-             existing_docs = events_ref.stream()
-             processed_ids = {doc.id for doc in existing_docs}
+
+        # 1. Force Sync: Delete existing collections if requested
+        if force_sync:
+             SYNC_STATE[user_id]['message'] = "Force Sync: Clearing old data..."
+             _delete_collection(events_ref, 50)
+             _delete_collection(tasks_log_ref, 50)
+             processed_ids = set()
+        else:
+            # Fetch Processed IDs ("Redis-like" check)
+            try:
+                 existing_docs = events_ref.select([]).stream() 
+                 processed_ids = {doc.id for doc in existing_docs}
+            except:
+                 # Fallback if select([]) not supported in this client version
+                 existing_docs = events_ref.stream()
+                 processed_ids = {doc.id for doc in existing_docs}
         
         # 2. Fetch Emails
+        SYNC_STATE[user_id]['message'] = "Fetching emails from Google..."
         emails = google_service.fetch_career_emails(max_results=30) 
         
         # 3. Filter New Emails
@@ -434,7 +443,7 @@ async def _background_sync_process(user_id: str, creds_json: str, db):
             SYNC_STATE[user_id]['message'] = 'Sync complete. No new emails found.'
             return
 
-        SYNC_STATE[user_id]['message'] = f"Found {len(new_emails)} new emails. Analyzing..."
+        SYNC_STATE[user_id]['message'] = f"Found {len(new_emails)} emails to process..."
         
         # 4. Parallel Processing
         # Process in chunks of 5 to avoid overwhelming quotas
@@ -451,13 +460,13 @@ async def _background_sync_process(user_id: str, creds_json: str, db):
             chunk_results = await asyncio.gather(*tasks)
             all_results.extend(chunk_results)
             
-            # Optional: Update intermediate event count
+            # Update intermediate event count
             processed_in_batch = 0
             for res in chunk_results:
                 processed_in_batch += len(res['events']) + len(res['tasks'])
             
             if processed_in_batch > 0:
-                 SYNC_STATE[user_id]['message'] = f"Batch {batch_num}/{total_batches}: Found {processed_in_batch} items."
+                 SYNC_STATE[user_id]['message'] = f"Batch {batch_num}: Found {processed_in_batch} candidate items."
 
         # 5. Batch Write to DB
         SYNC_STATE[user_id]['message'] = "Saving results to database..."
@@ -488,7 +497,6 @@ async def _background_sync_process(user_id: str, creds_json: str, db):
              SYNC_STATE[user_id]['message'] = "Sync complete. No relevant events found in emails."
 
         SYNC_STATE[user_id]['status'] = 'completed'
-
         
     except Exception as e:
         print(f"Background Sync Error: {e}")
@@ -497,10 +505,22 @@ async def _background_sync_process(user_id: str, creds_json: str, db):
         SYNC_STATE[user_id]['status'] = 'failed'
         SYNC_STATE[user_id]['message'] = str(e)
 
+def _delete_collection(coll_ref, batch_size):
+    """Helper to delete entire collection in batches."""
+    docs = coll_ref.limit(batch_size).stream()
+    deleted = 0
+    for doc in docs:
+        doc.reference.delete()
+        deleted += 1
+    if deleted >= batch_size:
+        return _delete_collection(coll_ref, batch_size)
+
+
 
 @router.post("/sync")
 async def sync_career_mail(
     background_tasks: BackgroundTasks,
+    force: bool = False,
     user=Depends(get_current_user), 
     db=Depends(get_db_manager)
 ):
@@ -517,7 +537,7 @@ async def sync_career_mail(
         raise HTTPException(status_code=401, detail="Google account not connected.")
 
     # Start Background Task
-    background_tasks.add_task(_background_sync_process, user_id, creds_json, db)
+    background_tasks.add_task(_background_sync_process, user_id, creds_json, db, force)
     
     return {"status": "started", "message": "Sync started in background."}
 
