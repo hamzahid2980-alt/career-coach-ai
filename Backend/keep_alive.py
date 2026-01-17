@@ -9,8 +9,8 @@ RENDER_URL = os.getenv("RENDER_EXTERNAL_URL", "https://career-coach-ai-3xap.onre
 def ping_server():
     while True:
         try:
-            # Ping every 14 minutes (Render sleeps after 15 mins of inactivity)
-            time.sleep(14 * 60)
+            # Ping every 10 minutes (Render sleeps after 15 mins of inactivity)
+            time.sleep(10 * 60)
             
             print(f"⏰ Keep-Alive: Pinging {RENDER_URL}...")
             response = requests.get(f"{RENDER_URL}/ping")
