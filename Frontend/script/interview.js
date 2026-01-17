@@ -169,7 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
             handleWarning("Multiple People", "More than one person was detected.");
         }
 
-        requestAnimationFrame(runObjectDetection);
+        setTimeout(runObjectDetection, 1000);
     };
 
     // --- Core Workflow ---
