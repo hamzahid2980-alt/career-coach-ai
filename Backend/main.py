@@ -162,9 +162,23 @@ app.include_router(portfolio_rater.router, prefix="/api/portfolio-rater", tags=[
 # ------------------------------
 # Root Endpoint
 # ------------------------------
+# ------------------------------
+# Root Endpoint
+# ------------------------------
 @app.get("/")
 async def root():
     return {"message": "AI Career Coach Backend is running!"}
+
+@app.get("/ping")
+async def ping():
+    return {"status": "awake"}
+
+# ------------------------------
+# Keep-Alive Service
+# ------------------------------
+from keep_alive import start_keep_alive
+start_keep_alive()
+
 
 # ------------------------------
 # Local Development Only

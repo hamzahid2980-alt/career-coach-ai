@@ -157,7 +157,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const fetchLeaderboard = async (user) => {
         try {
             const token = await user.getIdToken();
-            const response = await fetch("http://127.0.0.1:8000/api/leaderboard/", {
+            const response = await fetch("https://career-coach-ai-3xap.onrender.com/api/leaderboard/", {
                 headers: {
                     "Authorization": `Bearer ${token}`
                 }
@@ -229,7 +229,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const user = firebase.auth().currentUser;
             const token = await user.getIdToken();
 
-            const response = await fetch("http://127.0.0.1:8000/api/leaderboard/compare", {
+            const response = await fetch("https://career-coach-ai-3xap.onrender.com/api/leaderboard/compare", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
