@@ -78,12 +78,31 @@ body {
 }
 
 /* --- Sidebar --- */
+.sidebar {
+    width: 260px;
+    min-width: 260px;
+    background-color: var(--bg-card);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    z-index: 2;
+    padding: 1rem 0;
+    /* Ensure no scrolling if possible, or graceful fallback */
+    overflow-y: auto;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+}
+
 .sidebar-header {
-    padding: 1.5rem 1.5rem;
+    padding: 1rem 1.5rem;
+    /* Reduced padding */
+    flex-shrink: 0;
 }
 
 .sidebar-header h2 {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
+    /* Slightly smaller */
     font-weight: 700;
     color: var(--text-light);
     display: flex;
@@ -96,7 +115,19 @@ body {
 }
 
 .sidebar-nav {
-    padding: 0 1rem;
+    padding: 0 0.8rem;
+    flex-grow: 1;
+    overflow-y: auto;
+    /* Allow scroll if screen is very short */
+}
+
+.sidebar-nav::-webkit-scrollbar {
+    width: 5px;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 5px;
 }
 
 .sidebar-nav ul {
@@ -104,19 +135,23 @@ body {
 }
 
 .sidebar-nav li {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.3rem;
+    /* Reduced margin */
 }
 
 .sidebar-nav a {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     color: var(--text-muted);
     text-decoration: none;
-    padding: 0.8rem 1rem;
-    border-radius: 10px;
+    padding: 0.65rem 0.8rem;
+    /* Reduced padding */
+    border-radius: 8px;
     transition: background-color 0.2s, color 0.2s;
     font-weight: 500;
+    font-size: 0.95rem;
+    /* Slightly smaller text */
 }
 
 .sidebar-nav a:hover {
@@ -130,31 +165,27 @@ body {
     font-weight: 600;
 }
 
-.sidebar-footer {
-    margin-top: auto;
-    padding: 1rem;
-}
-
-.logout-btn {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: none;
+/* --- Header Logout Button --- */
+.btn-logout-header {
+    background: rgba(255, 255, 255, 0.05);
     border: 1px solid var(--border-color);
     color: var(--text-muted);
-    padding: 0.8rem 1rem;
-    border-radius: 12px;
-    font-size: 1rem;
-    font-weight: 500;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease-out;
-    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
 }
 
-.logout-btn:hover {
+.btn-logout-header:hover {
+    background: rgba(224, 82, 82, 0.1);
     border-color: #e05252;
-    background-color: rgba(224, 82, 82, 0.1);
     color: #e05252;
+    transform: translateY(-2px);
 }
 
 /* --- Main Content Sections --- */
