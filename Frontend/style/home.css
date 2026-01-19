@@ -78,6 +78,7 @@ body {
 }
 
 /* --- Sidebar --- */
+/* --- Sidebar --- */
 .sidebar {
     width: 260px;
     min-width: 260px;
@@ -88,21 +89,21 @@ body {
     z-index: 2;
     padding: 1rem 0;
     /* Ensure no scrolling if possible, or graceful fallback */
-    overflow-y: auto;
+    overflow-y: hidden;
+    /* Hide scrollbar by default if everything fits */
     height: 100vh;
     position: sticky;
     top: 0;
 }
 
 .sidebar-header {
-    padding: 1rem 1.5rem;
-    /* Reduced padding */
+    padding: 0.8rem 1.5rem;
+    /* Further reduced padding */
     flex-shrink: 0;
 }
 
 .sidebar-header h2 {
     font-size: 1.3rem;
-    /* Slightly smaller */
     font-weight: 700;
     color: var(--text-light);
     display: flex;
@@ -118,25 +119,29 @@ body {
     padding: 0 0.8rem;
     flex-grow: 1;
     overflow-y: auto;
-    /* Allow scroll if screen is very short */
+    /* Fallback */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    /* Center items vertically if space allows */
 }
 
+/* Hide scrollbar for cleaner look */
 .sidebar-nav::-webkit-scrollbar {
-    width: 5px;
-}
-
-.sidebar-nav::-webkit-scrollbar-thumb {
-    background: var(--border-color);
-    border-radius: 5px;
+    width: 0px;
+    background: transparent;
 }
 
 .sidebar-nav ul {
     list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    /* Very tight gap */
 }
 
 .sidebar-nav li {
-    margin-bottom: 0.3rem;
-    /* Reduced margin */
+    margin-bottom: 0;
 }
 
 .sidebar-nav a {
@@ -145,12 +150,12 @@ body {
     gap: 10px;
     color: var(--text-muted);
     text-decoration: none;
-    padding: 0.65rem 0.8rem;
-    /* Reduced padding */
+    padding: 0.5rem 0.8rem;
+    /* Aggressively reduced padding */
     border-radius: 8px;
     transition: background-color 0.2s, color 0.2s;
     font-weight: 500;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     /* Slightly smaller text */
 }
 
@@ -165,27 +170,31 @@ body {
     font-weight: 600;
 }
 
-/* --- Header Logout Button --- */
-.btn-logout-header {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid var(--border-color);
-    color: var(--text-muted);
-    padding: 0.6rem 1.2rem;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: all 0.2s ease;
+.sidebar-footer {
+    padding: 0.8rem 1rem;
+    margin-top: auto;
 }
 
-.btn-logout-header:hover {
-    background: rgba(224, 82, 82, 0.1);
+.logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: none;
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    padding: 0.7rem 1rem;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease-out;
+    width: 100%;
+}
+
+.logout-btn:hover {
     border-color: #e05252;
+    background-color: rgba(224, 82, 82, 0.1);
     color: #e05252;
-    transform: translateY(-2px);
 }
 
 /* --- Main Content Sections --- */
