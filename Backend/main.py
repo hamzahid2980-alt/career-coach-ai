@@ -85,7 +85,7 @@ app.add_middleware(
         "http://127.0.0.1:5500",
         "http://localhost:5500",
         "http://localhost:3000",
-        "https://ai-career-coach-hackwins.vercel.app"
+        "https://ai-career-coach-innovation.vercel.app"
     ],
     allow_credentials=True,
     allow_methods=["*"],
