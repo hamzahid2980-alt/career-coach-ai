@@ -24,19 +24,29 @@ async def rate_portfolio(req: RateRequest, user: dict = Depends(get_current_user
     """
     try:
         # 1. Scrape Content
-        headers = {'User-Agent': 'Mozilla/5.0'}
-        try:
-            res = requests.get(req.url, headers=headers, timeout=10)
-            res.raise_for_status()
-        except requests.exceptions.RequestException as e:
-            raise HTTPException(status_code=400, detail=f"Failed to access URL: {str(e)}")
-            
-        soup = BeautifulSoup(res.text, 'html.parser')
-        # Limit text content to avoid token limits
-        text_content = soup.get_text(separator=' ', strip=True)[:6000]
+        # 1. Scrape Content (using Jina Reader for better JS/SPA support)
+        jina_url = f"https://r.jina.ai/{req.url}"
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+            'X-Return-Format': 'markdown'
+        }
         
-        if not text_content:
-             raise HTTPException(status_code=400, detail="Could not extract text from the provided URL.")
+        try:
+            res = requests.get(jina_url, headers=headers, timeout=25)
+            res.raise_for_status()
+            text_content = res.text[:8000] # Increased limit for markdown
+        except requests.exceptions.RequestException as e:
+            # Fallback to direct scraping if Jina fails (or for local testing)
+            try:
+                print(f"Jina failed ({e}), using fallback scraper...")
+                res = requests.get(req.url, headers={'User-Agent': 'Mozilla/5.0'}, timeout=10)
+                soup = BeautifulSoup(res.text, 'html.parser')
+                text_content = soup.get_text(separator=' ', strip=True)[:6000]
+            except Exception as e2:
+                 raise HTTPException(status_code=400, detail=f"Failed to access URL: {str(e2)}")
+            
+        if not text_content or len(text_content) < 50:
+             raise HTTPException(status_code=400, detail="Could not extract sufficient text from the provided URL. The site might be blocking bots or requires strict authentication.")
 
     except HTTPException as he:
         raise he
@@ -45,29 +55,46 @@ async def rate_portfolio(req: RateRequest, user: dict = Depends(get_current_user
 
     # 2. AI Analysis
     prompt = f"""
-    Act as a Lead Technical Recruiter. Audit this portfolio for a job application.
+    Act as a **Strict, No-Nonsense Lead Technical Recruiter**. code-name 'The Auditor'.
+    Your job is to audit this portfolio for a job application.
     
-    TARGET URL: {req.url}
-    CONTENT: {text_content}
+    **CRITICAL RULES (READ CAREFULLY):**
+    1. **NO HALLUCINATION**: Only use facts explicitly present in the [CONTENT] below. If a skill, project, or detail is not there, DO NOT invent it.
+    2. **HONESTY**: If the portfolio has very little content, give it a LOW SCORE. Do not be nice.
+    3. **VERIFICATION**: Identify if the user is a Developer, Designer, or Manager based ONLY on the evidence.
+    4. **CONTENT CHECK**: If the content looks like an error page, a login screen, or "JavaScript required", stop immediately and return a score of 0 with a warning.
+
+    ---
+    **TARGET URL**: {req.url}
+    
+    **CONTENT START**:
+    {text_content}
+    **CONTENT END**
+    ---
 
     **TASK:**
-    1. Detect the Profession (e.g., Designer, Developer, Writer).
-    2. Adapt criteria: Developers need code/GitHub; Designers need visual galleries.
-    3. Calculate 'Hireability': A strict score of how likely you are to interview them.
+    1. Detect the Profession.
+    2. Evaluate 'Hireability' (0-100). 
+       - < 40: Empty/Broken/Terrible
+       - 40-60: Junior/Generic
+       - 60-80: Good/Competent
+       - 80+: Exceptional/World-Class
+    3. Extract **3 Specific Strong Points** directly from the text.
+    4. Extract **3 Specific Red Flags** (e.g., "Generic descriptions", "No live links", "Typos", "Lack of complex projects").
 
     **RETURN JSON ONLY:**
     {{
         "detected_role": "Role Name",
         "hireability_score": 0,
-        "recruiter_overview": "2-3 sentences summarizing the candidate's appeal to a hiring manager.",
+        "recruiter_overview": "A brutally honest paragraph summarizing the candidate. Mention specific projects found in the text.",
         "metrics": {{
             "clarity": 0,
             "evidence_of_skill": 0,
             "culture_fit": 0
         }},
         "feedback": {{
-            "strong_points": ["Point 1", "Point 2"],
-            "red_flags": ["Point 1", "Point 2"]
+            "strong_points": ["Specific Point 1", "Specific Point 2"],
+            "red_flags": ["Critique 1", "Critique 2"]
         }}
     }}
     """
