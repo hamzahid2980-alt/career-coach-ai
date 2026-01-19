@@ -136,8 +136,8 @@ body {
     list-style: none;
     display: flex;
     flex-direction: column;
-    gap: 2px;
-    /* Very tight gap */
+    gap: 4px;
+    /* Increased slightly for breathing room */
 }
 
 .sidebar-nav li {
@@ -147,16 +147,17 @@ body {
 .sidebar-nav a {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
+    /* Restored gap */
     color: var(--text-muted);
     text-decoration: none;
-    padding: 0.5rem 0.8rem;
-    /* Aggressively reduced padding */
+    padding: 0.6rem 0.8rem;
+    /* Balanced padding */
     border-radius: 8px;
     transition: background-color 0.2s, color 0.2s;
     font-weight: 500;
-    font-size: 0.9rem;
-    /* Slightly smaller text */
+    font-size: 0.98rem;
+    /* Readable size */
 }
 
 .sidebar-nav a:hover {
