@@ -29,7 +29,7 @@
 /* Rank Specifics */
 .rank-1 {
   order: 2;
-  height: 380px;
+  min-height: 380px;
   border-color: #FFD700;
   box-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
   z-index: 2;
@@ -43,7 +43,7 @@
 
 .rank-2 {
   order: 1;
-  height: 320px;
+  min-height: 320px;
   border-color: #C0C0C0;
   box-shadow: 0 0 20px rgba(192, 192, 192, 0.15);
 }
@@ -56,7 +56,7 @@
 
 .rank-3 {
   order: 3;
-  height: 280px;
+  min-height: 280px;
   border-color: #CD7F32;
   box-shadow: 0 0 20px rgba(205, 127, 50, 0.15);
 }
