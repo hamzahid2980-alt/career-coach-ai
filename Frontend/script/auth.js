@@ -493,64 +493,77 @@ auth.onAuthStateChanged(user => {
 });
 
 function applySubscriptionLocks(tier) {
-    const premiumPages = ['portfolio_generator.html', 'portfolio_rater.html', 'career_mail.html'];
     const currentPath = window.location.pathname.split('/').pop();
-
+    
+    // Determine what is locked based on the tier
+    let lockedPages = [];
     if (tier === 'free') {
-        // 1. Direct page access gate (instant redirect with target detail parameters)
-        if (premiumPages.includes(currentPath)) {
-            let triggerVal = '1';
-            if (currentPath === 'portfolio_generator.html') triggerVal = 'portfolio_generator';
-            else if (currentPath === 'portfolio_rater.html') triggerVal = 'portfolio_rater';
-            else if (currentPath === 'career_mail.html') triggerVal = 'career_mail';
-            window.location.href = `home.html?trigger_upgrade=${triggerVal}`;
-            return;
-        }
+        lockedPages = ['portfolio_generator.html', 'portfolio_rater.html', 'career_mail.html'];
+    } else if (tier === 'pro') {
+        lockedPages = ['portfolio_generator.html', 'portfolio_rater.html'];
+    }
 
-        // 2. Visually lock & intercept sidebar links
-        premiumPages.forEach(page => {
-            const links = document.querySelectorAll(`a[href="${page}"]`);
-            links.forEach(link => {
+    // 1. Direct page access gate
+    if (lockedPages.includes(currentPath)) {
+        let triggerVal = '1';
+        if (currentPath === 'portfolio_generator.html') triggerVal = 'portfolio_generator';
+        else if (currentPath === 'portfolio_rater.html') triggerVal = 'portfolio_rater';
+        else if (currentPath === 'career_mail.html') triggerVal = 'career_mail';
+        window.location.href = `home.html?trigger_upgrade=${triggerVal}`;
+        return;
+    }
+
+    // 2. Visually lock or unlock sidebar links
+    const allPremiumPages = ['portfolio_generator.html', 'portfolio_rater.html', 'career_mail.html'];
+    allPremiumPages.forEach(page => {
+        const links = document.querySelectorAll(`a[href="${page}"]`);
+        links.forEach(link => {
+            if (lockedPages.includes(page)) {
                 link.style.opacity = '0.55';
-                
-                // Append lock icon if not present
                 if (!link.querySelector('.fa-lock')) {
                     const lock = document.createElement('i');
                     lock.className = 'fas fa-lock';
                     lock.style.cssText = 'margin-left: auto; font-size: 0.72rem; color: #8E8C99;';
                     link.appendChild(lock);
                 }
-
-                // Override navigation click handler with descriptive tier specifications
-                link.addEventListener('click', (e) => {
+                
+                // Override navigation click handler
+                link.onclick = (e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    let msg = "This premium feature is locked on the Free tier. Upgrade your plan to gain instant access!";
+                    let msg = `This feature is locked on your current '${tier.toUpperCase()}' plan. Upgrade to access!`;
                     if (page === 'portfolio_generator.html') {
-                        msg = "Portfolio Generator is locked on the Free tier. This feature requires the Career Elite (Premium) plan. Upgrade now to gain instant access!";
+                        msg = `Portfolio Generator is locked on the ${tier.charAt(0).toUpperCase() + tier.slice(1)} tier. This feature requires the Career Elite (Premium) plan. Upgrade now to gain instant access!`;
                     } else if (page === 'portfolio_rater.html') {
-                        msg = "Portfolio Rater is locked on the Free tier. This feature requires the Career Elite (Premium) plan. Upgrade now to gain instant access!";
+                        msg = `Portfolio Rater is locked on the ${tier.charAt(0).toUpperCase() + tier.slice(1)} tier. This feature requires the Career Elite (Premium) plan. Upgrade now to gain instant access!`;
                     } else if (page === 'career_mail.html') {
-                        msg = "Career Mail is locked on the Free tier. This feature requires the Career Accelerator (Pro) plan. Upgrade now to gain instant access!";
+                        msg = `Career Mail is locked on the Free tier. This feature requires the Career Accelerator (Pro) plan. Upgrade now to gain instant access!`;
                     }
                     window.showUpgradeModal(msg);
-                });
-            });
+                };
+            } else {
+                // Unlock
+                link.style.opacity = '';
+                const lock = link.querySelector('.fa-lock');
+                if (lock) lock.remove();
+                link.onclick = null; // restore standard navigation
+            }
         });
+    });
 
-        // 3. Lock dashboard feature cards on home.html
-        const cardLocks = [
-            { id: 'portfolio-card', btnText: '🔒 Unlock Generator' },
-            { id: 'rater-card', btnText: '🔒 Unlock Rater' },
-            { id: 'mail-card', btnText: '🔒 Unlock Mail' }
-        ];
-        cardLocks.forEach(item => {
-            const card = document.getElementById(item.id);
-            if (card) {
+    // 3. Lock or Unlock dashboard feature cards on home.html
+    const cardLocks = [
+        { id: 'portfolio-card', page: 'portfolio_generator.html', btnText: '🔒 Unlock Generator', originalBtnText: 'Generate Portfolio' },
+        { id: 'rater-card', page: 'portfolio_rater.html', btnText: '🔒 Unlock Rater', originalBtnText: 'Rate Portfolio' },
+        { id: 'mail-card', page: 'career_mail.html', btnText: '🔒 Unlock Mail', originalBtnText: 'Draft Email' }
+    ];
+    cardLocks.forEach(item => {
+        const card = document.getElementById(item.id);
+        if (card) {
+            if (lockedPages.includes(item.page)) {
                 card.style.opacity = '0.65';
                 card.style.position = 'relative';
                 
-                // Add lock badge if not present
                 if (!card.querySelector('.dashboard-lock-badge')) {
                     const badge = document.createElement('div');
                     badge.className = 'dashboard-lock-badge';
@@ -559,7 +572,6 @@ function applySubscriptionLocks(tier) {
                     card.appendChild(badge);
                 }
 
-                // Update button text
                 const btn = card.querySelector('button');
                 if (btn) {
                     btn.textContent = item.btnText;
@@ -567,38 +579,60 @@ function applySubscriptionLocks(tier) {
                     btn.style.border = '1px solid rgba(255,255,255,0.1)';
                     btn.style.color = '#8E8C99';
                 }
-            }
-        });
+            } else {
+                // Ensure card is completely unlocked and responsive
+                card.style.opacity = '';
+                card.style.position = '';
+                const badge = card.querySelector('.dashboard-lock-badge');
+                if (badge) badge.remove();
 
-        // 4. Capture-phase global click interceptor for inline onclick handlers (e.g. dashboard cards)
-        if (!window.hasGlobalClickInterceptor) {
-            window.hasGlobalClickInterceptor = true;
-            document.addEventListener('click', (e) => {
-                const currentTier = localStorage.getItem('subscription_tier') || 'free';
-                if (currentTier === 'free') {
-                    const target = e.target.closest('button, a');
-                    if (target) {
-                        const onclickAttr = target.getAttribute('onclick') || '';
-                        const hrefAttr = target.getAttribute('href') || '';
-                        const destination = onclickAttr + hrefAttr;
-                        
-                        if (premiumPages.some(page => destination.includes(page))) {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            let msg = "This premium feature is locked on the Free tier. Upgrade your plan to gain instant access!";
-                            if (destination.includes('portfolio_generator.html')) {
-                                msg = "Portfolio Generator is locked on the Free tier. This feature requires the Career Elite (Premium) plan. Upgrade now to gain instant access!";
-                            } else if (destination.includes('portfolio_rater.html')) {
-                                msg = "Portfolio Rater is locked on the Free tier. This feature requires the Career Elite (Premium) plan. Upgrade now to gain instant access!";
-                            } else if (destination.includes('career_mail.html')) {
-                                msg = "Career Mail is locked on the Free tier. This feature requires the Career Accelerator (Pro) plan. Upgrade now to gain instant access!";
-                            }
-                            window.showUpgradeModal(msg);
+                const btn = card.querySelector('button');
+                if (btn) {
+                    btn.textContent = item.originalBtnText;
+                    btn.style.background = '';
+                    btn.style.border = '';
+                    btn.style.color = '';
+                }
+            }
+        }
+    });
+
+    // 4. Capture-phase global click interceptor (delegated to active lockedPages)
+    if (!window.hasGlobalClickInterceptor) {
+        window.hasGlobalClickInterceptor = true;
+        document.addEventListener('click', (e) => {
+            const currentTier = localStorage.getItem('subscription_tier') || 'free';
+            let activeLockedPages = [];
+            if (currentTier === 'free') {
+                activeLockedPages = ['portfolio_generator.html', 'portfolio_rater.html', 'career_mail.html'];
+            } else if (currentTier === 'pro') {
+                activeLockedPages = ['portfolio_generator.html', 'portfolio_rater.html'];
+            }
+            
+            if (activeLockedPages.length > 0) {
+                const target = e.target.closest('button, a');
+                if (target) {
+                    const onclickAttr = target.getAttribute('onclick') || '';
+                    const hrefAttr = target.getAttribute('href') || '';
+                    const destination = onclickAttr + hrefAttr;
+                    
+                    if (activeLockedPages.some(page => destination.includes(page))) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        let targetPage = activeLockedPages.find(page => destination.includes(page));
+                        let msg = `This feature is locked on your current '${currentTier.toUpperCase()}' plan. Upgrade to access!`;
+                        if (targetPage === 'portfolio_generator.html') {
+                            msg = `Portfolio Generator is locked on the ${currentTier.charAt(0).toUpperCase() + currentTier.slice(1)} tier. This feature requires the Career Elite (Premium) plan. Upgrade now to gain instant access!`;
+                        } else if (targetPage === 'portfolio_rater.html') {
+                            msg = `Portfolio Rater is locked on the ${currentTier.charAt(0).toUpperCase() + currentTier.slice(1)} tier. This feature requires the Career Elite (Premium) plan. Upgrade now to gain instant access!`;
+                        } else if (targetPage === 'career_mail.html') {
+                            msg = `Career Mail is locked on the Free tier. This feature requires the Career Accelerator (Pro) plan. Upgrade now to gain instant access!`;
                         }
+                        window.showUpgradeModal(msg);
                     }
                 }
-            }, true); // True triggers capture-phase running before inline onclick attributes execute
-        }
+            }
+        }, true);
     }
 }
 
