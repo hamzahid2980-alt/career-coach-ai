@@ -167,6 +167,23 @@ async function fetchAndDisplayResume() {
 
     originalResumeData = data.resume_content || {};
     populateResumeFields(originalResumeData);
+
+    // Display subscription tier
+    const userTierSpan = document.getElementById("user-tier");
+    if (userTierSpan) {
+      let tier = data.subscription_tier || "free";
+      if (data.can_host_hackathons) {
+        tier += " (Verified Host)";
+      }
+      userTierSpan.textContent = tier;
+      if (data.subscription_tier === "pro") {
+        userTierSpan.style.color = "#8A49FF";
+      } else if (data.subscription_tier === "premium") {
+        userTierSpan.style.color = "#f5c430";
+      } else {
+        userTierSpan.style.color = "#50daa0";
+      }
+    }
   } catch (error) {
     showStatus(detailsUpdateStatusDiv, error.message, true);
   }

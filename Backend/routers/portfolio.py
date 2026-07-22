@@ -5,11 +5,17 @@ from pydantic import BaseModel
 from core.ai_core import extract_text_auto
 from core.portfolio_services import PortfolioGenerator, GitHubPublisher, get_portfolio_data_from_gemini
 from dependencies import get_current_user
+from core.tier_limits import verify_tier_limit, increment_tier_usage
 
 router = APIRouter()
 
 @router.post("/generate-direct")
-async def generate_direct(request: Request, file: UploadFile = File(...), user: dict = Depends(get_current_user)):
+async def generate_direct(
+    request: Request, 
+    file: UploadFile = File(...), 
+    user: dict = Depends(get_current_user),
+    _limit_check: None = Depends(verify_tier_limit("portfolios_generated"))
+):
     # 1. Extract Text
     file_bytes = await file.read()
     ext = os.path.splitext(file.filename)[1].lower()
@@ -39,6 +45,7 @@ async def generate_direct(request: Request, file: UploadFile = File(...), user: 
         f.write(html_code)
 
     base_url = str(request.base_url).rstrip("/")
+    increment_tier_usage(user) # Increment verified tier usage
     return {
         "url": f"{base_url}/generated_portfolios/{filename}",
         "slug": portfolio_data.get("personalInfo", {}).get("name", "portfolio").replace(" ", "-").lower(),

@@ -15,9 +15,10 @@ if not firebase_admin._apps:
     try:
         firebase_creds = os.environ.get("FIREBASE_CREDENTIALS")
         if firebase_creds:
-            # Load credentials from environment variable (Render/Production)
+            # Load credentials from environment variable (Render or local .env)
             cred_dict = json.loads(firebase_creds)
             cred = credentials.Certificate(cred_dict)
+            print("✅ Loaded credentials from environment variable.")
         else:
             # Fallback to local JSON file (for local dev)
             credentials_path = Path(__file__).parent / "firebase-credentials.json"
@@ -38,6 +39,13 @@ if not firebase_admin._apps:
                 'storageBucket': 'genaihack-240d7.firebasestorage.app' 
             })
             print("✅ Firebase Admin SDK initialized successfully.")
+        else:
+            # Try to initialize with application default credentials
+            initialize_app(options={
+                'projectId': 'genaihack-240d7',
+                'storageBucket': 'genaihack-240d7.firebasestorage.app' 
+            })
+            print("✅ Firebase Admin SDK initialized using default credentials.")
     except Exception as e:
         print(f"❌ Failed to initialize Firebase Admin SDK: {e}")
 else:
@@ -146,7 +154,7 @@ async def debug_auth():
         "python_version": sys.version
     }
 
-from routers import auth, resume, roadmap, user, joblisting, assessment, interview, portfolio, career_mail, portfolio_rater
+from routers import auth, resume, roadmap, user, joblisting, assessment, interview, portfolio, career_mail, portfolio_rater, payment, hackathons
 
 # Register the routes
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
@@ -161,6 +169,8 @@ app.include_router(leaderboard.router, prefix="/api/leaderboard", tags=["Leaderb
 app.include_router(trends.router, prefix="/api/trends", tags=["Market Trends"])
 app.include_router(career_mail.router, prefix="/api/career-mail", tags=["Career Mail Agent"])
 app.include_router(portfolio_rater.router, prefix="/api/portfolio-rater", tags=["Portfolio Rater"])
+app.include_router(payment.router, prefix="/api/payment", tags=["Payment & Subscriptions"])
+app.include_router(hackathons.router, prefix="/api/hackathons", tags=["Hackathon Hub"])
 
 # ------------------------------
 # Root Endpoint

@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Plan — AI Career Coach</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="./assets/favicon.png">
+    <style>
+        :root {
+            --bg-main: #0A090F;
+            --bg-card: #13111C;
+            --border-color: rgba(138, 73, 255, 0.15);
+            --primary: #8A49FF;
+            --primary-hover: #702cf8;
+            --secondary: #FF4DB8;
+            --text-light: #EAEBF0;
+            --text-muted: #8E8C99;
+            --radius: 14px;
+            --shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+            --font-main: 'Inter', system-ui, sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-light);
+            font-family: var(--font-main);
+            min-height: 100vh;
+            display: flex;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* --- Background Glow --- */
+        .background-glow {
+            position: fixed;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(138, 73, 255, 0.15) 0%, rgba(138, 73, 255, 0) 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* --- Sidebar Navigation --- */
+        .sidebar {
+            width: 260px;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 2rem 1.5rem;
+            z-index: 10;
+            position: fixed;
+            height: 100vh;
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-light);
+            margin-bottom: 2.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .sidebar-header h2 i {
+            color: var(--primary);
+        }
+
+        .sidebar-nav {
+            flex: 1;
+        }
+
+        .sidebar-nav ul {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 0.8rem;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+
+        .sidebar-nav a:hover, .sidebar-nav a.active {
+            color: var(--text-light);
+            background: rgba(138, 73, 255, 0.1);
+        }
+
+        .sidebar-nav a.active {
+            border: 1px solid var(--border-color);
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+        }
+
+        .logout-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            color: var(--text-light);
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* --- Main Content Area --- */
+        .main-content {
+            margin-left: 260px;
+            flex: 1;
+            padding: 3rem 4rem;
+            z-index: 1;
+            position: relative;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .page-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 0.75rem;
+        }
+
+        .page-subtitle {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+        }
+
+        /* --- Billing Toggle --- */
+        .billing-toggle-wrapper {
+            margin-top: 2rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.85rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 0.5rem 1.2rem;
+            border-radius: 50px;
+        }
+
+        .toggle-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            transition: color 0.3s;
+        }
+
+        .toggle-label.active {
+            color: var(--text-light);
+        }
+
+        .billing-toggle {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            border-radius: 50px;
+            border: none;
+            background: rgba(138, 73, 255, 0.25);
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .billing-toggle.annual-active {
+            background: var(--primary);
+        }
+
+        .billing-toggle-thumb {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: white;
+            transition: transform 0.3s;
+            display: block;
+        }
+
+        .billing-toggle.annual-active .billing-toggle-thumb {
+            transform: translateX(20px);
+        }
+
+        .save-badge {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 50px;
+            font-weight: 700;
+        }
+
+        /* --- Cards Grid --- */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-bottom: 4rem;
+            align-items: start;
+        }
+
+        .pricing-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2.5rem 2rem;
+            position: relative;
+            transition: transform 0.35s, box-shadow 0.35s, border-color 0.35s;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .pricing-card * {
+            box-sizing: border-box;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow);
+            border-color: rgba(138, 73, 255, 0.35);
+        }
+
+        .pricing-card-pro {
+            border-color: rgba(138, 73, 255, 0.5);
+            background: linear-gradient(160deg, rgba(138, 73, 255, 0.07) 0%, var(--bg-card) 60%);
+            box-shadow: 0 0 0 1px rgba(138, 73, 255, 0.4), 0 20px 50px rgba(138, 73, 255, 0.1);
+        }
+
+        .pricing-card-premium {
+            border-color: rgba(255, 200, 50, 0.25);
+            background: linear-gradient(160deg, rgba(255, 190, 30, 0.05) 0%, var(--bg-card) 60%);
+        }
+
+        .pricing-card-premium:hover {
+            border-color: rgba(255, 200, 50, 0.45);
+        }
+
+        .popular-tag {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            color: white;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 6px 16px;
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .tier-badge {
+            align-self: flex-start;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 50px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 1rem;
+        }
+
+        .badge-free { background: rgba(100, 220, 170, 0.12); color: #50daa0; border: 1px solid rgba(100, 220, 170, 0.25); }
+        .badge-pro { background: rgba(138, 73, 255, 0.15); color: var(--primary); border: 1px solid rgba(138, 73, 255, 0.3); }
+        .badge-premium { background: rgba(255, 195, 40, 0.12); color: #f5c430; border: 1px solid rgba(255, 195, 40, 0.3); }
+
+        .tier-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        .price-wrapper {
+            display: flex;
+            align-items: baseline;
+            gap: 2px;
+            margin-bottom: 1.5rem;
+        }
+
+        .currency {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        .price-value {
+            font-size: 3.2rem;
+            font-weight: 800;
+            line-height: 1;
+            transition: all 0.3s;
+        }
+
+        .pricing-card-pro .price-value {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .pricing-card-premium .price-value {
+            background: linear-gradient(90deg, #f5c430, #ffaa00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .price-period {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        /* --- CTA Buttons --- */
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-weight: 700;
+            font-size: 0.95rem;
+            padding: 0.85rem;
+            border-radius: 12px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.25s;
+            border: 1px solid transparent;
+            margin-bottom: 1.5rem;
+            width: 100%;
+        }
+
+        .btn-free {
+            background: transparent;
+            color: var(--text-light);
+            border-color: var(--border-color);
+        }
+
+        .btn-free:hover {
+            background: rgba(255, 255, 255, 0.03);
+            border-color: var(--primary);
+        }
+
+        .btn-pro {
+            background: linear-gradient(90deg, var(--primary), var(--primary-hover));
+            color: white;
+            box-shadow: 0 4px 15px rgba(138, 73, 255, 0.25);
+        }
+
+        .btn-pro:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(138, 73, 255, 0.35);
+        }
+
+        .btn-premium {
+            background: linear-gradient(90deg, #f5c430, #ffaa00);
+            color: #1a1200;
+            box-shadow: 0 4px 15px rgba(245, 196, 48, 0.2);
+        }
+
+        .btn-premium:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(245, 196, 48, 0.35);
+        }
+
+        .features-list {
+            list-style: none;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .features-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.6rem;
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .features-list li i {
+            font-size: 0.75rem;
+            margin-top: 3px;
+            width: 16px;
+            text-align: center;
+        }
+
+        .features-list li i.fa-check { color: #50daa0; }
+        .features-list li i.fa-lock { color: var(--text-muted); opacity: 0.5; }
+        .features-list li i.fa-crown { color: #f5c430; }
+
+        .features-list li.included { color: var(--text-light); }
+        .features-list li.locked { opacity: 0.45; }
+        .features-list li.exclusive { color: var(--text-light); }
+        .features-list li.exclusive strong { color: #f5c430; }
+
+        /* --- Organiser Banner --- */
+        .organiser-strip {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            padding: 1.5rem 2rem;
+            text-align: left;
+            margin-top: 2rem;
+        }
+
+        .organiser-icon {
+            font-size: 2rem;
+            color: var(--primary);
+            background: rgba(138, 73, 255, 0.1);
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .organiser-text {
+            flex: 1;
+        }
+
+        .organiser-text h5 {
+            font-size: 1rem;
+            margin-bottom: 0.15rem;
+        }
+
+        .organiser-text p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .organiser-pricing {
+            display: flex;
+            gap: 0.6rem;
+        }
+
+        .org-pill {
+            background: rgba(138, 73, 255, 0.1);
+            color: var(--primary);
+            border: 1px solid rgba(138, 73, 255, 0.2);
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 50px;
+        }
+
+        .org-pill.featured {
+            background: linear-gradient(90deg, rgba(138, 73, 255, 0.15), rgba(255, 77, 184, 0.15));
+            border-color: rgba(255, 77, 184, 0.3);
+            color: #ff80d0;
+        }
+
+        .organiser-btn {
+            padding: 0.75rem 1.25rem;
+            width: auto;
+            margin: 0;
+            font-size: 0.88rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="background-glow"></div>
+
+    <aside class="sidebar">
+        <header class="sidebar-header">
+            <h2><i class="fas fa-robot"></i> AI Career Coach</h2>
+        </header>
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="home.html"><i class="fas fa-home"></i> Dashboard</a></li>
+                <li><a href="roadmap.html"><i class="fas fa-route"></i> Roadmap</a></li>
+                <li><a href="optimizer.html"><i class="fas fa-file-alt"></i> Resume & LinkedIn</a></li>
+                <li><a href="assessment.html"><i class="fas fa-chart-line"></i> Skill Assessment</a></li>
+                <li><a href="joblisting.html"><i class="fas fa-briefcase"></i> Job Matching</a></li>
+                <li><a href="interview.html"><i class="fas fa-comments"></i> Mock Interview</a></li>
+                <li><a href="portfolio_generator.html"><i class="fas fa-laptop-code"></i> Portfolio Generator</a></li>
+                <li><a href="portfolio_rater.html"><i class="fas fa-star-half-alt"></i> Portfolio Rater</a></li>
+                <li><a href="career_mail.html"><i class="fas fa-envelope"></i> Career Mail</a></li>
+                <li><a href="#" class="active"><i class="fas fa-star" style="color: #f5c430;"></i> Upgrade Plan</a></li>
+                <li><a href="profile.html"><i class="fas fa-user-circle"></i> Profile Settings</a></li>
+                <li><a href="trends.html"><i class="fas fa-chart-bar"></i> Market Trends</a></li>
+                <li><a href="leaderboard.html"><i class="fas fa-trophy"></i> Leaderboard</a></li>
+            </ul>
+        </nav>
+        <footer class="sidebar-footer">
+            <button id="logout-btn-sidebar" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </footer>
+    </aside>
+
+    <main class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">Upgrade Your Career</h1>
+            <p class="page-subtitle">Access advanced AI resume features, personalized roadmaps, and custom hackathon alerts.</p>
+            <div class="billing-toggle-wrapper">
+                <span class="toggle-label active" id="monthly-label">Monthly</span>
+                <button class="billing-toggle" id="billing-toggle">
+                    <span class="billing-toggle-thumb"></span>
+                </button>
+                <span class="toggle-label" id="annual-label">Annual <span class="save-badge">Save 20%</span></span>
+            </div>
+        </div>
+
+        <div class="pricing-grid">
+            <!-- FREE CARD -->
+            <div class="pricing-card">
+                <div class="tier-badge badge-free">Starter</div>
+                <h4 class="tier-name">Free</h4>
+                <div class="price-wrapper">
+                    <span class="currency">₹</span>
+                    <span class="price-value" id="val-free">0</span>
+                    <span class="price-period">/month</span>
+                </div>
+                <button class="btn btn-free" disabled>Current Active Plan</button>
+                <ul class="features-list">
+                    <li class="included"><i class="fas fa-check"></i><span>Resume ATS Analysis <strong>1×/month</strong></span></li>
+                    <li class="included"><i class="fas fa-check"></i><span>Career Roadmap <strong>1 roadmap</strong></span></li>
+                    <li class="included"><i class="fas fa-check"></i><span>Mock Interview <strong>2 sessions · 5 questions</strong></span></li>
+                    <li class="included"><i class="fas fa-check"></i><span>Job Matching <strong>2 results/search</strong></span></li>
+                    <li class="included"><i class="fas fa-check"></i><span>AI Chatbot <strong>10 messages/day</strong></span></li>
+                    <li class="included"><i class="fas fa-check"></i><span>Resume Builder <strong>free templates</strong></span></li>
+                    <li class="locked"><i class="fas fa-lock"></i><span>Interview Summary Report</span></li>
+                    <li class="locked"><i class="fas fa-lock"></i><span>LinkedIn Optimizer</span></li>
+                    <li class="locked"><i class="fas fa-lock"></i><span>AI Avatar Interviewer</span></li>
+                </ul>
+            </div>
+
+            <!-- PRO CARD -->
+            <div class="pricing-card pricing-card-pro">
+                <div class="popular-tag"><i class="fas fa-star"></i> Most Popular</div>
+                <div class="tier-badge badge-pro">Pro</div>
+                <h4 class="tier-name">Career Accelerator</h4>
+                <div class="price-wrapper">
+                    <span class="currency">₹</span>
+                    <span class="price-value" id="val-pro">199</span>
+                    <span class="price-period" id="period-pro">/month</span>
+                </div>
+                <button class="btn btn-pro" onclick="proceedToPayment('pro')">Upgrade to Pro</button>
+                <ul class="features-list">
+                    <li class="included"><i class="fas fa-check"></i><span>Resume ATS Analysis <strong>5×/month</strong></span></li>
+                    <li class="included"><i class="fas fa-check"></i><span>Career Roadmap <strong>3/month + editable</strong></span></li>
+                    <li class="included"><i class="fas fa-check"></i><span>Mock Interview <strong>10 sessions · 10 questions</strong></span></li>
+                    <li class="included"><i class="fas fa-check"></i><span>Interview Summary <strong>standard report</strong></span></li>
+                    <li class="included"><i class="fas fa-check"></i><span>Job Matching <strong>10 results/search</strong></span></li>
+                    <li class="included"><i class="fas fa-check"></i><span>AI Chatbot <strong>50 messages/day</strong></span></li>
+                    <li class="included"><i class="fas fa-check"></i><span>Resume Builder <strong>3 resumes + PDF & DOCX</strong></span></li>
+                    <li class="included"><i class="fas fa-check"></i><span>LinkedIn Optimizer <strong>3×/month</strong></span></li>
+                    <li class="locked"><i class="fas fa-lock"></i><span>AI Avatar Interviewer</span></li>
+                    <li class="locked"><i class="fas fa-lock"></i><span>Hackathon Alerts</span></li>
+                </ul>
+            </div>
+
+            <!-- PREMIUM CARD -->
+            <div class="pricing-card pricing-card-premium">
+                <div class="tier-badge badge-premium"><i class="fas fa-crown"></i> Elite</div>
+                <h4 class="tier-name">Career Elite</h4>
+                <div class="price-wrapper">
+                    <span class="currency">₹</span>
+                    <span class="price-value" id="val-premium">399</span>
+                    <span class="price-period" id="period-premium">/month</span>
+                </div>
+                <button class="btn btn-premium" onclick="proceedToPayment('premium')">Go Elite <i class="fas fa-arrow-right"></i></button>
+                <ul class="features-list">
+                    <li class="included"><i class="fas fa-check"></i><span>Everything in Pro</span></li>
+                    <li class="included"><i class="fas fa-check"></i><span>Resume ATS <strong>Unlimited</strong></span></li>
+                    <li class="included"><i class="fas fa-check"></i><span>Career Roadmap <strong>Unlimited</strong></span></li>
+                    <li class="included"><i class="fas fa-check"></i><span>Mock Interview <strong>Unlimited sessions</strong></span></li>
+                    <li class="exclusive"><i class="fas fa-crown"></i><span><strong>AI Avatar Interviewer</strong> — voice + face</span></li>
+                    <li class="exclusive"><i class="fas fa-crown"></i><span><strong>Live Mic Responses</strong> — real-time voice</span></li>
+                    <li class="exclusive"><i class="fas fa-crown"></i><span><strong>Full Interview PDF Report</strong></span></li>
+                    <li class="included"><i class="fas fa-check"></i><span>Job Matching <strong>20 results/search</strong></span></li>
+                    <li class="included"><i class="fas fa-check"></i><span>AI Chatbot <strong>200 messages/day</strong></span></li>
+                    <li class="exclusive"><i class="fas fa-crown"></i><span><strong>Hackathon Alerts</strong> — skill matched</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="organiser-strip">
+            <div class="organiser-icon"><i class="fas fa-flag-checkered"></i></div>
+            <div class="organiser-text">
+                <h5>Organising a Hackathon?</h5>
+                <p>List your event and reach thousands of skill-matched students on our global community.</p>
+            </div>
+            <div class="organiser-pricing">
+                <span class="org-pill">Standard ₹199</span>
+                <span class="org-pill featured">Featured ₹499 <i class="fas fa-bolt"></i></span>
+            </div>
+            <button class="btn btn-free organiser-btn" onclick="proceedToPayment('hackathon')">List Your Hackathon <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </main>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="./script/auth.js"></script>
+
+    <script>
+        // Log out handler
+        document.getElementById('logout-btn-sidebar')?.addEventListener('click', async () => {
+            await auth.signOut();
+        });
+
+        // Billing Period Toggle Logic
+        const toggle = document.getElementById('billing-toggle');
+        const monthlyLabel = document.getElementById('monthly-label');
+        const annualLabel = document.getElementById('annual-label');
+        
+        const valPro = document.getElementById('val-pro');
+        const valPremium = document.getElementById('val-premium');
+        const periodPro = document.getElementById('period-pro');
+        const periodPremium = document.getElementById('period-premium');
+
+        let billingPeriod = 'monthly';
+
+        toggle.addEventListener('click', () => {
+            if (billingPeriod === 'monthly') {
+                billingPeriod = 'annual';
+                toggle.classList.add('annual-active');
+                monthlyLabel.classList.remove('active');
+                annualLabel.classList.add('active');
+
+                // Apply 20% discount on annual (199 -> 159, 399 -> 319)
+                valPro.textContent = '159';
+                valPremium.textContent = '319';
+                periodPro.textContent = '/month, billed annually';
+                periodPremium.textContent = '/month, billed annually';
+            } else {
+                billingPeriod = 'monthly';
+                toggle.classList.remove('annual-active');
+                monthlyLabel.classList.add('active');
+                annualLabel.classList.remove('active');
+
+                valPro.textContent = '199';
+                valPremium.textContent = '399';
+                periodPro.textContent = '/month';
+                periodPremium.textContent = '/month';
+            }
+        });
+
+        function proceedToPayment(plan) {
+            // Forward user to the UPI QR payment confirmation page
+            // Preserve the selected plan and billing period
+            window.location.href = `upgrade.html?plan=${plan}&billing=${billingPeriod}`;
+        }
+    </script>
+</body>
+</html>

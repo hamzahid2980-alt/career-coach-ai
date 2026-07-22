@@ -8,6 +8,8 @@ from core.db_core import DatabaseManager
 from dependencies import get_db_manager, get_current_user
 from fastapi import Depends
 
+from core.tier_limits import verify_tier_limit, increment_tier_usage
+
 router = APIRouter(
     tags=["Mock Interview"]
 )
@@ -56,7 +58,11 @@ class VideoFeedbackResponse(BaseModel):
 # ==========================================================
 
 @router.post("/chat", response_model=ChatResponse, summary="Get the next interview question")
-async def conduct_interview_chat(request: ChatRequest):
+async def conduct_interview_chat(
+    request: ChatRequest,
+    user: dict = Depends(get_current_user),
+    _limit_check: None = Depends(verify_tier_limit("mock_interviews"))
+):
     if not request.job_description or not request.job_description.strip():
         raise HTTPException(status_code=400, detail="Job description cannot be empty.")
     response_data = get_interview_chat_response(
@@ -66,14 +72,23 @@ async def conduct_interview_chat(request: ChatRequest):
     )
     if not response_data or "reply" not in response_data:
         raise HTTPException(status_code=500, detail="AI failed to generate a chat response.")
+    
+    # Increment mock_interviews count when starting a new session
+    if len(request.chat_history) <= 1:
+        increment_tier_usage(user)
+        
     return response_data
 
 @router.post("/video", response_model=VideoFeedbackResponse, summary="Analyze a recorded audio answer")
 async def analyze_video_answer(
     video_file: UploadFile = File(...),
     question: str = Form(...),
-    job_description: str = Form(...)
+    job_description: str = Form(...),
+    question_count: int = Form(...),
+    user: dict = Depends(get_current_user)
 ):
+    uid = user['uid']
+    print(f"[Interview Log] User {uid} submitted answer for question #{question_count}")
     audio_content = await video_file.read()
     feedback_data = process_audio_answer(
         audio_content=audio_content,
@@ -108,5 +123,6 @@ async def summarize_interview(request: SummarizeRequest,
         raise HTTPException(status_code=500, detail="AI failed to generate an interview summary.")
         
     db.save_interview_result(user['uid'], summary_data)
+    increment_tier_usage(user) # Increment verified tier usage
         
     return summary_data

@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upgrade Your Plan — AI Career Coach</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="./assets/favicon.png">
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <style>
+        :root {
+            --bg-main: #0A090F;
+            --bg-card: #13111C;
+            --border-color: rgba(138, 73, 255, 0.15);
+            --primary: #8A49FF;
+            --primary-hover: #702cf8;
+            --secondary: #FF4DB8;
+            --text-light: #EAEBF0;
+            --text-muted: #8E8C99;
+            --radius: 14px;
+            --shadow: 0 16px 48px rgba(0,0,0,0.4);
+            --font-main: 'Inter', system-ui, sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: var(--bg-main);
+            color: var(--text-light);
+            font-family: var(--font-main);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Background glow */
+        .bg-glow {
+            position: fixed;
+            top: -100px; left: 50%;
+            transform: translateX(-50%);
+            width: 700px; height: 500px;
+            background: radial-gradient(circle, rgba(138,73,255,0.12) 0%, transparent 65%);
+            pointer-events: none; z-index: 0;
+            animation: pulseGlow 8s ease-in-out infinite;
+        }
+        @keyframes pulseGlow {
+            0%,100% { opacity:.5; transform:translateX(-50%) scale(1); }
+            50%      { opacity:.8; transform:translateX(-50%) scale(1.05); }
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.2rem 2rem;
+            border-bottom: 1px solid var(--border-color);
+            background: rgba(10,9,15,0.85);
+            backdrop-filter: blur(10px);
+            position: sticky; top: 0; z-index: 100;
+        }
+        .logo {
+            font-size: 1.2rem; font-weight: 700;
+            color: var(--text-light); text-decoration: none;
+            display: flex; align-items: center; gap: .5rem;
+        }
+        .logo i { color: var(--primary); }
+        .back-link {
+            color: var(--text-muted); font-size: .9rem;
+            text-decoration: none; display: flex; align-items: center; gap: .4rem;
+            transition: color .2s;
+        }
+        .back-link:hover { color: var(--text-light); }
+
+        /* Page wrapper */
+        .page {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 3rem 1.5rem 5rem;
+            position: relative; z-index: 1;
+        }
+
+        /* Step indicators */
+        .steps {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: .5rem;
+            margin-bottom: 3rem;
+        }
+        .step {
+            display: flex; align-items: center; gap: .4rem;
+            font-size: .82rem; font-weight: 600;
+            color: var(--text-muted);
+        }
+        .step-num {
+            width: 26px; height: 26px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: .78rem; font-weight: 700;
+            border: 1.5px solid var(--border-color);
+            background: var(--bg-card);
+        }
+        .step.active { color: var(--text-light); }
+        .step.active .step-num {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+        .step.done { color: #50daa0; }
+        .step.done .step-num {
+            background: rgba(80,218,160,.15);
+            border-color: #50daa0;
+            color: #50daa0;
+        }
+        .step-line {
+            width: 40px; height: 1px;
+            background: var(--border-color);
+        }
+
+        /* Plan selector pills */
+        .plan-selector {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 2.5rem;
+            flex-wrap: wrap;
+        }
+        .plan-pill {
+            display: flex; flex-direction: column; align-items: center;
+            gap: .2rem;
+            padding: .9rem 2rem;
+            border-radius: 14px;
+            border: 1.5px solid var(--border-color);
+            background: var(--bg-card);
+            cursor: pointer;
+            transition: all .25s;
+            min-width: 160px;
+        }
+        .plan-pill:hover { border-color: rgba(138,73,255,.4); }
+        .plan-pill.selected {
+            border-color: var(--primary);
+            background: rgba(138,73,255,.1);
+            box-shadow: 0 0 0 1px rgba(138,73,255,.25);
+        }
+        .plan-pill-name { font-size: .78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .6px; }
+        .plan-pill-price { font-size: 1.6rem; font-weight: 800; color: var(--text-light); }
+        .plan-pill-price span { font-size: .85rem; font-weight: 500; color: var(--text-muted); }
+        .plan-pill.selected .plan-pill-price { color: var(--primary); }
+
+        /* Main two-column layout */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        /* Card base */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2rem;
+        }
+        .card-title {
+            font-size: 1rem; font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex; align-items: center; gap: .5rem;
+            color: var(--text-light);
+        }
+        .card-title i { color: var(--primary); }
+
+        /* QR section */
+        .qr-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.25rem;
+        }
+        .amount-badge {
+            background: linear-gradient(90deg, rgba(138,73,255,.15), rgba(255,77,184,.15));
+            border: 1px solid rgba(138,73,255,.3);
+            border-radius: 50px;
+            padding: .4rem 1.4rem;
+            font-size: .9rem;
+            font-weight: 700;
+            color: var(--text-light);
+        }
+        .amount-badge strong { color: var(--primary); font-size: 1.1rem; }
+
+        .qr-img-box {
+            background: white;
+            border-radius: 16px;
+            padding: 1rem;
+            width: 220px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 32px rgba(0,0,0,.4);
+        }
+        .qr-img-box img {
+            width: 100%;
+            border-radius: 8px;
+            display: block;
+        }
+
+        .upi-id-box {
+            width: 100%;
+            background: rgba(138,73,255,.06);
+            border: 1px solid rgba(138,73,255,.2);
+            border-radius: 12px;
+            padding: .85rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: .5rem;
+        }
+        .upi-id-text {
+            font-size: .88rem; font-weight: 600;
+            color: var(--text-light); font-family: monospace;
+        }
+        .copy-btn {
+            background: rgba(138,73,255,.15);
+            border: none; color: var(--primary);
+            width: 32px; height: 32px; border-radius: 8px;
+            cursor: pointer; font-size: .85rem;
+            display: flex; align-items: center; justify-content: center;
+            transition: all .2s; flex-shrink: 0;
+        }
+        .copy-btn:hover { background: rgba(138,73,255,.3); }
+
+        .upi-apps-row {
+            display: flex; gap: .6rem; align-items: center; justify-content: center;
+            flex-wrap: wrap;
+        }
+        .upi-app-tag {
+            font-size: .75rem; color: var(--text-muted);
+            background: rgba(255,255,255,.05);
+            border: 1px solid var(--border-color);
+            padding: 3px 10px; border-radius: 6px;
+        }
+
+        /* Instructions */
+        .steps-list {
+            display: flex; flex-direction: column; gap: 1rem;
+        }
+        .step-item {
+            display: flex; gap: .85rem; align-items: flex-start;
+        }
+        .step-icon {
+            width: 34px; height: 34px; border-radius: 10px;
+            background: rgba(138,73,255,.1);
+            display: flex; align-items: center; justify-content: center;
+            font-size: .8rem; font-weight: 800;
+            color: var(--primary); flex-shrink: 0;
+        }
+        .step-text strong { display: block; font-size: .9rem; color: var(--text-light); margin-bottom: .15rem; }
+        .step-text span { font-size: .82rem; color: var(--text-muted); line-height: 1.4; }
+
+        /* Form */
+        .form-section {
+            margin-top: 2rem;
+            display: flex; flex-direction: column; gap: 1rem;
+        }
+        .form-group {
+            display: flex; flex-direction: column; gap: .45rem;
+        }
+        .form-label {
+            font-size: .82rem; font-weight: 600; color: var(--text-muted);
+            display: flex; align-items: center; gap: .3rem;
+        }
+        .form-input {
+            background: rgba(255,255,255,.04);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: .8rem 1rem;
+            color: var(--text-light);
+            font-family: var(--font-main);
+            font-size: .95rem;
+            transition: border-color .2s;
+            outline: none; width: 100%;
+        }
+        .form-input:focus { border-color: var(--primary); background: rgba(138,73,255,.05); }
+        .form-input::placeholder { color: var(--text-muted); }
+        .form-input:read-only { opacity: .7; cursor: default; }
+        .form-hint {
+            font-size: .76rem; color: var(--text-muted);
+            display: flex; align-items: center; gap: .3rem;
+        }
+
+        /* Submit button */
+        .submit-btn {
+            display: flex; align-items: center; justify-content: center; gap: .5rem;
+            background: linear-gradient(90deg, var(--primary), var(--primary-hover));
+            color: white; font-weight: 700; font-size: 1rem;
+            padding: .95rem 1.5rem; border-radius: 12px;
+            border: none; cursor: pointer; width: 100%;
+            transition: all .25s;
+            box-shadow: 0 4px 20px rgba(138,73,255,.25);
+            position: relative; overflow: hidden;
+            margin-top: .5rem;
+        }
+        .submit-btn::before {
+            content: '';
+            position: absolute; top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,.15), transparent);
+            transition: .5s;
+        }
+        .submit-btn:hover::before { left: 100%; }
+        .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(138,73,255,.35); }
+        .submit-btn:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+
+        /* Success screen */
+        .success-screen {
+            display: none;
+            text-align: center;
+            padding: 3rem 2rem;
+            animation: fadeInUp .5s ease-out;
+        }
+        .success-icon {
+            width: 80px; height: 80px; border-radius: 50%;
+            background: rgba(80,218,160,.1);
+            border: 2px solid #50daa0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2rem; color: #50daa0;
+            margin: 0 auto 1.5rem;
+            animation: popIn .5s cubic-bezier(.175,.885,.32,1.275);
+        }
+        @keyframes popIn {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .success-screen h2 { font-size: 1.5rem; margin-bottom: .75rem; }
+        .success-screen p { color: var(--text-muted); max-width: 400px; margin: 0 auto 2rem; line-height: 1.6; }
+        .success-detail {
+            background: rgba(80,218,160,.07);
+            border: 1px solid rgba(80,218,160,.2);
+            border-radius: 14px;
+            padding: 1.25rem;
+            margin: 0 auto 2rem;
+            max-width: 380px;
+        }
+        .success-detail p { font-size: .88rem; color: var(--text-light); margin-bottom: .4rem; }
+        .success-detail p:last-child { margin: 0; }
+        .success-detail strong { color: #50daa0; }
+
+        .notice-box {
+            background: rgba(138,73,255,.07);
+            border: 1px solid rgba(138,73,255,.2);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            font-size: .84rem; color: var(--text-muted);
+            display: flex; align-items: flex-start; gap: .6rem;
+            margin-top: 1.5rem;
+            text-align: left;
+        }
+        .notice-box i { color: var(--primary); flex-shrink: 0; margin-top: 2px; }
+
+        /* Toast */
+        .toast {
+            position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
+            background: #50daa0; color: #0A090F;
+            font-weight: 700; font-size: .85rem;
+            padding: .65rem 1.4rem; border-radius: 50px;
+            box-shadow: 0 4px 20px rgba(0,0,0,.3);
+            opacity: 0; transition: opacity .3s; pointer-events: none; z-index: 999;
+            white-space: nowrap;
+        }
+        .toast.show { opacity: 1; }
+
+        /* Responsive */
+        @media (max-width: 750px) {
+            .main-grid { grid-template-columns: 1fr; }
+            .plan-selector { gap: .7rem; }
+            .plan-pill { min-width: 130px; padding: .8rem 1.2rem; }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity:0; transform:translateY(20px); }
+            to   { opacity:1; transform:translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-glow"></div>
+    <div class="toast" id="toast"></div>
+
+    <header class="header">
+        <a href="index.html" class="logo"><i class="fas fa-robot"></i> AI Career Coach</a>
+        <a href="#" class="back-link" onclick="navigateBack(event)"><i class="fas fa-arrow-left"></i> Back to Pricing</a>
+    </header>
+
+    <script>
+        function navigateBack(e) {
+            e.preventDefault();
+            const params = new URLSearchParams(window.location.search);
+            const from   = params.get('from');
+
+            // If arrived from hackathon pricing page, go back there
+            if (from === 'hackathon_pricing') {
+                window.location.href = 'hackathon_pricing.html';
+                return;
+            }
+
+            // Otherwise use auth state to decide
+            const user = firebase.auth().currentUser;
+            if (user) {
+                window.location.href = 'select_plan.html';
+            } else {
+                window.location.href = 'index.html#pricing';
+            }
+        }
+    </script>
+
+    <div class="page">
+
+        <!-- Steps indicator -->
+        <div class="steps">
+            <div class="step active" id="step-ind-1">
+                <div class="step-num">1</div> Select Plan
+            </div>
+            <div class="step-line"></div>
+            <div class="step active" id="step-ind-2">
+                <div class="step-num">2</div> Pay via UPI
+            </div>
+            <div class="step-line"></div>
+            <div class="step" id="step-ind-3">
+                <div class="step-num">3</div> Confirm
+            </div>
+        </div>
+
+        <!-- Plan selector -->
+        <div class="plan-selector" id="user-plan-selector">
+            <div class="plan-pill selected" id="pill-pro" onclick="selectPlan('pro')">
+                <span class="plan-pill-name">Pro</span>
+                <div class="plan-pill-price">₹199<span>/mo</span></div>
+            </div>
+            <div class="plan-pill" id="pill-premium" onclick="selectPlan('premium')">
+                <span class="plan-pill-name">Premium <i class="fas fa-crown" style="color:#f5c430;font-size:.7rem;"></i></span>
+                <div class="plan-pill-price">₹399<span>/mo</span></div>
+            </div>
+        </div>
+
+        <div class="plan-selector" id="hackathon-plan-selector" style="display:none;">
+            <div class="plan-pill selected" id="pill-hackathon_standard" onclick="selectPlan('hackathon_standard')">
+                <span class="plan-pill-name">Standard Listing</span>
+                <div class="plan-pill-price">₹199<span> total</span></div>
+            </div>
+            <div class="plan-pill" id="pill-hackathon_featured" onclick="selectPlan('hackathon_featured')">
+                <span class="plan-pill-name">Featured Listing <i class="fas fa-bolt" style="color:#ff4db8;font-size:.7rem;"></i></span>
+                <div class="plan-pill-price">₹499<span> total</span></div>
+            </div>
+        </div>
+
+        <!-- Main content (Razorpay checkout details card) -->
+        <div class="main-grid" id="payment-section" style="grid-template-columns: 1fr; max-width: 600px; margin: 0 auto;">
+            <div class="card">
+                <div class="card-title" style="justify-content: center; font-size: 1.25rem;">
+                    <i class="fas fa-credit-card"></i> Secure Payment Checkout
+                </div>
+                
+                <div style="background: rgba(138,73,255,.07); border: 1px solid rgba(138,73,255,.15); border-radius: 12px; padding: 1.25rem; margin-bottom: 1.5rem; text-align: center;">
+                    <div style="font-size: .85rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700; letter-spacing: .5px;">Selected Plan</div>
+                    <div style="font-size: 1.8rem; font-weight: 800; color: var(--primary); margin: .25rem 0;" id="display-plan">Pro</div>
+                    <div style="font-size: 2.2rem; font-weight: 900; color: var(--text-light);" id="display-amount">₹199</div>
+                    <div style="font-size: .8rem; color: var(--text-muted); margin-top: .4rem;">Automatic instant activation after payment</div>
+                </div>
+
+                <div class="form-section" style="margin-top: 1rem;">
+                    <div class="form-group" style="margin-bottom: 1.5rem;">
+                        <label class="form-label"><i class="fas fa-envelope"></i> Billing Email Address</label>
+                        <input class="form-input" type="email" id="user-email" placeholder="Loading..." readonly style="background: rgba(255,255,255,.02); border-color: rgba(255,255,255,.08); text-align: center; font-weight: 600;">
+                    </div>
+                    
+                    <button class="submit-btn" id="submit-btn" onclick="payWithRazorpay()" style="height: 52px; font-size: 1rem;">
+                        <i class="fas fa-bolt"></i> Pay Instantly with Razorpay
+                    </button>
+                </div>
+                
+                <div style="display: flex; align-items: center; justify-content: center; gap: 1rem; margin-top: 1.5rem; opacity: .6; font-size: .8rem;">
+                    <span><i class="fas fa-lock"></i> 256-bit SSL encryption</span>
+                    <span>•</span>
+                    <span><i class="fas fa-shield-halved"></i> Powered by Razorpay</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success screen (hidden initially) -->
+        <div class="success-screen" id="success-screen">
+            <div class="card" style="max-width: 520px; margin: 0 auto;">
+                <div class="success-icon"><i class="fas fa-check"></i></div>
+                <h2 style="color: var(--green);">Payment Successful! 🎉</h2>
+                <p>Your subscription has been verified and activated automatically in real-time. Welcome to the elite tier!</p>
+
+                <div class="success-detail" id="success-detail" style="margin-top: 1.5rem; text-align: left; padding: 1.25rem;">
+                    <p>Plan: <strong id="success-plan" style="color: var(--primary);">Pro</strong></p>
+                    <p>Amount Paid: <strong id="success-amount">₹199</strong></p>
+                    <p>Payment ID: <strong id="success-payment-id" style="font-family: monospace;"></strong></p>
+                    <p>Account Email: <strong id="success-email"></strong></p>
+                </div>
+
+                <a href="home.html" style="display:flex;align-items:center;justify-content:center;gap:.5rem;margin-top:2rem;background: var(--primary); border:none; color:white;padding:1rem;border-radius:12px;text-decoration:none;font-weight:700;transition:all .2s;box-shadow: 0 4px 18px rgba(138,73,255,.3);">
+                    <i class="fas fa-rocket"></i> Launch Dashboard
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="./script/auth.js"></script>
+
+    <script>
+        const PLANS = {
+            pro:     { name: 'Pro', amount: 199, annualAmount: 159, label: 'Career Accelerator' },
+            premium: { name: 'Premium', amount: 399, annualAmount: 319, label: 'Career Elite' },
+            hackathon: { name: 'Hackathon Standard Listing', amount: 199, annualAmount: 199, label: 'Standard Listing' },
+            hackathon_standard: { name: 'Hackathon Standard Listing', amount: 199, annualAmount: 199, label: 'Standard Listing' },
+            hackathon_featured: { name: 'Hackathon Featured Listing', amount: 499, annualAmount: 499, label: 'Featured Listing' }
+        };
+
+        let currentPlan = 'pro';
+        let userEmail = '';
+        let currentBilling = 'monthly';
+
+        // Read plan from URL param
+        window.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            let planParam = params.get('plan') || 'pro';
+            const billingParam = params.get('billing');
+            
+            if (billingParam === 'annual') {
+                currentBilling = 'annual';
+            }
+
+            // If user clicked list hackathon, map standard listing initially
+            if (planParam === 'hackathon') {
+                planParam = 'hackathon_standard';
+            }
+
+            if (planParam.startsWith('hackathon')) {
+                document.getElementById('user-plan-selector').style.display = 'none';
+                document.getElementById('hackathon-plan-selector').style.display = 'flex';
+            } else {
+                document.getElementById('user-plan-selector').style.display = 'flex';
+                document.getElementById('hackathon-plan-selector').style.display = 'none';
+            }
+
+            if (planParam && PLANS[planParam]) selectPlan(planParam);
+
+            // Load user email from Firebase
+            firebase.auth().onAuthStateChanged(user => {
+                if (user) {
+                    userEmail = user.email;
+                    document.getElementById('user-email').value = userEmail;
+                } else {
+                    // Not logged in — redirect to login, preserving plan, billing, and from parameters
+                    const currentPlanParam    = planParam ? `&plan=${planParam}` : '';
+                    const currentBillingParam = billingParam ? `&billing=${billingParam}` : '';
+                    const fromParam           = params.get('from') ? `&from=${params.get('from')}` : '';
+                    window.location.href = `login.html?redirect=upgrade.html${currentPlanParam}${currentBillingParam}${fromParam}`;
+                }
+            });
+        });
+
+        function selectPlan(plan) {
+            currentPlan = plan;
+            const p = PLANS[plan];
+            // Calculate total amount to pay
+            const amount = currentBilling === 'annual' && !plan.startsWith('hackathon') ? (p.annualAmount * 12) : p.amount;
+            const billingLabel = currentBilling === 'annual' && !plan.startsWith('hackathon') ? ' (Annual Billing — ₹' + p.annualAmount + '/mo x 12)' : '';
+
+            document.getElementById('display-amount').textContent = '₹' + amount;
+            document.getElementById('display-plan').textContent = p.name + billingLabel;
+
+            document.querySelectorAll('.plan-pill').forEach(el => el.classList.remove('selected'));
+            document.getElementById('pill-' + plan).classList.add('selected');
+
+            // Update URL without reload
+            const url = new URL(window.location);
+            url.searchParams.set('plan', plan);
+            url.searchParams.set('billing', currentBilling);
+            window.history.replaceState({}, '', url);
+        }
+
+        function copyUpiId() {
+            const id = document.getElementById('upi-id-text').textContent;
+            navigator.clipboard.writeText(id).then(() => showToast('UPI ID copied!'));
+        }
+
+        function showToast(msg, error = false) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.style.background = error ? '#FF4DB8' : '#50daa0';
+            t.style.color = error ? 'white' : '#0A090F';
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2800);
+        }
+
+        async function payWithRazorpay() {
+            const btn = document.getElementById('submit-btn');
+            
+            const BACKEND_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') 
+                ? 'http://localhost:8000' 
+                : 'https://career-coach-ai-3xap.onrender.com';
+
+            if (!userEmail) {
+                showToast('Please log in first.', true); return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing Checkout...';
+
+            try {
+                const idToken = await firebase.auth().currentUser.getIdToken();
+                const p = PLANS[currentPlan];
+
+                // 1. Create order on Backend
+                const orderRes = await fetch(`${BACKEND_URL}/api/payment/create-order`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${idToken}`
+                    },
+                    body: JSON.stringify({
+                        plan: currentPlan,
+                        billing: currentBilling
+                    })
+                });
+
+                if (!orderRes.ok) {
+                    const data = await orderRes.json();
+                    throw new Error(data.detail || 'Failed to create payment order.');
+                }
+
+                const orderData = await orderRes.json();
+
+                // 2. Configure & Open Razorpay checkout overlay
+                const options = {
+                    key: orderData.key_id,
+                    amount: orderData.amount,
+                    currency: "INR",
+                    name: "AI Career Coach",
+                    description: p.name + " Plan Upgrade",
+                    order_id: orderData.order_id,
+                    handler: async function (paymentResponse) {
+                        try {
+                            btn.disabled = true;
+                            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying Payment...';
+
+                            // 3. Call backend verification endpoint
+                            const verifyRes = await fetch(`${BACKEND_URL}/api/payment/verify`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Authorization': `Bearer ${idToken}`
+                                },
+                                body: JSON.stringify({
+                                    razorpay_payment_id: paymentResponse.razorpay_payment_id,
+                                    razorpay_order_id: paymentResponse.razorpay_order_id,
+                                    razorpay_signature: paymentResponse.razorpay_signature,
+                                    plan: currentPlan,
+                                    billing: currentBilling
+                                })
+                            });
+
+                            if (verifyRes.ok) {
+                                // Show success screen
+                                document.getElementById('payment-section').style.display = 'none';
+                                document.querySelector('.plan-selector').style.display = 'none';
+                                if (document.querySelector('.steps')) {
+                                    document.querySelector('.steps').style.display = 'none';
+                                }
+
+                                // Fill success screen details
+                                document.getElementById('success-plan').textContent = p.name;
+                                const amountPaid = currentBilling === 'annual' && !currentPlan.startsWith('hackathon') ? (p.annualAmount * 12) : p.amount;
+                                document.getElementById('success-amount').textContent = '₹' + amountPaid;
+                                document.getElementById('success-payment-id').textContent = paymentResponse.razorpay_payment_id;
+                                document.getElementById('success-email').textContent = userEmail;
+
+                                document.getElementById('success-screen').style.display = 'block';
+                                if (currentPlan === 'pro' || currentPlan === 'premium') {
+                                    localStorage.setItem('subscription_tier', currentPlan);
+                                }
+                                showToast('Payment verified and plan activated!');
+                            } else {
+                                const errData = await verifyRes.json();
+                                showToast(errData.detail || 'Payment verification failed.', true);
+                                btn.disabled = false;
+                                btn.innerHTML = '<i class="fas fa-bolt"></i> Pay Instantly with Razorpay';
+                            }
+                        } catch (err) {
+                            console.error(err);
+                            showToast('Error during payment verification.', true);
+                            btn.disabled = false;
+                            btn.innerHTML = '<i class="fas fa-bolt"></i> Pay Instantly with Razorpay';
+                        }
+                    },
+                    prefill: {
+                        email: userEmail
+                    },
+                    theme: {
+                        color: "#8A49FF"
+                    },
+                    modal: {
+                        ondismiss: function() {
+                            btn.disabled = false;
+                            btn.innerHTML = '<i class="fas fa-bolt"></i> Pay Instantly with Razorpay';
+                        }
+                    }
+                };
+
+                const rzp = new Razorpay(options);
+                rzp.open();
+
+            } catch (err) {
+                console.error(err);
+                showToast(err.message || 'Network error. Please try again.', true);
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-bolt"></i> Pay Instantly with Razorpay';
+            }
+        }
+    </script>
+</body>
+</html>

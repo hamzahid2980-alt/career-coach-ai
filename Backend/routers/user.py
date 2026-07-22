@@ -31,6 +31,10 @@ async def get_user_profile(
         
         resume_data = db.fetch_resume_relational(user_uid=uid, get_optimized=False)
         
+        # Fetch subscription details from the users collection
+        user_doc = db.db.collection('users').document(uid).get()
+        user_data = user_doc.to_dict() if user_doc.exists else {}
+
         profile_response = {
             "uid": uid,
             "name": user.get("name") or (resume_data.get('personal_info', {}).get('name') if resume_data else None),
@@ -38,7 +42,10 @@ async def get_user_profile(
             "phone": resume_data.get('personal_info', {}).get('phone') if resume_data else None,
             "linkedin": resume_data.get('personal_info', {}).get('linkedin') if resume_data else None,
             "github": resume_data.get('personal_info', {}).get('github') if resume_data else None,
-            "resume_content": resume_data or {}
+            "resume_content": resume_data or {},
+            "subscription_tier": user_data.get("subscription_tier", "free"),
+            "subscription_expires": user_data.get("subscription_expires", None),
+            "can_host_hackathons": user_data.get("can_host_hackathons", False)
         }
         
         return profile_response

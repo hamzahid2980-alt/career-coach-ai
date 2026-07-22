@@ -35,6 +35,7 @@ from core.ai_core import (
 )
 
 from dependencies import get_db_manager, get_current_user
+from core.tier_limits import verify_tier_limit, increment_tier_usage
 
 router = APIRouter()
 
@@ -71,7 +72,8 @@ async def upload_and_process_resume(
     use_saved_resume: bool = Form(False, description="Set to true to use the resume already saved in the user's profile."),
     job_description: Optional[str] = Form(None, description="Optional job description for ATS analysis."),
     user: Dict[str, Any] = Depends(get_current_user),
-    db: DatabaseManager = Depends(get_db_manager)
+    db: DatabaseManager = Depends(get_db_manager),
+    _limit_check: None = Depends(verify_tier_limit("resumes_optimized"))
 ) -> JSONResponse:
     """
     Uploads a new resume file, or uses a previously uploaded one, performs AI parsing/categorization,
@@ -247,6 +249,7 @@ async def upload_and_process_resume(
         # NEW: Record this as an optimization/analysis event so the Dashboard stats update.
         # The button says "Analyze & Optimize", so users expect this to count.
         db.record_resume_optimization(uid)
+        increment_tier_usage(user)
 
         return JSONResponse(content={
             "message": "Resume processed successfully!",

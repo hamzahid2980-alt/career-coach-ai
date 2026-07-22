@@ -300,7 +300,11 @@ async function handleGenerateRoadmap(e) {
     chatbotFloatButton.classList.remove("hidden");
   } catch (error) {
     console.error("Error generating roadmap:", error);
-    showStatus(roadmapStatusDiv, `Error: ${error.message}`, true);
+    if (error.message.includes("Limit Exceeded") || error.message.includes("Subscription Limit")) {
+        window.showUpgradeModal(error.message);
+    } else {
+        showStatus(roadmapStatusDiv, `Error: ${error.message}`, true);
+    }
   } finally {
     showLoading(false, generateRoadmapButton, "Generate My Strategic Plan");
   }

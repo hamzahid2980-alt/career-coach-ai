@@ -7,6 +7,8 @@ import json
 import datetime
 import asyncio
 
+from core.tier_limits import verify_tier_limit, increment_tier_usage
+
 router = APIRouter()
 
 @router.get("/auth-url")
@@ -247,7 +249,12 @@ class CreateDraftRequest(BaseModel):
     body: str
 
 @router.post("/draft-email")
-async def draft_career_email(request: DraftRequest, user=Depends(get_current_user), db=Depends(get_db_manager)):
+async def draft_career_email(
+    request: DraftRequest, 
+    user=Depends(get_current_user), 
+    db=Depends(get_db_manager),
+    _limit_check: None = Depends(verify_tier_limit("emails_sent"))
+):
     """
     Generates a draft email content using AI (Groq). Auto-fetches user profile.
     """
@@ -286,6 +293,7 @@ async def draft_career_email(request: DraftRequest, user=Depends(get_current_use
     # Reassemble body, skipping empty leading lines if any
     body = "\n".join(lines[body_start_index:]).strip()
     
+    increment_tier_usage(user) # Increment verified tier usage
     return {"subject": subject, "body": body}
 
 @router.post("/create-email-draft")

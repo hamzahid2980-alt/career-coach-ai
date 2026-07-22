@@ -18,3 +18,5 @@ numpy
 google-cloud-bigquery
 beautifulsoup4
 google-cloud-vision
+razorpay
+

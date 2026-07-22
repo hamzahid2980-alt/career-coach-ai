@@ -18,6 +18,7 @@ from core.db_core import DatabaseManager
 from core.ai_core import generate_career_roadmap, get_tutor_explanation, get_chatbot_response, evaluate_and_adjust_roadmap
 msg = "" # Placeholder for optional messaging
 from dependencies import get_db_manager, get_current_user
+from core.tier_limits import verify_tier_limit, increment_tier_usage
 
 router = APIRouter()
 
@@ -182,7 +183,12 @@ def initialize_roadmap_progress(roadmap_data: Dict[str, Any]) -> Dict[str, Any]:
 # --- API Endpoints ---
 
 @router.post("/generate")
-async def generate_roadmap_endpoint(request: RoadmapRequest, user: dict = Depends(get_current_user), db: DatabaseManager = Depends(get_db_manager)):
+async def generate_roadmap_endpoint(
+    request: RoadmapRequest, 
+    user: dict = Depends(get_current_user), 
+    db: DatabaseManager = Depends(get_db_manager),
+    _limit_check: None = Depends(verify_tier_limit("roadmaps_generated"))
+):
     uid = user['uid']
     try:
         roadmap_output_raw = generate_career_roadmap(request.dict())
@@ -191,7 +197,10 @@ async def generate_roadmap_endpoint(request: RoadmapRequest, user: dict = Depend
         roadmap_output = initialize_roadmap_progress(roadmap_output_raw)
         await db.save_user_roadmap(uid, roadmap_output)
         db.record_roadmap_generation(uid)
+        increment_tier_usage(user) # Record usage increment
         return roadmap_output
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An internal server error occurred: {str(e)}")
 
@@ -425,7 +434,11 @@ def _summarize_career_plan(plan: Dict[str, Any]) -> str:
     return "\n".join(parts) if parts else "No career plan details are available."
 
 @router.post("/chat")
-async def get_chatbot_response_endpoint(request: ChatbotRequest, user: dict = Depends(get_current_user)):
+async def get_chatbot_response_endpoint(
+    request: ChatbotRequest, 
+    user: dict = Depends(get_current_user),
+    _limit_check: None = Depends(verify_tier_limit("chatbot_messages"))
+):
     try:
         plan_summary_str = _summarize_career_plan(request.career_plan)
         
@@ -439,7 +452,11 @@ async def get_chatbot_response_endpoint(request: ChatbotRequest, user: dict = De
         
         if not chatbot_response:
             raise HTTPException(status_code=500, detail="AI chatbot failed to generate a response.")
+            
+        increment_tier_usage(user) # Increment verified tier usage
         return chatbot_response
+    except HTTPException:
+        raise
     except Exception as e:
         print(f"❌ Chatbot Endpoint Error: {e}")
         raise HTTPException(status_code=500, detail=f"An internal server error occurred: {str(e)}")

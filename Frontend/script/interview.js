@@ -39,6 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentQuestion = '';
     let mediaRecorder;
     let recordedChunks = [];
+    let answeredQuestionsCount = 0;
 
     // --- PROCTORING STATE ---
     let totalWarnings = 0;
@@ -110,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
         chatMessagesContainer.appendChild(messageRow);
         
         // setTimeout(() => {
-            // messageRow.scrollIntoView({ behavior: "smooth", block: "end" });
+        //     messageRow.scrollIntoView({ behavior: "smooth", block: "end" });
         // }, 100);
     };
 
@@ -222,33 +223,84 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     startInterviewBtn.addEventListener('click', async () => {
-        startPromptCard.style.display = 'none';
-        showSpinner("Setting up your interview...");
-        
-        if (!objectDetectionModel) {
-            try { 
-                objectDetectionModel = await cocoSsd.load(); 
-            } catch (e) { 
-                console.error("Failed to load model:", e); 
-                showToast("Could not initialize proctoring AI.", 'danger');
-                startPromptCard.style.display = 'block';
-                hideSpinner();
-                return;
-            }
-        }
-        
-        const hasCamera = await setupCameraAndRecorder();
-        if (!hasCamera) {
-            hideSpinner();
-            showToast("Camera and microphone access is required.", 'danger');
-            startPromptCard.style.display = 'block';
+        const user = firebase.auth().currentUser;
+        if (!user) {
+            showToast("User not authenticated. Please log in.", "danger");
             return;
         }
         
-        hideSpinner();
-        interviewCard.style.display = 'block';
-        isInterviewActive = true;
-        await beginInterviewSession();
+        showSpinner("Setting up your interview...");
+        
+        try {
+            // First check the limit by hitting the starting endpoint with Authorization headers
+            const token = await user.getIdToken();
+            const testRes = await fetch(`${API_URL}/chat`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ 
+                    job_description: jobDescription, 
+                    chat_history: [{ role: 'user', content: "Start the interview." }], 
+                    difficulty: selectedDifficulty 
+                }),
+            });
+            
+            if (!testRes.ok) {
+                let errMsg = "Failed to initialize interview.";
+                try {
+                    const errData = await testRes.json();
+                    errMsg = errData.detail || errMsg;
+                } catch (e) {}
+                throw new Error(errMsg);
+            }
+            
+            // Limit check passed, we got the first question!
+            const firstQuestionData = await testRes.json();
+            
+            // Now load proctoring models and setup media streams
+            if (!objectDetectionModel) {
+                try { 
+                    objectDetectionModel = await cocoSsd.load(); 
+                } catch (e) { 
+                    console.error("Failed to load model:", e); 
+                    showToast("Could not initialize proctoring AI.", 'danger');
+                    hideSpinner();
+                    return;
+                }
+            }
+            
+            const hasCamera = await setupCameraAndRecorder();
+            if (!hasCamera) {
+                hideSpinner();
+                showToast("Camera and microphone access is required.", 'danger');
+                return;
+            }
+            
+            hideSpinner();
+            startPromptCard.style.display = 'none';
+            interviewCard.style.display = 'block';
+            isInterviewActive = true;
+            
+            // Begin session with the question we already fetched
+            chatHistory = [];
+            answeredQuestionsCount = 0;
+            showToast("The proctored session has started. Please maintain focus.", 'success');
+            currentQuestion = firstQuestionData.reply;
+            addMessageToChat('model', currentQuestion);
+            recordBtn.disabled = false;
+            endInterviewBtn.disabled = false;
+            
+        } catch (error) {
+            hideSpinner();
+            console.error("Failed to start interview:", error);
+            if (error.message.includes("Limit Exceeded") || error.message.includes("Subscription Limit") || error.message.includes("subscription limit")) {
+                window.showUpgradeModal(error.message);
+            } else {
+                showToast(error.message, 'danger');
+            }
+        }
     });
 
     // --- Interview Logic ---
@@ -272,49 +324,48 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    const beginInterviewSession = async () => {
-        chatHistory = [];
-        // This now shows a GREEN toast notification.
-        showToast("The proctored session has started. Please maintain focus.", 'success');
-        showTypingIndicator();
-        try {
-            const res = await fetch(`${API_URL}/chat`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ job_description: jobDescription, chat_history: [{ role: 'user', content: "Start the interview." }], difficulty: selectedDifficulty }),
-            });
-            if (!res.ok) throw new Error('Failed to get first question.');
-            const data = await res.json();
-            
-            hideTypingIndicator();
-            currentQuestion = data.reply;
-            addMessageToChat('model', currentQuestion);
-            recordBtn.disabled = false;
-            endInterviewBtn.disabled = false;
-        } catch (error) {
-            hideTypingIndicator();
-            console.error("Start Interview Error:", error);
-            addMessageToChat('model', "Sorry, an error occurred. Please restart.");
-        }
-    };
-
     const handleRecordingSubmission = async (videoBlob) => {
         showVideoSpinner("Analyzing your response...");
         recordBtn.disabled = true;
         
+        const user = firebase.auth().currentUser;
+        if (!user) {
+            hideVideoSpinner();
+            showToast("User not authenticated. Please log in.", "danger");
+            return;
+        }
+        
+        const token = await user.getIdToken();
         const formData = new FormData();
         formData.append('video_file', videoBlob, 'answer.webm');
         formData.append('question', currentQuestion);
         formData.append('job_description', jobDescription);
+        formData.append('question_count', answeredQuestionsCount + 1);
         
         try {
-            const res = await fetch(`${API_URL}/video`, { method: 'POST', body: formData });
+            const res = await fetch(`${API_URL}/video`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                body: formData
+            });
             if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
             const data = await res.json();
             
             hideVideoSpinner();
 
-            const combinedMessage = `<strong>Feedback:</strong><br>${data.feedback}<br><br><strong>Next question:</strong><br>${data.next_question}`;
+            answeredQuestionsCount++;
+            const currentTier = localStorage.getItem('subscription_tier') || 'free';
+            const maxQuestions = currentTier === 'free' ? 5 : (currentTier === 'pro' ? 10 : 999);
+            const limitHit = answeredQuestionsCount >= maxQuestions;
+
+            let combinedMessage = "";
+            if (limitHit) {
+                combinedMessage = `<strong>Feedback:</strong><br>${data.feedback}<br><br><span style="color: #FF4DB8; font-weight: bold;"><i class="fas fa-lock"></i> Session limit reached:</span> You have completed the maximum allowed ${maxQuestions} questions for your current '${currentTier.toUpperCase()}' tier. Please click <strong>End & Analyze Interview</strong> to see your final score and summary.`;
+            } else {
+                combinedMessage = `<strong>Feedback:</strong><br>${data.feedback}<br><br><strong>Next question:</strong><br>${data.next_question}`;
+            }
 
             chatHistory.push(
                 { role: 'model', content: `Question: ${currentQuestion}` }, 
@@ -327,8 +378,18 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 hideTypingIndicator();
                 addMessageToChat('model', combinedMessage);
-                currentQuestion = data.next_question;
-                recordBtn.disabled = false;
+                if (limitHit) {
+                    currentQuestion = "";
+                    recordBtn.disabled = true;
+                    recordBtn.style.opacity = '0.4';
+                    recordBtn.title = "Limit reached. End the interview.";
+                    // Highlight the end interview button
+                    endInterviewBtn.style.animation = "pulseGlow 2s infinite";
+                    showToast("Interview questions limit reached. Please end the interview to see your summary.", "info");
+                } else {
+                    currentQuestion = data.next_question;
+                    recordBtn.disabled = false;
+                }
             }, 1200);
 
         } catch (error) {
@@ -427,11 +488,30 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         const strengthsHtml = (summary.strengths || []).map(s => `<li class="strength">${s}</li>`).join('');
         const improvementsHtml = (summary.areas_for_improvement || []).map(i => `<li class="improvement">${i}</li>`).join('');
+        
+        const currentTier = localStorage.getItem('subscription_tier') || 'free';
+        let ctaHtml = "";
+        if (currentTier !== 'premium') {
+            ctaHtml = `
+                <div class="upgrade-cta" style="margin-top: 2rem; padding: 1.5rem; background: rgba(138, 73, 255, 0.08); border: 1px solid rgba(138, 73, 255, 0.25); border-radius: 12px; text-align: center;">
+                    <h4 style="color: #FFF; margin-bottom: 0.5rem;"><i class="fas fa-crown" style="color: #f5c430;"></i> Want Unlimited Practice?</h4>
+                    <p style="font-size: 0.85rem; color: #8E8C99; margin-bottom: 1rem;">Upgrade your plan to unlock unlimited questions, real-time voice mic responses, and full AI pro reports.</p>
+                    <button onclick="window.showUpgradeModal('Unlock unlimited questions and full premium analyses for your mock interviews!')" class="btn primary-gradient-btn" style="padding: 8px 20px; border-radius: 50px; font-weight: bold; background: #8A49FF; color: #fff; border: none; cursor: pointer;">Upgrade Your Account</button>
+                </div>
+            `;
+            
+            // Pop the modal after 4.5 seconds to prompt upgrade
+            setTimeout(() => {
+                window.showUpgradeModal("Unlock unlimited questions and full premium analyses for your mock interviews!");
+            }, 4500);
+        }
+
         summaryContent.innerHTML = `
             <h3>Overall Score: ${summary.overall_score || 'N/A'}/100</h3>
             <h3>Strengths</h3><ul>${strengthsHtml || '<li>Not identified.</li>'}</ul>
             <h3>Areas for Improvement</h3><ul>${improvementsHtml || '<li>Not identified.</li>'}</ul>
-            <div id="overall-feedback"><h3>Overall Feedback</h3><p>${summary.overall_feedback || 'Not available.'}</p></div>`;
+            <div id="overall-feedback"><h3>Overall Feedback</h3><p>${summary.overall_feedback || 'Not available.'}</p></div>
+            ${ctaHtml}`;
     };
     
     restartInterviewBtn.addEventListener('click', () => window.location.reload());

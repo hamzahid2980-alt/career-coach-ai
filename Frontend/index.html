@@ -28,7 +28,7 @@
         </div>
         <ul class="mobile-nav-links">
             <li><a href="#features">Features</a></li>
-             
+            <li><a href="#pricing">Pricing</a></li>
             <li><a href="#about">About</a></li>
             <li><a href="login.html" class="btn primary-gradient-btn">Get Started</a></li>
         </ul>
@@ -116,8 +116,157 @@
                     <h4>Career Mail</h4>
                     <p>Draft professional emails for applications and follow-ups automatically using context-aware AI.</p>
                 </div>
+                <div class="feature-item card">
+                    <div class="feature-icon"><i class="fas fa-cubes"></i></div>
+                    <h4>Hackathon Hub</h4>
+                    <p>Browse, submit, and host developer hackathons. Build real-world experience, win prizes, and stand out to top recruiters.</p>
+                </div>
+                <div class="feature-item card">
+                    <div class="feature-icon"><i class="fas fa-file-invoice"></i></div>
+                    <h4>AI Resume Builder <span style="font-size: 0.62rem; font-weight: 800; background: #8A49FF; color: #fff; padding: 2px 6px; border-radius: 20px; vertical-align: middle; margin-left: 6px; text-transform: uppercase;">Upcoming</span></h4>
+                    <p>Build job-winning resumes manually or by chatting with our AI agent. Choose premium templates and download free of charge.</p>
+                </div>
             </div>
         </section>
+
+        <!-- ===== PRICING SECTION ===== -->
+        <section class="pricing-section" id="pricing">
+            <div class="pricing-header">
+                <h3 class="pricing-heading">Simple, Transparent Pricing</h3>
+                <p class="pricing-subtext">Start free. Upgrade when you're ready. No surprises.</p>
+                <div class="pricing-toggle-wrapper">
+                    <span class="toggle-label active-toggle" id="toggle-monthly-label">Monthly</span>
+                    <button class="pricing-toggle" id="pricing-toggle" aria-label="Toggle billing period">
+                        <span class="pricing-toggle-thumb"></span>
+                    </button>
+                    <span class="toggle-label" id="toggle-annual-label">Annual <span class="save-badge">Save 20%</span></span>
+                </div>
+            </div>
+
+            <div class="pricing-grid">
+
+                <!-- FREE CARD -->
+                <div class="pricing-card" data-aos="fade-up">
+                    <div class="pricing-card-inner">
+                        <div class="pricing-tier-badge free-badge">Starter</div>
+                        <h4 class="pricing-tier-name">Free</h4>
+                        <div class="pricing-amount">
+                            <span class="currency">₹</span>
+                            <span class="price-val" data-monthly="0" data-annual="0">0</span>
+                            <span class="price-period">/month</span>
+                        </div>
+                        <p class="pricing-desc">Taste every feature. Get hooked on the quality.</p>
+                        <a href="login.html" class="btn pricing-btn-free">Get Started Free</a>
+                        <div class="pricing-divider"></div>
+                        <ul class="pricing-features-list">
+                            <li><i class="fas fa-check"></i><span>Resume ATS Analysis <strong>1×/month</strong></span></li>
+                            <li><i class="fas fa-check"></i><span>Career Roadmap <strong>1 roadmap</strong></span></li>
+                            <li><i class="fas fa-check"></i><span>Skills Assessment <strong>2/month</strong></span></li>
+                            <li><i class="fas fa-check"></i><span>Mock Interview <strong>2 sessions · 5 questions</strong></span></li>
+                            <li><i class="fas fa-check"></i><span>Job Matching <strong>2 results/search</strong></span></li>
+                            <li><i class="fas fa-check"></i><span>AI Chatbot <strong>10 messages/day</strong></span></li>
+                            <li><i class="fas fa-check"></i><span>Career Mail <strong>1 email/day</strong></span></li>
+                            <li><i class="fas fa-check"></i><span>Resume Builder <strong>free premium templates</strong></span></li>
+                            <li><i class="fas fa-check"></i><span>Portfolio Builder <strong>1 portfolio</strong></span></li>
+                            <li><i class="fas fa-check"></i><span>Hackathon Hub <strong>full browse</strong></span></li>
+                            <li><i class="fas fa-check"></i><span>Market Trends <strong>full access</strong></span></li>
+                            <li class="feature-locked"><i class="fas fa-lock"></i><span>Interview Summary Report</span></li>
+                            <li class="feature-locked"><i class="fas fa-lock"></i><span>LinkedIn Optimizer</span></li>
+                            <li class="feature-locked"><i class="fas fa-lock"></i><span>AI Avatar Interviewer</span></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- PRO CARD -->
+                <div class="pricing-card pricing-card-pro" data-aos="fade-up" data-aos-delay="100">
+                    <div class="pricing-popular-tag"><i class="fas fa-star"></i> Most Popular</div>
+                    <div class="pricing-card-inner">
+                        <div class="pricing-tier-badge pro-badge">Pro</div>
+                        <h4 class="pricing-tier-name">Career Accelerator</h4>
+                        <div class="pricing-amount">
+                            <span class="currency">₹</span>
+                            <span class="price-val" data-monthly="199" data-annual="159">199</span>
+                            <span class="price-period">/month</span>
+                        </div>
+                        <p class="pricing-desc">For serious job seekers using the platform every week.</p>
+                        <a href="#" onclick="selectPricingPlan(event, 'pro')" class="btn primary-gradient-btn pricing-btn-pro">Upgrade to Pro</a>
+                        <div class="pricing-divider"></div>
+                        <ul class="pricing-features-list">
+                            <li><i class="fas fa-check"></i><span>Resume ATS Analysis <strong>5×/month</strong></span></li>
+                            <li><i class="fas fa-check"></i><span>Career Roadmap <strong>3/month + editable</strong></span></li>
+                            <li><i class="fas fa-check"></i><span>Skills Assessment <strong>10/month</strong></span></li>
+                            <li><i class="fas fa-check"></i><span>Mock Interview <strong>10 sessions · 10 questions</strong></span></li>
+                            <li><i class="fas fa-check"></i><span>Interview Summary <strong>standard report</strong></span></li>
+                            <li><i class="fas fa-check"></i><span>Job Matching <strong>10 results/search</strong></span></li>
+                            <li><i class="fas fa-check"></i><span>AI Chatbot <strong>50 messages/day</strong></span></li>
+                            <li><i class="fas fa-check"></i><span>Career Mail <strong>5 emails/day</strong></span></li>
+                            <li><i class="fas fa-check"></i><span>Resume Builder <strong>3 resumes + PDF & DOCX</strong></span></li>
+                            <li><i class="fas fa-check"></i><span>Portfolio Builder <strong>3 portfolios</strong></span></li>
+                            <li><i class="fas fa-check"></i><span>LinkedIn Optimizer <strong>3×/month</strong></span></li>
+                            <li><i class="fas fa-check"></i><span>Google Calendar Sync</span></li>
+                            <li><i class="fas fa-check"></i><span>Cover Letter Generator <strong>3×/month</strong></span></li>
+                            <li><i class="fas fa-check"></i><span>Salary Insights</span></li>
+                            <li class="feature-locked"><i class="fas fa-lock"></i><span>AI Avatar Interviewer</span></li>
+                            <li class="feature-locked"><i class="fas fa-lock"></i><span>Hackathon Alerts</span></li>
+                            <li class="feature-locked"><i class="fas fa-lock"></i><span>Job Alert Emails</span></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- PREMIUM CARD -->
+                <div class="pricing-card pricing-card-premium" data-aos="fade-up" data-aos-delay="200">
+                    <div class="pricing-card-inner">
+                        <div class="pricing-tier-badge premium-badge"><i class="fas fa-crown"></i> Elite</div>
+                        <h4 class="pricing-tier-name">Career Elite</h4>
+                        <div class="pricing-amount">
+                            <span class="currency">₹</span>
+                            <span class="price-val" data-monthly="399" data-annual="319">399</span>
+                            <span class="price-period">/month</span>
+                        </div>
+                        <p class="pricing-desc">The complete experience — unlimited, unrestricted, elite.</p>
+                        <a href="#" onclick="selectPricingPlan(event, 'premium')" class="btn pricing-btn-premium">Go Elite <i class="fas fa-arrow-right"></i></a>
+                        <div class="pricing-divider"></div>
+                        <ul class="pricing-features-list">
+                            <li><i class="fas fa-check"></i><span>Everything in Pro</span></li>
+                            <li><i class="fas fa-check"></i><span>Resume ATS <strong>Unlimited</strong></span></li>
+                            <li><i class="fas fa-check"></i><span>Career Roadmap <strong>Unlimited</strong></span></li>
+                            <li><i class="fas fa-check"></i><span>Skills Assessment <strong>Unlimited</strong></span></li>
+                            <li><i class="fas fa-check"></i><span>Mock Interview <strong>Unlimited sessions</strong></span></li>
+                            <li class="feature-exclusive"><i class="fas fa-crown"></i><span><strong>AI Avatar Interviewer</strong> — voice + face</span></li>
+                            <li class="feature-exclusive"><i class="fas fa-crown"></i><span><strong>Live Mic Responses</strong> — real-time voice</span></li>
+                            <li class="feature-exclusive"><i class="fas fa-crown"></i><span><strong>Full Interview PDF Report</strong></span></li>
+                            <li><i class="fas fa-check"></i><span>Job Matching <strong>20 results/search</strong></span></li>
+                            <li><i class="fas fa-check"></i><span>AI Chatbot <strong>200 messages/day</strong></span></li>
+                            <li><i class="fas fa-check"></i><span>Career Mail <strong>Unlimited</strong></span></li>
+                            <li><i class="fas fa-check"></i><span>Resume Builder <strong>Unlimited</strong></span></li>
+                            <li><i class="fas fa-check"></i><span>LinkedIn Optimizer <strong>Unlimited</strong></span></li>
+                            <li><i class="fas fa-check"></i><span>Cover Letter <strong>Unlimited</strong></span></li>
+                            <li class="feature-exclusive"><i class="fas fa-crown"></i><span><strong>Hackathon Alerts</strong> — matched to your skills</span></li>
+                            <li class="feature-exclusive"><i class="fas fa-crown"></i><span><strong>Daily Job Alert Emails</strong></span></li>
+                            <li class="feature-exclusive"><i class="fas fa-crown"></i><span><strong>AI Salary Negotiation Coach</strong></span></li>
+                            <li class="feature-exclusive"><i class="fas fa-crown"></i><span><strong>Priority API Routing</strong></span></li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Hackathon Organiser CTA Strip -->
+            <div class="organiser-cta">
+                <div class="organiser-cta-icon"><i class="fas fa-flag-checkered"></i></div>
+                <div class="organiser-cta-text">
+                    <strong>Organising a Hackathon?</strong>
+                    <span>List your event and reach thousands of skilled, motivated participants.</span>
+                </div>
+                <div class="organiser-cta-prices">
+                    <span class="org-price-pill">Standard ₹199</span>
+                    <span class="org-price-pill featured-pill">Featured ₹499 <i class="fas fa-bolt"></i></span>
+                </div>
+                <a href="#" onclick="selectPricingPlan(event, 'hackathon')" class="btn secondary-btn organiser-btn">List Your Hackathon <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </section>
+        <!-- ===== END PRICING SECTION ===== -->
+
          <section class="cta-section">
             <div class="cta-content">
                 <h3 class="cta-heading">Ready to Transform Your Career?</h3>
@@ -272,12 +421,52 @@
             });
         }
         
+        // --- Pricing Toggle ---
+        function setupPricingToggle() {
+            const toggle = document.getElementById('pricing-toggle');
+            const monthlyLabel = document.getElementById('toggle-monthly-label');
+            const annualLabel = document.getElementById('toggle-annual-label');
+            const priceVals = document.querySelectorAll('.price-val');
+            let isAnnual = false;
+
+            toggle.addEventListener('click', () => {
+                isAnnual = !isAnnual;
+                toggle.classList.toggle('annual-active', isAnnual);
+                monthlyLabel.classList.toggle('active-toggle', !isAnnual);
+                annualLabel.classList.toggle('active-toggle', isAnnual);
+
+                priceVals.forEach(el => {
+                    const target = isAnnual ? el.dataset.annual : el.dataset.monthly;
+                    el.textContent = target;
+                });
+            });
+        }
+
+        // --- Handle Pricing Selection Auth Flow ---
+        function selectPricingPlan(e, plan) {
+            e.preventDefault();
+            const toggle = document.getElementById('pricing-toggle');
+            const isAnnual = toggle ? toggle.classList.contains('annual-active') : false;
+            const billing = isAnnual ? 'annual' : 'monthly';
+
+            firebase.auth().onAuthStateChanged(user => {
+                if (user) {
+                    // User is logged in, send them straight to payment/upgrade page
+                    window.location.href = `upgrade.html?plan=${plan}&billing=${billing}`;
+                } else {
+                    // User is not logged in, send them to login first with redirection parameters preserved
+                    window.location.href = `login.html?redirect=upgrade.html&plan=${plan}&billing=${billing}`;
+                }
+            });
+        }
+
         // Initialize everything when DOM is loaded
         document.addEventListener('DOMContentLoaded', () => {
             createParticles();
             setupBackToTop();
             setupMobileMenu();
             setupScrollAnimations();
+            setupPricingToggle();
         });
     </script>
 

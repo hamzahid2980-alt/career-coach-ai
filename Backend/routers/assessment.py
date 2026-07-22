@@ -17,6 +17,7 @@ from core.db_core import DatabaseManager
 from core.ai_core import generate_assessment_questions, evaluate_assessment_answers # NEW AI CORE FUNCTIONS
 
 from dependencies import get_db_manager, get_current_user
+from core.tier_limits import verify_tier_limit, increment_tier_usage
 
 router = APIRouter()
 
@@ -40,7 +41,8 @@ class AssessmentSubmissionRequest(BaseModel):
 async def start_assessment_endpoint(
     request: AssessmentSetupRequest,
     user: dict = Depends(get_current_user),
-    db: DatabaseManager = Depends(get_db_manager)
+    db: DatabaseManager = Depends(get_db_manager),
+    _limit_check: None = Depends(verify_tier_limit("assessments_taken"))
 ):
     uid = user['uid']
     print(f"User {uid} requesting assessment start for type: {request.assessment_type}, skills: {request.skills}")
@@ -57,6 +59,7 @@ async def start_assessment_endpoint(
             raise HTTPException(status_code=500, detail="AI failed to generate assessment questions.")
         
         db.record_assessment_taken(uid)
+        increment_tier_usage(user) # Increment verified tier usage
         return {"questions": questions_output['questions']}
         
     except Exception as e:

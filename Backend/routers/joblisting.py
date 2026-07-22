@@ -26,6 +26,7 @@ from core.db_core import DatabaseManager
 from dependencies import get_current_user
 from dependencies import get_db_manager
 from routers.user import get_user_profile # Reuse user profile fetching to get resume content
+from core.tier_limits import verify_tier_limit, increment_tier_usage
 
 router = APIRouter()
 
@@ -36,7 +37,8 @@ async def upload_resume_and_find_jobs(
     use_saved_resume: bool = Form(False, description="Set to true to use the resume already saved in the user's profile."), 
     location: str = Query("India", description="The country or city to search for jobs in (e.g., 'USA', 'London')"),
     user: Dict[str, Any] = Depends(get_current_user),
-    db: DatabaseManager = Depends(get_db_manager)
+    db: DatabaseManager = Depends(get_db_manager),
+    _limit_check: None = Depends(verify_tier_limit("jobs_matched"))
 ) -> JSONResponse:
     """
     Uploads a user's resume, or uses a saved one, extracts skills, fetches relevant job listings from Adzuna,
@@ -168,6 +170,7 @@ async def upload_resume_and_find_jobs(
         
         print(f"DEBUG: Returning {len(formatted_jobs)} formatted jobs to frontend.")
         db.record_jobs_matched(uid)
+        increment_tier_usage(user) # Increment verified tier usage
         return JSONResponse(content={"skills": user_skills, "jobs": formatted_jobs})
 
     except HTTPException as e:

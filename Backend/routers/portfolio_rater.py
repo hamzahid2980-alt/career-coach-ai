@@ -4,6 +4,7 @@ import requests
 from bs4 import BeautifulSoup
 import json
 from dependencies import get_current_user
+from core.tier_limits import verify_tier_limit, increment_tier_usage
 
 # Use the centralized gemini handler for key rotation and robustness
 from core.gemini_handler import gemini_client
@@ -17,7 +18,11 @@ class RateRequest(BaseModel):
     url: str
 
 @router.post("/rate")
-async def rate_portfolio(req: RateRequest, user: dict = Depends(get_current_user)):
+async def rate_portfolio(
+    req: RateRequest, 
+    user: dict = Depends(get_current_user),
+    _limit_check: None = Depends(verify_tier_limit("portfolios_rated"))
+):
     """
     Analyzes a portfolio URL and returns a recruiter-style rating.
     Requires user authentication.
@@ -107,6 +112,7 @@ async def rate_portfolio(req: RateRequest, user: dict = Depends(get_current_user
             raise HTTPException(status_code=503, detail="AI Service currently unavailable (All keys exhausted)")
 
         raw = response.text.replace("```json", "").replace("```", "").strip()
+        increment_tier_usage(user) # Increment verified tier usage
         return json.loads(raw)
     except Exception as e:
         print(f"AI Analysis Error: {e}")

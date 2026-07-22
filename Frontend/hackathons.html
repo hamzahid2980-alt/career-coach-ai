@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hackathon Hub — AI Career Coach</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="icon" type="image/png" href="./assets/favicon.png">
+
+    <!-- Load GSAP for premium entrance transitions -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg-main:      #050408;
+            --bg-card:      rgba(17, 15, 26, 0.7);
+            --bg-elevated:  rgba(30, 27, 46, 0.5);
+            --primary:      #8A49FF;
+            --primary-glow: rgba(138, 73, 255, 0.4);
+            --pink:         #FF4DB8;
+            --pink-glow:    rgba(255, 77, 184, 0.4);
+            --gold:         #F5C430;
+            --border:       rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(138, 73, 255, 0.3);
+            --text-light:   #F3F4F6;
+            --text-muted:   #9CA3AF;
+            --green:        #10B981;
+            --font-display: 'Outfit', sans-serif;
+            --font-body:    'Inter', sans-serif;
+            --radius:       20px;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-main);
+            color: var(--text-light);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ── Aurora Background Glows ── */
+        .aurora-bg {
+            position: fixed; inset: 0; pointer-events: none; z-index: 0;
+            background: 
+                radial-gradient(circle at 10% 10%, rgba(138, 73, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 90% 80%, rgba(255, 77, 184, 0.12) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(138, 73, 255, 0.05) 0%, transparent 70%);
+        }
+
+        .particles-backdrop {
+            position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: 0.3;
+        }
+
+        /* ── Navigation Header ── */
+        .top-nav {
+            position: sticky; top: 0; z-index: 100;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 3rem; height: 72px;
+            background: rgba(5, 4, 8, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+        .nav-logo {
+            display: flex; align-items: center; gap: 12px;
+            font-family: var(--font-display); font-size: 1.2rem; font-weight: 800;
+            color: var(--text-light); text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+        .nav-logo i {
+            background: linear-gradient(135deg, var(--primary), var(--pink));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            font-size: 1.4rem;
+        }
+        .nav-right { display: flex; align-items: center; gap: 16px; }
+        
+        .btn-back {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 0.55rem 1.25rem; border-radius: 12px;
+            border: 1px solid var(--border); background: var(--bg-card);
+            color: var(--text-light); font-size: 0.85rem; font-weight: 600;
+            cursor: pointer; text-decoration: none; transition: all 0.3s;
+        }
+        .btn-back:hover {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px var(--primary-glow);
+            transform: translateY(-1px);
+        }
+
+        /* ── Main Container Layout ── */
+        .page-wrapper {
+            position: relative; z-index: 1;
+            max-width: 1380px; margin: 0 auto;
+            padding: 3rem 2rem 6rem;
+        }
+
+        /* ── Hero Section ── */
+        .hero {
+            text-align: center; margin-bottom: 4rem; position: relative;
+        }
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: rgba(138, 73, 255, 0.1);
+            border: 1px solid rgba(138, 73, 255, 0.25);
+            color: #C084FC; font-size: 0.78rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 1.5px;
+            padding: 6px 16px; border-radius: 50px; margin-bottom: 1.5rem;
+        }
+        .hero h1 {
+            font-family: var(--font-display); font-size: 3.2rem; font-weight: 900;
+            line-height: 1.15; margin-bottom: 1rem; letter-spacing: -1px;
+            background: linear-gradient(135deg, #FFF 30%, #D8B4FE 70%, var(--pink) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .hero p {
+            font-size: 1.05rem; color: var(--text-muted); max-width: 580px;
+            margin: 0 auto 2.5rem; line-height: 1.6;
+        }
+
+        /* Search Bar & Stats Wrapper */
+        .search-container {
+            max-width: 720px; margin: 0 auto 3.5rem; position: relative;
+        }
+        .search-box {
+            display: flex; align-items: center;
+            background: var(--bg-card); border: 1.5px solid var(--border);
+            border-radius: 16px; padding: 6px 6px 6px 18px;
+            transition: all 0.3s;
+        }
+        .search-box:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 25px rgba(138, 73, 255, 0.2);
+        }
+        .search-box i.search-icon { color: var(--text-muted); font-size: 1.1rem; }
+        .search-box input {
+            flex: 1; background: transparent; border: none; outline: none;
+            color: var(--text-light); font-size: 0.95rem; padding: 10px 14px;
+            font-family: var(--font-body);
+        }
+        .search-box button {
+            background: linear-gradient(135deg, var(--primary), var(--pink));
+            color: #FFF; border: none; border-radius: 12px;
+            padding: 10px 24px; font-weight: 700; font-size: 0.9rem;
+            cursor: pointer; display: flex; align-items: center; gap: 8px;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+        .search-box button:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        .quick-chips {
+            display: flex; justify-content: center; gap: 8px; margin-top: 1rem; flex-wrap: wrap;
+        }
+        .chip {
+            background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+            padding: 4px 12px; border-radius: 50px; font-size: 0.78rem;
+            color: var(--text-muted); cursor: pointer; transition: all 0.2s;
+        }
+        .chip:hover, .chip.active {
+            background: rgba(138, 73, 255, 0.1); border-color: var(--primary); color: var(--text-light);
+        }
+
+        /* ── Dynamic Counters Stats ── */
+        .hero-stats {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            max-width: 680px; margin: 0 auto; gap: 20px;
+        }
+        .stat-card {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: 1.25rem; text-align: center;
+        }
+        .stat-val {
+            font-family: var(--font-display); font-size: 1.8rem; font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--pink));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .stat-lbl { font-size: 0.78rem; color: var(--text-muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* ── Split Layout ── */
+        .split-layout {
+            display: grid; grid-template-columns: 280px 1fr; gap: 2rem;
+            align-items: start;
+        }
+        @media (max-width: 992px) {
+            .split-layout { grid-template-columns: 1fr; }
+        }
+
+        /* ── AI Recommendation Section ── */
+        .section-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 1.5rem; margin-top: 1rem;
+        }
+        .section-header h3 {
+            font-family: var(--font-display); font-size: 1.35rem; font-weight: 700;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .section-header h3 i { color: var(--pink); }
+
+        .ai-recs-container {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 3.5rem;
+        }
+        @media (max-width: 768px) {
+            .ai-recs-container { grid-template-columns: 1fr; }
+        }
+
+        .ai-rec-card {
+            background: linear-gradient(135deg, rgba(25, 20, 36, 0.8), rgba(15, 12, 23, 0.8));
+            border: 1px solid rgba(255, 77, 184, 0.25);
+            box-shadow: 0 8px 32px rgba(255, 77, 184, 0.05);
+            border-radius: var(--radius); padding: 1.5rem;
+            display: flex; align-items: center; gap: 1.25rem;
+            position: relative; overflow: hidden;
+            transition: transform 0.3s, border-color 0.3s;
+        }
+        .ai-rec-card:hover {
+            transform: translateY(-4px); border-color: var(--pink);
+            box-shadow: 0 12px 40px rgba(255, 77, 184, 0.1);
+        }
+        .ai-rec-card::before {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255, 77, 184, 0.04) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        /* SVG Circular Match Ring */
+        .match-ring-wrapper {
+            position: relative; width: 68px; height: 68px; flex-shrink: 0;
+        }
+        .match-ring-svg { transform: rotate(-90deg); width: 68px; height: 68px; }
+        .match-ring-bg { fill: none; stroke: rgba(255,255,255,0.06); stroke-width: 5px; }
+        .match-ring-fill {
+            fill: none; stroke: url(#pinkGradient); stroke-width: 5px;
+            stroke-linecap: round; stroke-dasharray: 188; stroke-dashoffset: 188;
+            transition: stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .match-ring-text {
+            position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+            font-size: 0.88rem; font-weight: 800; font-family: var(--font-display); color: var(--text-light);
+        }
+
+        .ai-rec-details { flex: 1; }
+        .ai-rec-title { font-size: 1.05rem; font-weight: 700; color: #FFF; margin-bottom: 2px; }
+        .ai-rec-org { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px; }
+        .ai-rec-reason {
+            font-size: 0.8rem; color: #D8B4FE; line-height: 1.4;
+            background: rgba(138, 73, 255, 0.08); border-left: 2px solid var(--primary);
+            padding: 6px 10px; border-radius: 4px;
+        }
+
+        /* ── Tab Switch Bar ── */
+        .tab-bar {
+            display: flex; gap: 10px; margin-bottom: 2rem;
+            background: rgba(17,15,26,0.6); border: 1px solid var(--border);
+            padding: 6px; border-radius: 14px;
+        }
+        .tab-btn {
+            flex: 1; border: none; background: transparent; padding: 0.7rem;
+            border-radius: 10px; font-weight: 700; font-size: 0.88rem;
+            color: var(--text-muted); cursor: pointer; transition: all 0.25s;
+            font-family: var(--font-body);
+        }
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--primary), var(--pink));
+            color: #FFF; box-shadow: 0 4px 18px var(--primary-glow);
+        }
+
+        /* ── Sidebar Filters ── */
+        .filter-sidebar {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: 1.75rem;
+            position: sticky; top: 96px;
+        }
+        .filter-group { margin-bottom: 1.75rem; }
+        .filter-group:last-child { margin-bottom: 0; }
+        .filter-title {
+            font-size: 0.8rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 1px; color: var(--text-muted); margin-bottom: 0.8rem;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        
+        .filter-select {
+            width: 100%; background: var(--bg-elevated); border: 1px solid var(--border);
+            border-radius: 8px; padding: 8px 12px; color: var(--text-light);
+            font-size: 0.85rem; outline: none; transition: border-color 0.2s;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%239CA3AF' d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 12px center; background-size: 10px;
+        }
+        .filter-select:focus { border-color: var(--primary); }
+
+        .tech-tags-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+        .tag-toggle {
+            background: var(--bg-elevated); border: 1px solid var(--border);
+            padding: 4px 10px; border-radius: 6px; font-size: 0.72rem;
+            color: var(--text-muted); cursor: pointer; transition: all 0.2s;
+        }
+        .tag-toggle.active {
+            background: rgba(138, 73, 255, 0.15); border-color: var(--primary); color: var(--text-light);
+        }
+
+        .range-slider {
+            width: 100%; accent-color: var(--primary); margin-top: 6px;
+        }
+
+        /* ── Premium Hackathon Cards ── */
+        .hackathon-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .premium-card {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: var(--radius); overflow: hidden;
+            display: flex; flex-direction: column; justify-content: space-between;
+            position: relative; transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+        }
+        .premium-card:hover {
+            transform: translateY(-6px); border-color: rgba(138,73,255,0.4);
+            box-shadow: 0 12px 35px rgba(138, 73, 255, 0.12);
+        }
+
+        /* Visual Card Banner */
+        .card-banner {
+            height: 140px; position: relative; background: linear-gradient(135deg, #1C1930, #2E1A47);
+            display: flex; align-items: center; justify-content: center; overflow: hidden;
+        }
+        .card-banner img {
+            width: 100%; height: 100%; object-fit: cover; opacity: 0.6;
+            transition: transform 0.4s;
+        }
+        .premium-card:hover .card-banner img { transform: scale(1.05); }
+
+        .featured-pill {
+            position: absolute; top: 12px; left: 12px;
+            background: linear-gradient(90deg, #ff4db8, #8a49ff);
+            color: #FFF; font-size: 0.68rem; font-weight: 800;
+            padding: 4px 10px; border-radius: 20px;
+            text-transform: uppercase; letter-spacing: 0.5px;
+            display: flex; align-items: center; gap: 4px;
+        }
+
+        .match-badge-float {
+            position: absolute; top: 12px; right: 12px;
+            background: rgba(10, 9, 15, 0.85); backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 77, 184, 0.4);
+            padding: 4px 10px; border-radius: 30px;
+            color: var(--pink); font-size: 0.75rem; font-weight: 700;
+        }
+
+        .card-body { padding: 1.5rem; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .card-title-row { margin-bottom: 0.5rem; }
+        .card-h-title { font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; color: #FFF; }
+        .card-h-org { font-size: 0.82rem; color: var(--text-muted); margin-top: 2px; }
+
+        .card-desc {
+            font-size: 0.84rem; color: var(--text-muted); line-height: 1.5;
+            margin-bottom: 1rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+        }
+
+        .sdgs-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 0.8rem; }
+        .sdg-tag {
+            background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2);
+            color: #34D399; font-size: 0.68rem; padding: 2px 8px; border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .tech-chips { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 1.25rem; }
+        .tech-chip {
+            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+            font-size: 0.68rem; padding: 2px 8px; border-radius: 4px; color: var(--text-light);
+        }
+
+        .prize-row {
+            background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 12px; padding: 10px 14px;
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;
+        }
+        .prize-lbl { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .prize-val { font-family: var(--font-display); font-size: 1.15rem; font-weight: 800; color: var(--gold); }
+
+        .card-footer {
+            display: flex; align-items: center; justify-content: space-between;
+            padding-top: 1rem; border-top: 1px solid var(--border);
+        }
+        .deadline-text {
+            font-size: 0.78rem; color: var(--text-muted); display: flex; align-items: center; gap: 5px;
+        }
+        .btn-apply {
+            background: linear-gradient(135deg, var(--primary), var(--pink));
+            color: #FFF; border: none; padding: 6px 14px; border-radius: 8px;
+            font-size: 0.78rem; font-weight: 700; cursor: pointer; text-decoration: none;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+        .btn-apply:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        /* Bookmark & Share controls */
+        .card-actions { display: flex; gap: 8px; }
+        .btn-action-icon {
+            background: transparent; border: 1px solid var(--border);
+            color: var(--text-muted); font-size: 0.85rem; width: 32px; height: 32px;
+            border-radius: 8px; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .btn-action-icon:hover { border-color: var(--primary); color: var(--text-light); }
+
+        /* ── Closing Soon Subsection ── */
+        .closing-section {
+            margin-top: 4.5rem; margin-bottom: 4.5rem;
+        }
+        .closing-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem;
+        }
+        .countdown-card {
+            background: linear-gradient(135deg, rgba(26,23,38,0.5), rgba(13,11,20,0.5));
+            border: 1px solid rgba(245, 196, 48, 0.25);
+            border-radius: var(--radius); padding: 1.5rem;
+            position: relative; display: flex; align-items: center; justify-content: space-between;
+            transition: all 0.3s;
+        }
+        .countdown-card:hover {
+            border-color: var(--gold); transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(245, 196, 48, 0.1);
+        }
+        .countdown-val {
+            font-family: var(--font-display); font-size: 1.4rem; font-weight: 800; color: var(--gold);
+        }
+
+        /* ── Newsletter Footer Card ── */
+        .newsletter-footer {
+            background: radial-gradient(circle at top right, rgba(138, 73, 255, 0.15), var(--bg-card));
+            border: 1px solid var(--border); border-radius: var(--radius);
+            padding: 3rem; text-align: center; margin-top: 6rem;
+            position: relative; overflow: hidden;
+        }
+        .newsletter-footer h3 {
+            font-family: var(--font-display); font-size: 1.8rem; font-weight: 800; margin-bottom: 0.5rem;
+        }
+        .newsletter-footer p { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 2rem; }
+        .input-inline-form {
+            max-width: 480px; margin: 0 auto; display: flex; gap: 10px;
+        }
+        .input-inline-form input {
+            flex: 1; background: var(--bg-elevated); border: 1px solid var(--border);
+            border-radius: 10px; padding: 10px 14px; color: var(--text-light);
+            outline: none; transition: border-color 0.2s;
+        }
+        .input-inline-form input:focus { border-color: var(--primary); }
+        .input-inline-form button {
+            background: var(--primary); color: #FFF; border: none; border-radius: 10px;
+            padding: 10px 20px; font-weight: 700; cursor: pointer; transition: opacity 0.2s;
+        }
+        .input-inline-form button:hover { opacity: 0.9; }
+
+        /* ── Shimmer Loading / Skeleton Loaders ── */
+        .shimmer-wrapper {
+            background: #110F1A; border: 1px solid var(--border); border-radius: var(--radius);
+            height: 380px; position: relative; overflow: hidden;
+        }
+        .shimmer-wrapper::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.03), transparent);
+            transform: translateX(-100%); animation: shimmerMove 1.5s infinite;
+        }
+        @keyframes shimmerMove { 100% { transform: translateX(100%); } }
+
+        /* Empty Feed / Loading */
+        .empty-state {
+            grid-column: 1/-1; text-align: center; padding: 60px 20px; color: var(--text-muted);
+        }
+        .empty-state i { font-size: 3rem; margin-bottom: 12px; opacity: 0.5; }
+    </style>
+</head>
+<body>
+    <!-- Gradients & Auroras -->
+    <div class="aurora-bg"></div>
+    <div class="particles-backdrop" id="particles-container"></div>
+
+    <!-- SVG Gradients Definition -->
+    <svg style="width:0; height:0; position:absolute;">
+        <defs>
+            <linearGradient id="pinkGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#FF4DB8" />
+                <stop offset="100%" stop-color="#8A49FF" />
+            </linearGradient>
+        </defs>
+    </svg>
+
+    <!-- Top Sticky Header -->
+    <nav class="top-nav">
+        <a href="home.html" class="nav-logo">
+            <i class="fas fa-trophy"></i> AI Career Coach
+        </a>
+        <div class="nav-right">
+            <a href="home.html" class="btn-back">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+    </nav>
+
+    <!-- Content Panel -->
+    <div class="page-wrapper">
+
+        <!-- ── 1. Hero & Stats Section ── -->
+        <header class="hero">
+            <div class="hero-badge">
+                <i class="fas fa-sparkles"></i> Matching 10,000+ Innovators
+            </div>
+            <h1>Discover Your Next Winning Challenge</h1>
+            <p>Our AI analyzes your active resume profile in real-time, matching you with the highest payout, skill-matched global hackathons.</p>
+
+            <div class="search-container">
+                <div class="search-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="global-search-input" placeholder="Search by name, organizer, technology target..." oninput="filterFeed()">
+                    <button onclick="filterFeed()"><i class="fas fa-sliders-h"></i> Find Challenges</button>
+                </div>
+                <div class="quick-chips">
+                    <span class="chip active" onclick="toggleQuickSearch('', this)">All Categories</span>
+                    <span class="chip" onclick="toggleQuickSearch('python', this)">Python</span>
+                    <span class="chip" onclick="toggleQuickSearch('tensorflow', this)">TensorFlow</span>
+                    <span class="chip" onclick="toggleQuickSearch('react', this)">React</span>
+                    <span class="chip" onclick="toggleQuickSearch('blockchain', this)">Blockchain</span>
+                </div>
+            </div>
+
+            <!-- Dashboard Stats -->
+            <div class="hero-stats">
+                <div class="stat-card">
+                    <div class="stat-val" id="stat-count">0</div>
+                    <div class="stat-lbl">Active Hackathons</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-val" id="stat-prizes">₹15L+</div>
+                    <div class="stat-lbl">Global Prize Pool</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-val">98%</div>
+                    <div class="stat-lbl">Average AI Match</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- ── 2. AI Matches Section ── -->
+        <section>
+            <div class="section-header">
+                <h3><i class="fas fa-bolt"></i> Personalised AI Recommendations</h3>
+            </div>
+            <div class="ai-recs-container" id="ai-recommends-feed">
+                <!-- AI recommendations loaded dynamically -->
+                <div class="empty-state" style="grid-column: 1/-1;">
+                    <i class="fas fa-circle-notch fa-spin"></i>
+                    <p>AI engine is scanning your technical profile...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── 3. Main Dashboard Body (Filter + Grid) ── -->
+        <div class="split-layout">
+            
+            <!-- Left Panel: Premium Filters -->
+            <aside class="filter-sidebar">
+                <div class="filter-group">
+                    <div class="filter-title">Toggle Interface</div>
+                    <div class="tab-bar">
+                        <button class="tab-btn active" id="tab-view-challenges" onclick="switchTabs('view')">View Feed</button>
+                        <button class="tab-btn" id="tab-submit-challenges" onclick="switchTabs('submit')">Host Event</button>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <div class="filter-title">Listing Tier</div>
+                    <select class="filter-select" id="filter-tier" onchange="filterFeed()">
+                        <option value="all">All Tiers</option>
+                        <option value="featured">👑 Featured Only</option>
+                        <option value="standard">Standard Listings</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <div class="filter-title">Minimum Match %</div>
+                    <input type="range" class="range-slider" id="filter-match" min="50" max="100" value="50" oninput="updateMatchRange(this.value); filterFeed()">
+                    <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-muted); margin-top:4px;">
+                        <span>Min: 50%</span>
+                        <span id="range-val" style="color:var(--pink); font-weight:700;">50%</span>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <div class="filter-title">Featured Tech Targets</div>
+                    <div class="tech-tags-grid">
+                        <span class="tag-toggle" onclick="toggleFilterTag('python', this)">Python</span>
+                        <span class="tag-toggle" onclick="toggleFilterTag('react', this)">React</span>
+                        <span class="tag-toggle" onclick="toggleFilterTag('tensorflow', this)">TensorFlow</span>
+                        <span class="tag-toggle" onclick="toggleFilterTag('flutter', this)">Flutter</span>
+                        <span class="tag-toggle" onclick="toggleFilterTag('blockchain', this)">Blockchain</span>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Right Panel: Challenge Grid / Submissions -->
+            <main>
+                <!-- Hackathons List Feed -->
+                <section id="feed-listing-section">
+                    <div class="section-header">
+                        <h3><i class="fas fa-list"></i> Explore Active Challenges</h3>
+                    </div>
+                    <div class="hackathon-grid" id="main-challenges-grid">
+                        <!-- Loaded dynamically -->
+                        <div class="shimmer-wrapper"></div>
+                        <div class="shimmer-wrapper"></div>
+                        <div class="shimmer-wrapper"></div>
+                    </div>
+                </section>
+
+                <!-- Host Submissions Gate (hidden initially) -->
+                <section id="host-listing-section" style="display:none;">
+                    <div style="background:var(--bg-card); border:1.5px dashed var(--primary); border-radius:var(--radius); padding:2.5rem; text-align:center;">
+                        <i class="fas fa-rocket" style="font-size:3rem; color:var(--primary); margin-bottom:1.5rem;"></i>
+                        <h2 style="font-family:var(--font-display); font-size:1.8rem; font-weight:800; margin-bottom:0.5rem;">Host Your Own Hackathon</h2>
+                        <p style="color:var(--text-muted); font-size:0.95rem; max-width:520px; margin:0 auto 2rem; line-height:1.6;">
+                            Reach a curated directory of 10,000+ AI, Web, and Mobile developers. Verify your listing instantly and trigger skill-matched email alerts.
+                        </p>
+                        <button class="btn-back" style="background:var(--primary); border:none; padding:12px 30px; font-weight:700; font-size:0.95rem; border-radius:12px;" onclick="goToHostingPrices()">
+                            Proceed to Listing Plans <i class="fas fa-arrow-right" style="margin-left:6px;"></i>
+                        </button>
+                    </div>
+                </section>
+            </main>
+
+        </div><!-- /split-layout -->
+
+        <!-- ── 4. Closing Soon Countdown Cards ── -->
+        <section class="closing-section">
+            <div class="section-header">
+                <h3><i class="fas fa-clock" style="color:var(--gold);"></i> Closing Soon</h3>
+            </div>
+            <div class="closing-grid" id="closing-soon-grid">
+                <!-- Countdown cards loaded dynamically -->
+                <div class="empty-state">
+                    <p>No immediate deadlines ending this week.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── 5. Newsletter Footer CTA ── -->
+        <footer class="newsletter-footer">
+            <h3>Never Miss Another Opportunity</h3>
+            <p>Get a weekly digest of premium AI & Web3 hackathons matching your tech stack delivered to your inbox.</p>
+            <div class="input-inline-form">
+                <input type="email" id="sub-email" placeholder="Enter your developer email..." required>
+                <button onclick="subscribeNewsletter()">Subscribe Now</button>
+            </div>
+        </footer>
+
+    </div><!-- /page-wrapper -->
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="./script/auth.js"></script>
+
+    <script>
+        const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+            ? 'http://localhost:8000'
+            : 'https://career-coach-ai-3xap.onrender.com';
+
+        let currentUser = null;
+        let allHackathons = [];
+        let activeQuickSearch = "";
+        let activeFilterTags = [];
+        let canHostEvents = false;
+
+        // Called by auth.js when user is logged in
+        async function onUserLoggedIn(user) {
+            currentUser = user;
+            await checkUserPrivileges();
+            await fetchHackathonsFeed();
+            animateHero();
+        }
+
+        async function checkUserPrivileges() {
+            try {
+                const idToken = await currentUser.getIdToken();
+                const res = await fetch(`${API_BASE_URL}/api/user/profile`, {
+                    headers: { Authorization: `Bearer ${idToken}` }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    canHostEvents = !!data.can_host_hackathons;
+                }
+            } catch (e) {
+                console.error("Failed to read user privileges", e);
+            }
+        }
+
+        async function fetchHackathonsFeed() {
+            try {
+                const idToken = await currentUser.getIdToken();
+                const res = await fetch(`${API_BASE_URL}/api/hackathons/list`, {
+                    headers: { Authorization: `Bearer ${idToken}` }
+                });
+                if (!res.ok) throw new Error("Failed to load list from API");
+                allHackathons = await res.json();
+                
+                // Update stats
+                document.getElementById('stat-count').textContent = allHackathons.length;
+
+                renderFeed();
+                renderAIRecommendations();
+                renderClosingSoon();
+            } catch (err) {
+                console.error(err);
+                document.getElementById('main-challenges-grid').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle" style="color:var(--pink);"></i>
+                        <h3>Error loading feed</h3>
+                        <p>${err.message}</p>
+                    </div>`;
+            }
+        }
+
+        function renderFeed() {
+            const grid = document.getElementById('main-challenges-grid');
+            const searchVal = document.getElementById('global-search-input').value.toLowerCase();
+            const tierVal = document.getElementById('filter-tier').value;
+            const matchVal = parseInt(document.getElementById('filter-match').value);
+
+            let filtered = allHackathons.filter(h => {
+                // Search term
+                const matchesSearch = h.title.toLowerCase().includes(searchVal) ||
+                                      h.organizer.toLowerCase().includes(searchVal) ||
+                                      h.description.toLowerCase().includes(searchVal) ||
+                                      (h.skills_required || []).some(s => s.toLowerCase().includes(searchVal));
+                
+                // Quick search tags
+                const matchesQuick = !activeQuickSearch || (h.skills_required || []).some(s => s.toLowerCase() === activeQuickSearch.toLowerCase());
+                
+                // Filters
+                const matchesTier = tierVal === 'all' || h.listing_tier === tierVal;
+                
+                // Tech tags filters
+                const matchesTags = activeFilterTags.length === 0 || activeFilterTags.every(tag => 
+                    (h.skills_required || []).some(s => s.toLowerCase() === tag.toLowerCase())
+                );
+
+                // Simulated match scoring for grid
+                const score = getMatchScore(h);
+                const matchesScore = score >= matchVal;
+
+                return matchesSearch && matchesQuick && matchesTier && matchesTags && matchesScore;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-folder-open"></i>
+                        <h3>No challenges found</h3>
+                        <p>Adjust your filters or query criteria to search again.</p>
+                    </div>`;
+                return;
+            }
+
+            grid.innerHTML = filtered.map((h, index) => {
+                const isFeatured = h.listing_tier === 'featured';
+                const matchScore = getMatchScore(h);
+                
+                // Visual Cover Gradients
+                const gradients = [
+                    'linear-gradient(135deg, #1C1930, #2E1A47)',
+                    'linear-gradient(135deg, #0f172a, #1e1b4b)',
+                    'linear-gradient(135deg, #180828, #3b0764)',
+                    'linear-gradient(135deg, #020617, #1e1b4b)'
+                ];
+                const grad = gradients[index % gradients.length];
+                
+                const skillTags = (h.skills_required || []).map(s => `<span class="tech-chip">${s.trim()}</span>`).join('');
+                
+                // Draw SDG elements based on dummy requirements
+                const sdgHtml = h.skills_required.includes('iot') || h.skills_required.includes('blockchain') 
+                    ? `<span class="sdg-tag">SDG 13: Climate Action</span>`
+                    : `<span class="sdg-tag">SDG 4: Quality Education</span>`;
+
+                return `
+                    <div class="premium-card" style="opacity:0;" id="card-item-${index}">
+                        <div class="card-banner" style="background:${grad}">
+                            ${isFeatured ? '<span class="featured-pill"><i class="fas fa-crown"></i> Featured</span>' : ''}
+                            <span class="match-badge-float">${matchScore}% Match</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-title-row">
+                                <h4 class="card-h-title">${h.title}</h4>
+                                <p class="card-h-org"><i class="fas fa-building" style="margin-right:4px; font-size:0.75rem;"></i>${h.organizer}</p>
+                            </div>
+                            <p class="card-desc">${h.description}</p>
+                            <div class="sdgs-row">${sdgHtml}</div>
+                            <div class="tech-chips">${skillTags}</div>
+                            
+                            <div class="prize-row">
+                                <span class="prize-lbl">Prize Pool</span>
+                                <span class="prize-val">₹${isFeatured ? '2.5L' : '1.0L'}</span>
+                            </div>
+
+                            <div class="card-footer">
+                                <span class="deadline-text"><i class="fas fa-calendar"></i> Ends: ${h.end_date}</span>
+                                <div class="card-actions">
+                                    <button class="btn-action-icon" onclick="bookmarkCard(this)"><i class="far fa-bookmark"></i></button>
+                                    <button class="btn-action-icon" onclick="shareCard('${h.title}')"><i class="far fa-share-nodes"></i></button>
+                                    <a href="${h.website}" target="_blank" class="btn-apply">Apply</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Trigger GSAP entrance animation for grid cards
+            gsap.to('.premium-card', {
+                opacity: 1,
+                y: 0,
+                duration: 0.4,
+                stagger: 0.08,
+                ease: 'power2.out'
+            });
+        }
+
+        function renderAIRecommendations() {
+            const container = document.getElementById('ai-recommends-feed');
+            
+            // Sort by match score and pick top 2 featured/high-scoring events
+            let sorted = [...allHackathons].sort((a,b) => getMatchScore(b) - getMatchScore(a)).slice(0, 2);
+
+            if (sorted.length === 0) {
+                container.innerHTML = `<div style="grid-column:1/-1; color:var(--text-muted); font-style:italic;">No AI recommendations available yet.</div>`;
+                return;
+            }
+
+            container.innerHTML = sorted.map((h, index) => {
+                const match = getMatchScore(h);
+                // Circular stroke-dashoffset calculation (radius = 30, circumference = ~188)
+                const dashoffset = 188 - (188 * match) / 100;
+
+                return `
+                    <div class="ai-rec-card" style="opacity:0;" id="ai-rec-${index}">
+                        <div class="match-ring-wrapper">
+                            <svg class="match-ring-svg">
+                                <circle class="match-ring-bg" cx="34" cy="34" r="30" />
+                                <circle class="match-ring-fill" cx="34" cy="34" r="30" style="stroke-dashoffset: ${dashoffset};" />
+                            </svg>
+                            <div class="match-ring-text">${match}%</div>
+                        </div>
+                        <div class="ai-rec-details">
+                            <h4 class="ai-rec-title">${h.title}</h4>
+                            <p class="ai-rec-org">By ${h.organizer}</p>
+                            <p class="ai-rec-reason">
+                                <i class="fas fa-sparkles"></i> Matches your tech preferences: <strong>${(h.skills_required || []).slice(0,2).join(', ')}</strong>
+                            </p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            gsap.to('.ai-rec-card', {
+                opacity: 1,
+                x: 0,
+                duration: 0.5,
+                stagger: 0.1,
+                ease: 'power2.out'
+            });
+        }
+
+        function renderClosingSoon() {
+            const container = document.getElementById('closing-soon-grid');
+            
+            // Sort events ending soonest
+            let sorted = [...allHackathons]
+                .filter(h => new Date(h.end_date) >= new Date())
+                .sort((a,b) => new Date(a.end_date) - new Date(b.end_date))
+                .slice(0, 3);
+
+            if (sorted.length === 0) {
+                container.innerHTML = `<div class="empty-state"><h3>No immediate deadlines</h3><p>All active hackathons have extended timelines.</p></div>`;
+                return;
+            }
+
+            container.innerHTML = sorted.map(h => {
+                const daysLeft = Math.ceil((new Date(h.end_date) - new Date()) / (1000 * 60 * 60 * 24));
+                return `
+                    <div class="countdown-card">
+                        <div>
+                            <h4 style="font-size:0.95rem; font-weight:700; color:#FFF; margin-bottom:4px;">${h.title}</h4>
+                            <p style="font-size:0.78rem; color:var(--text-muted);">Organized by: ${h.organizer}</p>
+                        </div>
+                        <div class="countdown-val">${daysLeft}d left</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Helper match scoring logic
+        function getMatchScore(hackathon) {
+            // Simulated match logic based on skills
+            const matchKeys = ['python', 'react', 'tensorflow', 'firebase', 'flutter', 'blockchain'];
+            let matched = (hackathon.skills_required || []).filter(s => matchKeys.includes(s.toLowerCase())).length;
+            
+            if (matched >= 3) return 98;
+            if (matched === 2) return 86;
+            if (matched === 1) return 74;
+            return 64;
+        }
+
+        function updateMatchRange(val) {
+            document.getElementById('range-val').textContent = val + '%';
+        }
+
+        function toggleQuickSearch(term, el) {
+            document.querySelectorAll('.quick-chips .chip').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            activeQuickSearch = term;
+            renderFeed();
+        }
+
+        function toggleFilterTag(tag, el) {
+            el.classList.toggle('active');
+            if (activeFilterTags.includes(tag)) {
+                activeFilterTags = activeFilterTags.filter(t => t !== tag);
+            } else {
+                activeFilterTags.push(tag);
+            }
+            renderFeed();
+        }
+
+        function filterFeed() {
+            renderFeed();
+        }
+
+        // Tabs Toggle (View Feed / Host Submissions Gate)
+        function switchTabs(tab) {
+            const btnView = document.getElementById('tab-view-challenges');
+            const btnSubmit = document.getElementById('tab-submit-challenges');
+            const secFeed = document.getElementById('feed-listing-section');
+            const secSubmit = document.getElementById('host-listing-section');
+
+            if (tab === 'submit') {
+                if (!canHostEvents) {
+                    showToastModal('Verified Host privileges required. Redirecting to Listing Plans...');
+                    setTimeout(() => {
+                        window.location.href = 'hackathon_pricing.html';
+                    }, 1400);
+                    return;
+                }
+                btnSubmit.classList.add('active');
+                btnView.classList.remove('active');
+                secSubmit.style.display = 'block';
+                secFeed.style.display = 'none';
+            } else {
+                btnView.classList.add('active');
+                btnSubmit.classList.remove('active');
+                secFeed.style.display = 'block';
+                secSubmit.style.display = 'none';
+            }
+        }
+
+        function goToHostingPrices() {
+            window.location.href = 'hackathon_pricing.html';
+        }
+
+        // Controls Action Mocking
+        function bookmarkCard(el) {
+            const icon = el.querySelector('i');
+            icon.classList.toggle('far');
+            icon.classList.toggle('fas');
+            icon.style.color = icon.classList.contains('fas') ? 'var(--pink)' : '';
+            showToastModal(icon.classList.contains('fas') ? 'Challenge bookmarked successfully!' : 'Bookmark removed.');
+        }
+
+        function shareCard(title) {
+            navigator.clipboard.writeText(window.location.href);
+            showToastModal(`Portal URL copied for: ${title}`);
+        }
+
+        function subscribeNewsletter() {
+            const email = document.getElementById('sub-email').value;
+            if (!email) {
+                showToastModal('Please enter a valid email address.', true);
+                return;
+            }
+            showToastModal('✅ Subscription successful! Stay matched.');
+            document.getElementById('sub-email').value = "";
+        }
+
+        // Custom Toast Helper
+        function showToastModal(msg, isError = false) {
+            let t = document.getElementById('action-toast');
+            if (!t) {
+                t = document.createElement('div');
+                t.id = 'action-toast';
+                t.style.cssText = `
+                    position:fixed; bottom:28px; left:50%; transform:translateX(-50%);
+                    background:linear-gradient(135deg, #8A49FF, #FF4DB8); color:#fff;
+                    font-weight:700; font-size:.85rem; padding:.75rem 1.8rem;
+                    border-radius:50px; z-index:99999; opacity:0;
+                    box-shadow:0 8px 30px rgba(138,73,255,.4);
+                    transition:opacity .3s ease; pointer-events:none;`;
+                document.body.appendChild(t);
+            }
+            t.textContent = msg;
+            t.style.background = isError ? '#FF4DB8' : '';
+            t.style.opacity = '1';
+            setTimeout(() => t.style.opacity = '0', 2500);
+        }
+
+        // GSAP Hero Staggers
+        function animateHero() {
+            gsap.from('.hero h1', { opacity: 0, y: 30, duration: 0.8, delay: 0.1, ease: 'power3.out' });
+            gsap.from('.hero p', { opacity: 0, y: 20, duration: 0.8, delay: 0.2, ease: 'power3.out' });
+            gsap.from('.search-container', { opacity: 0, y: 15, duration: 0.6, delay: 0.35, ease: 'power2.out' });
+        }
+    </script>
+</body>
+</html>

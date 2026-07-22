@@ -150,7 +150,22 @@ const handleGoogleAuth = async () => {
         
         document.body.classList.add('auth-success');
         setTimeout(() => {
-            window.location.href = 'home.html';
+            const params = new URLSearchParams(window.location.search);
+            const redirectUrl = params.get('redirect');
+            if (redirectUrl) {
+                const plan = params.get('plan');
+                const billing = params.get('billing');
+                let targetUrl = redirectUrl;
+                const queryParams = [];
+                if (plan) queryParams.push(`plan=${plan}`);
+                if (billing) queryParams.push(`billing=${billing}`);
+                if (queryParams.length > 0) {
+                    targetUrl += `?${queryParams.join('&')}`;
+                }
+                window.location.href = targetUrl;
+            } else {
+                window.location.href = 'home.html';
+            }
         }, 500);
 
     } catch (error) {
