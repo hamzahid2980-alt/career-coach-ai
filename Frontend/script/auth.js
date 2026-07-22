@@ -218,6 +218,148 @@ function injectPricingModal() {
         .compare-table td i.fa-times { color: #FF4DB8; opacity: 0.25; font-size: 0.8rem; }
         .compare-table td .status-na { color: rgba(255, 255, 255, 0.15); font-weight: 400; }
 
+        /* Collapsible Sidebar Styles */
+        .sidebar {
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), min-width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+        .sidebar.no-transition {
+            transition: none !important;
+        }
+        .sidebar.collapsed,
+        .sidebar.collapsed * {
+            scrollbar-width: none !important;
+            -ms-overflow-style: none !important;
+        }
+        .sidebar.collapsed::-webkit-scrollbar,
+        .sidebar.collapsed *::-webkit-scrollbar {
+            display: none !important;
+            width: 0 !important;
+            height: 0 !important;
+        }
+        .sidebar.collapsed {
+            width: 80px !important;
+            min-width: 80px !important;
+            overflow-x: hidden !important;
+        }
+        
+        .sidebar-header {
+            position: relative;
+        }
+        .sidebar-header h2 {
+            margin-right: 36px;
+            transition: margin 0.3s ease;
+        }
+        .sidebar.collapsed .sidebar-header h2 {
+            margin-right: 0;
+        }
+        
+        .sidebar.collapsed .sidebar-header {
+            padding: 1.5rem 0.5rem 1.5rem 0.5rem !important;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.25rem;
+            height: auto !important;
+        }
+        
+        /* Hide text elements inside sidebar when collapsed */
+        .sidebar.collapsed .sidebar-header h2 span,
+        .sidebar.collapsed .sidebar-nav ul li a span,
+        .sidebar.collapsed .sidebar-footer .logout-btn span {
+            display: none;
+        }
+        
+        /* Center elements when collapsed */
+        .sidebar.collapsed .sidebar-header h2 {
+            justify-content: center;
+            font-size: 1.6rem;
+            padding-left: 0;
+            padding-right: 0;
+            margin: 0;
+        }
+        .sidebar.collapsed .sidebar-header h2 i {
+            margin: 0;
+        }
+        
+        .sidebar.collapsed .sidebar-nav {
+            padding: 0 0.5rem !important;
+            overflow-x: hidden !important;
+        }
+        .sidebar.collapsed .sidebar-nav ul li a {
+            justify-content: center;
+            padding: 0.8rem 0;
+            gap: 0 !important;
+            position: relative !important;
+        }
+        .sidebar.collapsed .sidebar-nav ul li a i {
+            margin-right: 0 !important;
+            font-size: 1.25rem;
+        }
+        .sidebar.collapsed .sidebar-nav ul li a i.fa-lock {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            font-size: 0.6rem;
+            margin-left: 0 !important;
+        }
+        
+        .sidebar.collapsed .sidebar-footer {
+            padding: 1rem 0.5rem !important;
+            overflow-x: hidden !important;
+        }
+        .sidebar.collapsed .sidebar-footer .logout-btn {
+            justify-content: center;
+            padding: 0.8rem 0;
+            gap: 0 !important;
+            width: 100%;
+            position: relative !important;
+        }
+        .sidebar.collapsed .sidebar-footer .logout-btn i {
+            margin-right: 0 !important;
+            font-size: 1.25rem;
+        }
+        
+        /* Sidebar Toggle Button */
+        .sidebar-collapse-toggle {
+            position: absolute;
+            top: 22px;
+            right: 16px;
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: rgba(138, 73, 255, 0.12);
+            border: 1px solid rgba(138, 73, 255, 0.35);
+            color: #C084FC;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 100;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .sidebar-collapse-toggle:hover {
+            background: var(--primary);
+            color: #FFF;
+            border-color: var(--primary);
+            box-shadow: 0 0 12px rgba(138, 73, 255, 0.5);
+        }
+        .sidebar.collapsed .sidebar-collapse-toggle {
+            position: relative !important;
+            top: auto !important;
+            right: auto !important;
+            left: auto !important;
+            transform: none !important;
+            width: 24px;
+            height: 24px;
+            margin-top: 0.25rem;
+        }
+        .sidebar.collapsed .sidebar-collapse-toggle i {
+            transform: rotate(180deg);
+        }
+
         @media (max-width: 860px) {
             .modal-grid { grid-template-columns: 1fr; }
             .pricing-modal-container { max-height: 95vh; }
@@ -666,8 +808,113 @@ async function enforceSubscriptionRestrictions(user) {
     }
 }
 
+function setupCollapsibleSidebar() {
+    const sidebar = document.querySelector('.sidebar');
+    if (!sidebar) return;
+
+    // Temporarily disable transitions during initial DOM load to prevent transition animation flash
+    sidebar.classList.add('no-transition');
+
+    // 1. Wrap the sidebar header text in a span if not done
+    const headerH2 = sidebar.querySelector('.sidebar-header h2');
+    if (headerH2 && !headerH2.querySelector('span')) {
+        const icon = headerH2.querySelector('i');
+        let text = "";
+        headerH2.childNodes.forEach(node => {
+            if (node.nodeType === Node.TEXT_NODE) {
+                text += node.textContent;
+            }
+        });
+        text = text.trim();
+        headerH2.innerHTML = '';
+        if (icon) headerH2.appendChild(icon);
+        const span = document.createElement('span');
+        span.textContent = ' ' + text;
+        headerH2.appendChild(span);
+    }
+
+    // 2. Wrap nav links text in span if not done
+    const sidebarLinks = sidebar.querySelectorAll('.sidebar-nav ul li a');
+    sidebarLinks.forEach(link => {
+        if (!link.querySelector('span')) {
+            const icon = link.querySelector('i:not(.fa-lock)');
+            const lock = link.querySelector('i.fa-lock');
+            let text = "";
+            link.childNodes.forEach(node => {
+                if (node.nodeType === Node.TEXT_NODE) {
+                    text += node.textContent;
+                }
+            });
+            text = text.trim();
+            
+            link.innerHTML = '';
+            if (icon) link.appendChild(icon);
+            const span = document.createElement('span');
+            span.style.marginLeft = '10px';
+            span.textContent = text;
+            link.appendChild(span);
+            if (lock) link.appendChild(lock);
+        }
+    });
+
+    // 3. Wrap logout button text in span if not done
+    const logoutBtn = sidebar.querySelector('.logout-btn');
+    if (logoutBtn && !logoutBtn.querySelector('span')) {
+        const icon = logoutBtn.querySelector('i');
+        let text = "";
+        logoutBtn.childNodes.forEach(node => {
+            if (node.nodeType === Node.TEXT_NODE) {
+                text += node.textContent;
+            }
+        });
+        text = text.trim();
+        
+        logoutBtn.innerHTML = '';
+        if (icon) logoutBtn.appendChild(icon);
+        const span = document.createElement('span');
+        span.style.marginLeft = '10px';
+        span.textContent = text;
+        logoutBtn.appendChild(span);
+    }
+
+    // 4. Inject the collapse toggle button inside the header
+    const sidebarHeader = sidebar.querySelector('.sidebar-header');
+    if (sidebarHeader && !document.getElementById('sidebar-collapse-toggle')) {
+        const toggleBtn = document.createElement('button');
+        toggleBtn.id = 'sidebar-collapse-toggle';
+        toggleBtn.className = 'sidebar-collapse-toggle';
+        toggleBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
+        sidebarHeader.appendChild(toggleBtn);
+        
+        toggleBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('collapsed');
+            const isCollapsed = sidebar.classList.contains('collapsed');
+            localStorage.setItem('sidebar_collapsed', isCollapsed ? 'true' : 'false');
+        });
+    }
+
+    // 5. Restore saved collapsed state on load
+    const storedCollapsed = localStorage.getItem('sidebar_collapsed');
+    if (storedCollapsed === 'true') {
+        sidebar.classList.add('collapsed');
+    } else {
+        sidebar.classList.remove('collapsed');
+    }
+
+    // Force DOM layout recalculation to apply state immediately without transition
+    void sidebar.offsetHeight;
+
+    // Enable transitions again for user-triggered clicks
+    requestAnimationFrame(() => {
+        sidebar.classList.remove('no-transition');
+    });
+}
+
 // Check for redirect triggers after DOM is ready
 window.addEventListener('DOMContentLoaded', () => {
+    // Setup collapsible sidebar
+    setupCollapsibleSidebar();
+
     const params = new URLSearchParams(window.location.search);
     const trigger = params.get('trigger_upgrade');
     if (trigger) {
