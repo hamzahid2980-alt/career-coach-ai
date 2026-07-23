@@ -184,6 +184,76 @@ async function fetchAndDisplayResume() {
         userTierSpan.style.color = "#50daa0";
       }
     }
+
+    // Populate advanced subscription details card
+    const subPlanName = document.getElementById("sub-plan-name");
+    const subStatus = document.getElementById("sub-status");
+    const subExpiryDate = document.getElementById("sub-expiry-date");
+    const subDaysRemaining = document.getElementById("sub-days-remaining");
+    const renewButton = document.getElementById("renew-button");
+    const subExpiryContainer = document.getElementById("sub-expiry-container");
+    const subDaysContainer = document.getElementById("sub-days-container");
+
+    if (subPlanName) {
+      let tier = data.subscription_tier || "free";
+      subPlanName.textContent = tier;
+      if (tier === "pro") {
+        subPlanName.style.color = "#8A49FF";
+      } else if (tier === "premium") {
+        subPlanName.style.color = "#f5c430";
+      } else {
+        subPlanName.style.color = "#50daa0";
+      }
+
+      if (tier === "free") {
+        subStatus.innerHTML = '<span style="color:#50daa0; font-weight:700;">Active</span>';
+        if (subExpiryContainer) subExpiryContainer.style.display = 'none';
+        if (subDaysContainer) subDaysContainer.style.display = 'none';
+        if (renewButton) {
+          renewButton.style.display = 'inline-block';
+          renewButton.innerHTML = '<i class="fas fa-arrow-up"></i> Upgrade Now';
+        }
+      } else {
+        if (subExpiryContainer) subExpiryContainer.style.display = 'block';
+        if (subDaysContainer) subDaysContainer.style.display = 'block';
+        if (renewButton) {
+          renewButton.style.display = 'inline-block';
+          renewButton.innerHTML = '<i class="fas fa-redo"></i> Renew Plan';
+        }
+
+        if (data.subscription_expires) {
+          const expiryDate = new Date(data.subscription_expires);
+          const now = new Date();
+          const diffTime = expiryDate - now;
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+          if (subExpiryDate) {
+            subExpiryDate.textContent = expiryDate.toLocaleDateString(undefined, {
+              year: 'numeric', month: 'long', day: 'numeric'
+            });
+          }
+
+          if (diffDays > 0) {
+            if (subStatus) subStatus.innerHTML = '<span style="color:#50daa0; font-weight:700;">Active</span>';
+            if (subDaysRemaining) {
+              subDaysRemaining.textContent = `${diffDays} days remaining`;
+              subDaysRemaining.style.color = '#50daa0';
+            }
+          } else {
+            if (subStatus) subStatus.innerHTML = '<span style="color:#ff4db8; font-weight:700;">Expired</span>';
+            if (subDaysRemaining) {
+              subDaysRemaining.textContent = `Expired ${Math.abs(diffDays)} days ago`;
+              subDaysRemaining.style.color = '#ff4db8';
+            }
+            subPlanName.innerHTML = `${tier.toUpperCase()} <span style="color:#ff4db8; font-size:0.8rem; font-weight:normal; text-transform:none;">(Expired)</span>`;
+            if (renewButton) renewButton.innerHTML = '<i class="fas fa-redo"></i> Renew Now';
+          }
+        } else {
+          if (subExpiryDate) subExpiryDate.textContent = "N/A";
+          if (subDaysContainer) subDaysContainer.style.display = 'none';
+        }
+      }
+    }
   } catch (error) {
     showStatus(detailsUpdateStatusDiv, error.message, true);
   }

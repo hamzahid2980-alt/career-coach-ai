@@ -32,6 +32,20 @@
                 <p><strong>Plan Tier:</strong> <span id="user-tier" style="font-weight: 700; text-transform: uppercase;">Loading...</span></p>
             </div>
 
+            <!-- Plan & Subscription Details Card -->
+            <div class="card subscription-details-card" id="subscription-card">
+                <h2><i class="fas fa-credit-card"></i> Plan & Subscription Details</h2>
+                <div class="subscription-info-layout" style="display: flex; flex-direction: column; gap: 0.85rem; margin-top: 1rem;">
+                    <p style="margin-bottom: 0.2rem;"><strong>Current Active Plan:</strong> <span id="sub-plan-name" style="font-weight: 700; text-transform: uppercase;">Loading...</span></p>
+                    <p style="margin-bottom: 0.2rem;" id="sub-status-container"><strong>Status:</strong> <span id="sub-status">Loading...</span></p>
+                    <p style="margin-bottom: 0.2rem;" id="sub-expiry-container"><strong>Expiry Date:</strong> <span id="sub-expiry-date">Loading...</span></p>
+                    <p style="margin-bottom: 0.2rem;" id="sub-days-container"><strong>Time Remaining:</strong> <span id="sub-days-remaining">Loading...</span></p>
+                    <div style="margin-top: 0.75rem;">
+                        <button id="renew-button" class="btn primary-btn" style="width: auto; padding: 0.6rem 1.5rem; display: none;" onclick="window.showUpgradeModal()"><i class="fas fa-redo"></i> Renew Plan</button>
+                    </div>
+                </div>
+            </div>
+
             <!-- MODIFIED: Resume Details Card with Tabs -->
             <div class="card resume-details-card">
                 <div class="card-header">
