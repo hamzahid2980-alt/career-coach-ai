@@ -13,8 +13,8 @@ TIER_LIMITS = {
         "jobs_matched": 2,        # search allowance
         "chatbot_messages": 10,   # daily
         "emails_sent": 1,         # daily
-        "portfolios_generated": 0, # Premium exclusive (not allowed in free)
-        "portfolios_rated": 0      # Premium exclusive
+        "portfolios_generated": 1, 
+        "portfolios_rated": 1      
     },
     "pro": {
         "resumes_optimized": 5,
@@ -24,8 +24,8 @@ TIER_LIMITS = {
         "jobs_matched": 10,
         "chatbot_messages": 50,
         "emails_sent": 5,
-        "portfolios_generated": 0, # Premium exclusive
-        "portfolios_rated": 0      # Premium exclusive
+        "portfolios_generated": 3, 
+        "portfolios_rated": 5      
     },
     "premium": {
         "resumes_optimized": 999999, # unlimited

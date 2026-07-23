@@ -410,10 +410,10 @@ function injectPricingModal() {
                         <li class="included"><i class="fas fa-check"></i><span>Skills Assessment <strong>2/mo</strong></span></li>
                         <li class="included"><i class="fas fa-check"></i><span>Mock Interview <strong>2 sessions</strong></span></li>
                         <li class="included"><i class="fas fa-check"></i><span>AI Chatbot <strong>10 msgs/day</strong></span></li>
-                        <li class="locked"><i class="fas fa-lock"></i><span>Hackathon alerts locked</span></li>
+                        <li class="included"><i class="fas fa-check"></i><span>Portfolio Rater & Gen <strong>1x/mo</strong></span></li>
                     </ul>
                 </div>
-
+ 
                 <!-- Pro Card -->
                 <div class="modal-card pro">
                     <span class="modal-card-tag">Most Popular</span>
@@ -430,7 +430,7 @@ function injectPricingModal() {
                         <li class="included"><i class="fas fa-check"></i><span>Skills Assessment <strong>10/mo</strong></span></li>
                         <li class="included"><i class="fas fa-check"></i><span>Mock Interview <strong>10 sessions</strong></span></li>
                         <li class="included"><i class="fas fa-check"></i><span>AI Chatbot <strong>50 msgs/day</strong></span></li>
-                        <li class="locked"><i class="fas fa-lock"></i><span>Hackathon alerts locked</span></li>
+                        <li class="included"><i class="fas fa-check"></i><span>Portfolio Rater <strong>5/mo</strong> & Gen <strong>3/mo</strong></span></li>
                     </ul>
                 </div>
 
@@ -481,8 +481,8 @@ function injectPricingModal() {
                         <tr><td class="feat-name">Job Matching Results</td><td class="val-free">2 results/search</td><td class="val-pro">10 results/search</td><td class="val-premium"><strong>20 results/search</strong></td></tr>
                         <tr><td class="feat-name">AI Chatbot Queries</td><td class="val-free">10 msgs/day</td><td class="val-pro">50 msgs/day</td><td class="val-premium"><strong>200 msgs/day</strong></td></tr>
                         <tr><td class="feat-name">Career Mail Writer</td><td class="val-free">1 email/day</td><td class="val-pro">5 emails/day</td><td class="val-premium"><strong>Unlimited</strong></td></tr>
-                        <tr><td class="feat-name">Portfolio Website Generator</td><td class="val-free"><span class="status-na">—</span></td><td class="val-pro"><span class="status-na">—</span></td><td class="val-premium"><strong><i class="fas fa-crown"></i> Unlimited</strong></td></tr>
-                        <tr><td class="feat-name">Portfolio Design Rater</td><td class="val-free"><span class="status-na">—</span></td><td class="val-pro"><span class="status-na">—</span></td><td class="val-premium"><strong><i class="fas fa-crown"></i> Unlimited</strong></td></tr>
+                        <tr><td class="feat-name">Portfolio Website Generator</td><td class="val-free">1 attempt/month</td><td class="val-pro">3/month</td><td class="val-premium"><strong><i class="fas fa-crown"></i> Unlimited</strong></td></tr>
+                        <tr><td class="feat-name">Portfolio Design Rater</td><td class="val-free">1 attempt/month</td><td class="val-pro">5/month</td><td class="val-premium"><strong><i class="fas fa-crown"></i> Unlimited</strong></td></tr>
                         <tr><td class="feat-name">Google Calendar Sync</td><td class="val-free"><span class="status-na">—</span></td><td class="val-pro"><i class="fas fa-check"></i></td><td class="val-premium"><strong><i class="fas fa-check"></i></strong></td></tr>
                         <tr><td class="feat-name">Hackathon Alerts (Curated)</td><td class="val-free">Browse Only</td><td class="val-pro">Browse Only</td><td class="val-premium"><strong>Skill-Matched Alerts</strong></td></tr>
                         <tr><td class="feat-name">Daily Job Alert Emails</td><td class="val-free"><span class="status-na">—</span></td><td class="val-pro"><span class="status-na">—</span></td><td class="val-premium"><strong><i class="fas fa-crown"></i> Included</strong></td></tr>
@@ -640,9 +640,9 @@ function applySubscriptionLocks(tier) {
     // Determine what is locked based on the tier
     let lockedPages = [];
     if (tier === 'free') {
-        lockedPages = ['portfolio_generator.html', 'portfolio_rater.html', 'career_mail.html'];
+        lockedPages = ['career_mail.html'];
     } else if (tier === 'pro') {
-        lockedPages = ['portfolio_generator.html', 'portfolio_rater.html'];
+        lockedPages = [];
     }
 
     // 1. Direct page access gate
@@ -746,9 +746,9 @@ function applySubscriptionLocks(tier) {
             const currentTier = localStorage.getItem('subscription_tier') || 'free';
             let activeLockedPages = [];
             if (currentTier === 'free') {
-                activeLockedPages = ['portfolio_generator.html', 'portfolio_rater.html', 'career_mail.html'];
+                activeLockedPages = ['career_mail.html'];
             } else if (currentTier === 'pro') {
-                activeLockedPages = ['portfolio_generator.html', 'portfolio_rater.html'];
+                activeLockedPages = [];
             }
             
             if (activeLockedPages.length > 0) {
