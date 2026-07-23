@@ -81,7 +81,12 @@ class GenerateFromTextRequest(BaseModel):
     template: str = "creative" # Default to creative
 
 @router.post("/generate-from-text")
-async def generate_from_text_endpoint(payload: GenerateFromTextRequest, request: Request, user: dict = Depends(get_current_user)):
+async def generate_from_text_endpoint(
+    payload: GenerateFromTextRequest, 
+    request: Request, 
+    user: dict = Depends(get_current_user),
+    _limit_check: None = Depends(verify_tier_limit("portfolios_generated"))
+):
     # 1. Get Data
     try:
         portfolio_data = get_portfolio_data_from_gemini(payload.content)
@@ -100,6 +105,7 @@ async def generate_from_text_endpoint(payload: GenerateFromTextRequest, request:
 
     base_url = str(request.base_url).rstrip("/")
     
+    increment_tier_usage(user)
     return {
         "portfolio_data": portfolio_data,
         "html_content": html_code,
@@ -153,7 +159,12 @@ async def publish_portfolio_endpoint(payload: dict, user: dict = Depends(get_cur
         raise HTTPException(status_code=500, detail=f"GitHub Publication Failed: {str(e)}")
 
 @router.post("/publish-github")
-async def publish_portfolio_github(request: Request, file: UploadFile = File(...), user: dict = Depends(get_current_user)):
+async def publish_portfolio_github(
+    request: Request, 
+    file: UploadFile = File(...), 
+    user: dict = Depends(get_current_user),
+    _limit_check: None = Depends(verify_tier_limit("portfolios_generated"))
+):
     """
     Directly generates and publishes to GitHub Pages from a resume file.
     """
@@ -173,6 +184,7 @@ async def publish_portfolio_github(request: Request, file: UploadFile = File(...
         # Use name as base for slug
         base_slug = data.get("personalInfo", {}).get("name", "portfolio").replace(" ", "-")
         live_url = publisher.publish(base_slug, html)
+        increment_tier_usage(user)
         return {"success": True, "url": live_url, "message": "Published to GitHub Pages"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"GitHub Publication Failed: {str(e)}")

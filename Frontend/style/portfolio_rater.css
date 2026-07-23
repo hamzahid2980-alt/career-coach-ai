@@ -1,5 +1,11 @@
 /* --- Portfolio Rater Specific Styles --- */
 /* Custom full-width layout override */
+html, body {
+  height: auto !important;
+  overflow: visible !important;
+  overscroll-behavior: auto !important;
+}
+
 body {
   display: block;
   /* Remove flex used for sidebar layout */

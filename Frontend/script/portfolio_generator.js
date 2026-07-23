@@ -1,6 +1,10 @@
 // Frontend integration for portfolio publishing (Merged Logic)
+const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+    ? 'http://localhost:8000/api/portfolio'
+    : 'https://career-coach-ai-3xap.onrender.com/api/portfolio';
+
 class PortfolioPublisher {
-  constructor(apiBaseUrl = "https://career-coach-ai-3xap.onrender.com/api/portfolio") {
+  constructor(apiBaseUrl = API_BASE_URL) {
     this.apiBaseUrl = apiBaseUrl;
   }
 
@@ -50,8 +54,7 @@ class PortfolioGenerator {
       this.resumeFile = null;
       this.portfolioData = null;
       this.selectedTemplate = "creative"; // Default
-      // CHANGED: Point to PRODUCTION backend for deployment
-      this.apiBaseUrl = "https://career-coach-ai-3xap.onrender.com/api/portfolio"; 
+      this.apiBaseUrl = API_BASE_URL; 
       this.init();
     }
   
