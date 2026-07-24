@@ -1,0 +1,993 @@
+/* --- Resume Builder Stylesheet --- */
+
+:root {
+    --accent-color: #8A49FF; /* User customizable */
+    --resume-bg: #FFFFFF;
+    --resume-text-dark: #1E293B;
+    --resume-text-light: #64748B;
+    --border-resume: #E2E8F0;
+}
+
+/* Base Layout overrides */
+body {
+    overflow: hidden !important; /* Lock outer body scroll, split-containers will scroll */
+    background: #0A090F;
+}
+
+/* Toolbar */
+.toolbar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #13111C;
+    border-bottom: 1px solid rgba(138, 73, 255, 0.15);
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    z-index: 10;
+}
+
+.left-tools {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.back-link {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+.back-link:hover {
+    color: var(--text-light);
+}
+
+.tool-separator {
+    color: rgba(255,255,255,0.1);
+}
+
+.tool-title {
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--text-light);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.tool-title i {
+    color: var(--primary);
+}
+
+.right-tools {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+/* Color Picker */
+.color-picker-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+.color-options {
+    display: flex;
+    gap: 0.35rem;
+}
+.color-opt {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+.color-opt:hover {
+    transform: scale(1.15);
+}
+.color-opt.active {
+    border-color: #FFFFFF;
+    box-shadow: 0 0 8px var(--accent-color);
+}
+
+/* Select */
+.template-select-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+.tool-select {
+    background: #0A090F;
+    border: 1px solid rgba(138, 73, 255, 0.25);
+    color: var(--text-light);
+    padding: 0.4rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    outline: none;
+    cursor: pointer;
+}
+
+/* Split screen */
+.builder-split-container {
+    display: flex;
+    gap: 1.5rem;
+    flex: 1;
+    height: calc(100vh - 85px);
+    overflow: hidden;
+    padding-bottom: 0.5rem;
+}
+
+/* Left Wizard Panel */
+.wizard-panel {
+    flex: 1;
+    background: #13111C;
+    border: 1px solid rgba(138, 73, 255, 0.1);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    max-width: 50%;
+}
+
+.wizard-tabs {
+    display: flex;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(0,0,0,0.15);
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+.wizard-tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.wizard-tab-link {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    padding: 1rem 1.25rem;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+.wizard-tab-link:hover {
+    color: var(--text-light);
+    background: rgba(255,255,255,0.02);
+}
+.wizard-tab-link.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+    background: rgba(138, 73, 255, 0.05);
+}
+
+.wizard-panes {
+    padding: 1.5rem;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.wizard-pane {
+    display: none;
+}
+.wizard-pane.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+.wizard-pane h3 {
+    margin-bottom: 1.25rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-light);
+}
+
+.form-group {
+    margin-bottom: 1.25rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    background-color: var(--bg-main);
+    border: 1px solid var(--border-color);
+    color: var(--text-light);
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    font-family: var(--font-main);
+    outline: none;
+    font-size: 0.92rem;
+    transition: all 0.3s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 10px rgba(138, 73, 255, 0.25);
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.dynamic-inputs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.dynamic-item-card {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 12px;
+    padding: 1.25rem;
+    position: relative;
+}
+
+.delete-item-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: transparent;
+    border: none;
+    color: #EF4444;
+    cursor: pointer;
+    font-size: 0.9rem;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+.delete-item-btn:hover {
+    opacity: 1;
+}
+
+/* Right Preview Panel */
+.preview-panel {
+    flex: 1;
+    background: #0A090F;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 16px;
+    overflow: auto;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 2rem;
+    box-shadow: inset 0 4px 24px rgba(0,0,0,0.5);
+}
+
+.preview-inner {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+/* Simulated A4 Resume Sheet */
+.resume-sheet {
+    width: 210mm;
+    min-height: 297mm;
+    background: var(--resume-bg);
+    color: var(--resume-text-dark);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    padding: 20mm 15mm;
+    font-family: 'Inter', sans-serif;
+    line-height: 1.5;
+    position: relative;
+    box-sizing: border-box;
+    font-size: 10pt;
+}
+
+/* General Resume Styling components */
+.res-header {
+    margin-bottom: 6mm;
+}
+.res-header h1 {
+    font-size: 24pt;
+    font-weight: 800;
+    margin-bottom: 1.5mm;
+    color: var(--resume-text-dark);
+    letter-spacing: -0.5px;
+    line-height: 1.1;
+}
+.res-header h2 {
+    font-size: 13pt;
+    font-weight: 600;
+    color: var(--accent-color);
+    margin-bottom: 3.5mm;
+}
+.res-contact {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3.5mm;
+    font-size: 8.5pt;
+    color: var(--resume-text-light);
+    border-top: 1px solid var(--border-resume);
+    border-bottom: 1px solid var(--border-resume);
+    padding: 2mm 0;
+}
+.res-contact span {
+    display: flex;
+    align-items: center;
+    gap: 1.5mm;
+}
+.res-contact i {
+    color: var(--accent-color);
+    font-size: 8pt;
+}
+
+.res-section {
+    margin-bottom: 5.5mm;
+}
+.res-section-title {
+    font-size: 11pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--accent-color);
+    letter-spacing: 0.5px;
+    border-bottom: 1.5px solid var(--accent-color);
+    padding-bottom: 1mm;
+    margin-bottom: 3mm;
+}
+
+.res-summary {
+    font-size: 9.5pt;
+    color: var(--resume-text-dark);
+}
+
+.res-item {
+    margin-bottom: 4mm;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+}
+.res-item:last-child {
+    margin-bottom: 0;
+}
+.res-item-header {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 700;
+    font-size: 10pt;
+    margin-bottom: 1mm;
+}
+.res-item-sub {
+    display: flex;
+    justify-content: space-between;
+    font-style: italic;
+    color: var(--resume-text-light);
+    font-size: 9pt;
+    margin-bottom: 1.5mm;
+}
+.res-item-desc {
+    margin-left: 4.5mm;
+    font-size: 9pt;
+    color: var(--resume-text-dark);
+}
+.res-item-desc li {
+    margin-bottom: 0.8mm;
+}
+
+.res-skills-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2mm;
+    font-size: 9pt;
+}
+.res-skill-group {
+    display: flex;
+    gap: 2mm;
+}
+.res-skill-group strong {
+    min-width: 32mm;
+}
+
+/* ==========================================================================
+   TEMPLATE VARIATIONS
+   ========================================================================== */
+
+/* 1. MODERN MINIMALIST */
+.resume-sheet.minimalist {
+    border-top: 5mm solid var(--accent-color);
+}
+
+/* 2. EXECUTIVE ELEGANT */
+.resume-sheet.elegant {
+    padding: 0;
+    display: grid;
+    grid-template-columns: 70mm 1fr;
+}
+.resume-sheet.elegant .sidebar-col {
+    background: #1E293B;
+    color: #F8FAFC;
+    padding: 15mm 8mm;
+}
+.resume-sheet.elegant .sidebar-col .res-section-title {
+    color: #F8FAFC;
+    border-bottom-color: rgba(255,255,255,0.15);
+}
+.resume-sheet.elegant .sidebar-col .res-contact {
+    display: flex;
+    flex-direction: column;
+    border: none;
+    padding: 0;
+}
+.resume-sheet.elegant .sidebar-col .res-contact span {
+    color: #E2E8F0;
+}
+.resume-sheet.elegant .sidebar-col .res-contact i {
+    color: var(--accent-color);
+}
+.resume-sheet.elegant .main-col {
+    padding: 15mm 12mm;
+}
+
+/* 3. CREATIVE CLASSIC */
+.resume-sheet.classic {
+    font-family: 'Playfair Display', serif;
+}
+.resume-sheet.classic .res-header {
+    text-align: center;
+}
+.resume-sheet.classic .res-header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 26pt;
+}
+.resume-sheet.classic .res-contact {
+    justify-content: center;
+    border-left: none;
+    border-right: none;
+}
+
+/* ==========================================================================
+   PRINT MEDIA STYLES
+   ========================================================================== */
+@media print {
+    body, html {
+        background: #FFFFFF !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        height: auto !important;
+        overflow: visible !important;
+    }
+    .toolbar-header, .wizard-panel, .background-glow {
+        display: none !important;
+    }
+    .preview-panel {
+        padding: 0 !important;
+        background: transparent !important;
+        overflow: visible !important;
+    }
+    .resume-sheet {
+        box-shadow: none !important;
+        margin: 0 !important;
+        border: none !important;
+        width: 100% !important;
+        min-height: 100% !important;
+    }
+}
+
+/* ==========================================================================
+   WIZARD BUTTONS & COLLISION FIXES
+   ========================================================================== */
+.wizard-panel .btn {
+    width: auto !important;
+    margin-top: 0 !important;
+    padding: 0.5rem 1rem !important;
+    font-size: 0.85rem !important;
+    border-radius: 8px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: linear-gradient(90deg, var(--primary), var(--primary-hover)) !important;
+    color: #FFF !important;
+    border: none !important;
+}
+
+.wizard-pane div[style*="display: flex"] {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 1.25rem !important;
+    position: relative !important;
+}
+
+.wizard-pane div[style*="display: flex"] h3 {
+    margin-bottom: 0 !important;
+}
+
+/* ==========================================================================
+   ELEGANT LAYOUT SKILLS OVERRIDES
+   ========================================================================== */
+.resume-sheet.elegant .res-skill-group {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1.5mm !important;
+    align-items: flex-start !important;
+}
+
+.resume-sheet.elegant .res-skill-group strong {
+    min-width: auto !important;
+    font-size: 9.5pt !important;
+    color: #FFF !important;
+    border-bottom: 1px solid rgba(255,255,255,0.1) !important;
+    width: 100% !important;
+    padding-bottom: 0.5mm !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.resume-sheet.elegant .res-skill-group span {
+    color: #E2E8F0 !important;
+    font-size: 8.5pt !important;
+    line-height: 1.4 !important;
+}
+
+/* ==========================================================================
+   4. PROFESSIONAL ATS LAYOUT
+   ========================================================================== */
+.resume-sheet.ats {
+    font-family: Arial, Helvetica, sans-serif !important;
+    font-size: 9.5pt !important;
+    color: #111827 !important;
+    padding: 15mm 15mm !important;
+}
+.resume-sheet.ats .res-header {
+    text-align: center !important;
+    margin-bottom: 5mm !important;
+    border-bottom: 2px dashed #D1D5DB;
+    padding-bottom: 3.5mm;
+}
+.resume-sheet.ats .res-header h1 {
+    font-size: 20pt !important;
+    font-family: Arial, Helvetica, sans-serif !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.5px;
+    margin-bottom: 1mm !important;
+}
+.resume-sheet.ats .res-header h2 {
+    font-size: 11pt !important;
+    font-weight: 700 !important;
+    color: #374151 !important;
+    text-transform: uppercase;
+    margin-bottom: 2mm !important;
+}
+.resume-sheet.ats .res-contact {
+    justify-content: center !important;
+    border: none !important;
+    font-size: 8pt !important;
+    gap: 3mm !important;
+    padding: 0 !important;
+}
+.resume-sheet.ats .res-contact span {
+    color: #4B5563 !important;
+}
+.resume-sheet.ats .res-contact i {
+    display: none !important; /* ATS parses standard text, icons not needed */
+}
+.resume-sheet.ats .res-section-title {
+    font-size: 10pt !important;
+    font-weight: 700 !important;
+    color: #111827 !important;
+    border-bottom: 1px solid #111827 !important;
+    padding-bottom: 0.5mm !important;
+    margin-bottom: 2.5mm !important;
+}
+.resume-sheet.ats .res-item {
+    margin-bottom: 3.5mm !important;
+}
+.resume-sheet.ats .res-item-header {
+    font-size: 9.5pt !important;
+    font-weight: 700 !important;
+}
+.resume-sheet.ats .res-item-sub {
+    font-size: 9pt !important;
+    font-style: normal !important;
+    font-weight: 600;
+    color: #4B5563 !important;
+}
+.resume-sheet.ats .res-item-desc {
+    margin-left: 4mm !important;
+}
+.resume-sheet.ats .res-item-desc li {
+    list-style-type: square !important;
+    margin-bottom: 0.5mm !important;
+}
+
+/* ==========================================================================
+   5. PREMIUM DEVELOPER LAYOUT
+   ========================================================================== */
+.resume-sheet.developer {
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 9pt !important;
+    color: #0F172A !important;
+    border-left: 6px solid var(--accent-color) !important;
+}
+.resume-sheet.developer .res-header h1 {
+    font-family: 'JetBrains Mono', monospace !important;
+    font-weight: 800 !important;
+}
+.resume-sheet.developer .res-header h2 {
+    font-family: 'JetBrains Mono', monospace !important;
+    font-weight: 700 !important;
+    background: rgba(138, 73, 255, 0.08);
+    display: inline-block;
+    padding: 0.5mm 2mm;
+    border-radius: 4px;
+    font-size: 10pt !important;
+}
+.resume-sheet.developer .res-section-title {
+    font-family: 'JetBrains Mono', monospace !important;
+    color: #0F172A !important;
+    border-bottom: 2px solid var(--accent-color) !important;
+    font-size: 10pt !important;
+    font-weight: 700 !important;
+}
+.resume-sheet.developer .dev-tag {
+    background: rgba(13, 148, 136, 0.08) !important;
+    color: #0D9488 !important;
+    border: 1px solid rgba(13, 148, 136, 0.2) !important;
+    padding: 0.4mm 1.5mm !important;
+    border-radius: 4px !important;
+    font-size: 7.5pt !important;
+    font-weight: 700 !important;
+    display: inline-block !important;
+    margin-right: 1mm !important;
+    margin-bottom: 1mm !important;
+}
+.resume-sheet.developer .res-skills-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2mm !important;
+}
+.resume-sheet.developer .res-skill-group {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1mm !important;
+}
+.resume-sheet.developer .res-skill-group strong {
+    font-size: 8.5pt !important;
+    color: var(--accent-color) !important;
+}
+.resume-sheet.developer .res-item {
+    border-left: 2px solid #E2E8F0;
+    padding-left: 4mm;
+    position: relative;
+    margin-bottom: 4mm;
+}
+.resume-sheet.developer .res-item::before {
+    content: '';
+    position: absolute;
+    left: -5px;
+    top: 5px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent-color);
+}
+
+/* ==========================================================================
+   TEMPLATE SELECTION SCREEN LAYOUT
+   ========================================================================== */
+.selection-screen {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+    height: 100vh;
+    overflow-y: auto;
+    animation: fadeIn 0.4s ease;
+}
+
+.selection-header {
+    text-align: center;
+    margin-bottom: 3.5rem;
+    position: relative;
+}
+.selection-header h1 {
+    font-size: 2.25rem;
+    font-weight: 800;
+    margin-bottom: 0.75rem;
+    color: var(--text-light);
+    background: linear-gradient(135deg, #FFF 0%, var(--primary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.selection-header p {
+    color: var(--text-muted);
+    font-size: 1.05rem;
+}
+.selection-header .back-link {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    font-weight: 700;
+}
+
+.template-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2.5rem;
+}
+
+.template-card {
+    background: #13111C;
+    border: 1px solid rgba(138, 73, 255, 0.1);
+    border-radius: 18px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.template-card:hover {
+    transform: translateY(-8px);
+    border-color: var(--primary);
+    box-shadow: 0 12px 30px rgba(138, 73, 255, 0.2);
+}
+
+/* Card Mock Graphic Previews */
+.card-preview-area {
+    height: 190px;
+    background: #1C1929;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    position: relative;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.selection-screen::-webkit-scrollbar {
+    display: none !important;
+}
+.selection-screen {
+    scrollbar-width: none !important; /* Firefox */
+}
+
+/* --- High-Fidelity Miniature Document Layouts --- */
+.mini-resume {
+    background: #FFFFFF;
+    color: #1E293B;
+    width: 100%;
+    height: 100%;
+    border-radius: 6px;
+    padding: 10px;
+    box-sizing: border-box;
+    font-size: 5pt;
+    line-height: 1.3;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    text-align: left;
+}
+
+.mini-accent-top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--primary);
+}
+
+.mini-header {
+    margin-bottom: 6px;
+}
+
+.mini-name {
+    font-size: 8pt;
+    font-weight: 800;
+    color: #0F172A;
+    line-height: 1;
+}
+.mini-name.serif {
+    font-family: 'Playfair Display', Georgia, serif;
+}
+.mini-name.monospace {
+    font-family: monospace;
+    font-size: 7.5pt;
+}
+
+.mini-title {
+    font-size: 5pt;
+    font-weight: 600;
+    color: #64748B;
+    margin-top: 1px;
+}
+.mini-title.monospace {
+    font-family: monospace;
+    font-size: 4.5pt;
+}
+
+.mini-section-title {
+    font-size: 4.5pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--primary);
+    border-bottom: 0.5px solid rgba(0,0,0,0.1);
+    padding-bottom: 1px;
+    margin: 4px 0 2px 0;
+}
+.mini-section-title.serif {
+    font-family: 'Playfair Display', Georgia, serif;
+}
+.mini-section-title.monospace {
+    font-family: monospace;
+}
+
+.mini-item {
+    font-weight: 700;
+    font-size: 4pt;
+    color: #334155;
+}
+
+.mini-bullet {
+    font-size: 3.5pt;
+    color: #475569;
+    padding-left: 5px;
+    position: relative;
+    margin-top: 0.5px;
+}
+.mini-bullet::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: #94A3B8;
+}
+
+/* Elegant Split Layout Mini Card */
+.mini-resume.mini-split {
+    padding: 0;
+    display: flex;
+}
+.mini-left-col {
+    width: 32%;
+    background: #1E293B;
+    padding: 10px 6px;
+    color: #F8FAFC;
+    height: 100%;
+}
+.mini-left-col .mini-name {
+    font-size: 6.5pt;
+}
+.mini-left-col .mini-section-title {
+    color: #FFF;
+    border-bottom-color: rgba(255,255,255,0.1);
+}
+.mini-contact-text {
+    font-size: 3.5pt;
+    color: #E2E8F0;
+    word-break: break-all;
+}
+.mini-right-col {
+    flex: 1;
+    padding: 10px;
+    background: #FFF;
+    height: 100%;
+}
+
+/* Centered & Classic mini styles */
+.mini-centered {
+    text-align: center;
+}
+.mini-centered .mini-divider {
+    width: 30px;
+    height: 0.5px;
+    background: rgba(0,0,0,0.15);
+    margin: 3px auto;
+}
+.mini-summary {
+    font-size: 3.8pt;
+    color: #475569;
+    line-height: 1.4;
+}
+
+/* ATS style */
+.ats-preview .mini-resume {
+    border: 1px solid #E2E8F0;
+}
+.ats-preview .mini-name {
+    color: #111827;
+}
+.ats-preview .mini-section-title {
+    color: #111827;
+    border-bottom-color: #111827;
+}
+
+/* Developer Mini Card */
+.mini-resume.mini-code {
+    border-left: 3px solid #0D9488;
+}
+.mini-resume.mini-code .mini-section-title {
+    color: #0D9488;
+    border-bottom-color: #0D9488;
+}
+.mini-tags {
+    display: flex;
+    gap: 2px;
+    margin-top: 2px;
+}
+.mini-tag {
+    font-size: 3.5pt;
+    font-family: monospace;
+    background: rgba(13, 148, 136, 0.1);
+    color: #0D9488;
+    border: 0.5px solid rgba(13, 148, 136, 0.2);
+    padding: 0.5px 2px;
+    border-radius: 2px;
+}
+
+.card-details {
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
+}
+
+.card-details h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-light);
+}
+
+.card-details p {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    flex: 1;
+}
+
+.selection-action-btn {
+    margin-top: 0.75rem !important;
+    background: rgba(138, 73, 255, 0.15) !important;
+    border: 1px solid rgba(138, 73, 255, 0.3) !important;
+    color: var(--text-light) !important;
+    font-size: 0.82rem !important;
+    padding: 0.5rem 1rem !important;
+    border-radius: 10px !important;
+    width: 100% !important;
+}
+.template-card:hover .selection-action-btn {
+    background: linear-gradient(90deg, var(--primary), var(--primary-hover)) !important;
+    border-color: transparent !important;
+    color: #FFF !important;
+}
+
+.back-link-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.88rem;
+    transition: color 0.2s;
+    outline: none;
+}
+.back-link-btn:hover {
+    color: var(--text-light);
+}
+

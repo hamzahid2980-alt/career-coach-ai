@@ -472,6 +472,7 @@ function injectPricingModal() {
                     </thead>
                     <tbody>
                         <tr><td class="feat-name">Resume ATS Optimization</td><td class="val-free">1x/month</td><td class="val-pro">5x/month</td><td class="val-premium"><strong>Unlimited</strong></td></tr>
+                        <tr><td class="feat-name">Premium Resume Builder</td><td class="val-free"><strong>Unlimited</strong></td><td class="val-pro"><strong>Unlimited</strong></td><td class="val-premium"><strong>Unlimited</strong></td></tr>
                         <tr><td class="feat-name">Career Roadmap Builder</td><td class="val-free">1 roadmap</td><td class="val-pro">3/month + editable</td><td class="val-premium"><strong>Unlimited</strong></td></tr>
                         <tr><td class="feat-name">Skills Assessment</td><td class="val-free">2/month</td><td class="val-pro">10/month</td><td class="val-premium"><strong>Unlimited</strong></td></tr>
                         <tr><td class="feat-name">Mock Interview Sessions</td><td class="val-free">2 sessions (5 Qs)</td><td class="val-pro">10 sessions (10 Qs)</td><td class="val-premium"><strong>Unlimited</strong></td></tr>

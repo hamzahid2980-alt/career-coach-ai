@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Builder — AI Career Coach</title>
+    <!-- Main Theme Styles -->
+    <link rel="stylesheet" href="./style/home.css?v=1.3">
+    <!-- Feature Specific Styles -->
+    <link rel="stylesheet" href="./style/resume_builder.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;1,400&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/png" href="./assets/favicon.png">
+</head>
+<body>
+    <div class="background-glow"></div>
+
+    <!-- 1. TEMPLATE SELECTION SCREEN (Visible by default) -->
+    <div id="template-selection-screen" class="selection-screen">
+        <header class="selection-header">
+            <a href="home.html" class="back-link"><i class="fas fa-arrow-left"></i> Dashboard</a>
+            <h1>Select a Resume Template</h1>
+            <p>Choose from our premium, hand-crafted resume templates to kickstart your application.</p>
+        </header>
+
+        <div class="template-grid">
+            <!-- Modern Minimalist -->
+            <div class="template-card" data-template="minimalist">
+                <div class="card-preview-area minimalist-preview">
+                    <div class="mini-resume">
+                        <div class="mini-accent-top"></div>
+                        <div class="mini-header">
+                            <div class="mini-name">DONNA ROBBINS</div>
+                            <div class="mini-title">Senior Software Engineer</div>
+                        </div>
+                        <div class="mini-body">
+                            <div class="mini-section-title">Experience</div>
+                            <div class="mini-item"><strong>Acme Corp</strong> — Lead Developer</div>
+                            <div class="mini-bullet">Led 5 engineers in fullstack web migrations</div>
+                            <div class="mini-bullet">Optimized database query response times by 30%</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-details">
+                    <h3>Modern Minimalist</h3>
+                    <p>Clean layout with elegant color accents. Perfect for technology and corporate roles.</p>
+                    <button class="btn selection-action-btn">Choose Layout</button>
+                </div>
+            </div>
+
+            <!-- Executive Elegant -->
+            <div class="template-card" data-template="elegant">
+                <div class="card-preview-area elegant-preview">
+                    <div class="mini-resume mini-split">
+                        <div class="mini-left-col">
+                            <div class="mini-name" style="color: #FFF;">DONNA R.</div>
+                            <div class="mini-section-title" style="color: #FFF; border-bottom-color: rgba(255,255,255,0.2);">Contact</div>
+                            <div class="mini-contact-text">donna@mail.com</div>
+                            <div class="mini-section-title" style="color: #FFF; border-bottom-color: rgba(255,255,255,0.2);">Skills</div>
+                            <div class="mini-contact-text">React, Node, Go</div>
+                        </div>
+                        <div class="mini-right-col">
+                            <div class="mini-title">Director of Engineering</div>
+                            <div class="mini-section-title">Experience</div>
+                            <div class="mini-item"><strong>Tech Corp</strong> — Manager</div>
+                            <div class="mini-bullet">Architected high-scale microservices</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-details">
+                    <h3>Executive Elegant</h3>
+                    <p>Sophisticated split-column format with dark accents. Highlights senior leadership skills.</p>
+                    <button class="btn selection-action-btn">Choose Layout</button>
+                </div>
+            </div>
+
+            <!-- Creative Classic -->
+            <div class="template-card" data-template="classic">
+                <div class="card-preview-area classic-preview">
+                    <div class="mini-resume mini-centered">
+                        <div class="mini-header" style="text-align: center;">
+                            <div class="mini-name serif">May Riley</div>
+                            <div class="mini-title">Creative Director</div>
+                            <div class="mini-divider"></div>
+                        </div>
+                        <div class="mini-body">
+                            <div class="mini-section-title serif">Professional Summary</div>
+                            <div class="mini-summary">Award-winning designer with 8+ years expertise in editorial design and typography.</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-details">
+                    <h3>Creative Classic</h3>
+                    <p>Serif typography with centralized dividers. Brings out character for design & academia.</p>
+                    <button class="btn selection-action-btn">Choose Layout</button>
+                </div>
+            </div>
+
+            <!-- Professional ATS -->
+            <div class="template-card" data-template="ats">
+                <div class="card-preview-area ats-preview">
+                    <div class="mini-resume">
+                        <div class="mini-header" style="text-align: center;">
+                            <div class="mini-name" style="font-family: Arial, sans-serif;">JACOB HANCOCK</div>
+                            <div class="mini-title" style="font-family: Arial, sans-serif; font-size: 6pt;">Product Manager</div>
+                            <div class="mini-divider"></div>
+                        </div>
+                        <div class="mini-body" style="font-family: Arial, sans-serif;">
+                            <div class="mini-section-title">WORK EXPERIENCE</div>
+                            <div class="mini-item"><strong>Tech Products Inc.</strong> — PM</div>
+                            <div class="mini-bullet">Managed lifecycle of 3 SaaS platforms</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-details">
+                    <h3>Professional ATS</h3>
+                    <p>Simplistic, structured single column. High compliance with recruiter scanning systems.</p>
+                    <button class="btn selection-action-btn">Choose Layout</button>
+                </div>
+            </div>
+
+            <!-- Premium Developer -->
+            <div class="template-card" data-template="developer">
+                <div class="card-preview-area developer-preview">
+                    <div class="mini-resume mini-code">
+                        <div class="mini-header">
+                            <div class="mini-name monospace">Zahid Hamdule</div>
+                            <div class="mini-title monospace">Full Stack Engineer</div>
+                        </div>
+                        <div class="mini-body">
+                            <div class="mini-section-title monospace">Technical Stack</div>
+                            <div class="mini-tags">
+                                <span class="mini-tag">React</span>
+                                <span class="mini-tag">FastAPI</span>
+                                <span class="mini-tag">Docker</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-details">
+                    <h3>Premium Developer</h3>
+                    <p>Engineered layout with code-font tags and timelines. Ideal for software engineers.</p>
+                    <button class="btn selection-action-btn">Choose Layout</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. EDITING WORKSPACE (Hidden by default) -->
+    <main id="editor-workspace" class="main-content" style="display: none; padding: 1.5rem 2rem; max-width: 100%; margin: 0; flex-direction: column; height: 100vh;">
+        <!-- Top Toolbar Control Bar -->
+        <header class="toolbar-header">
+            <div class="left-tools">
+                <button class="back-link-btn" onclick="window.location.href='home.html'"><i class="fas fa-arrow-left"></i> Dashboard</button>
+                <span class="tool-separator">|</span>
+                <span class="tool-title"><i class="fas fa-file-invoice"></i> Premium Resume Builder</span>
+            </div>
+
+            <div class="right-tools">
+                <!-- Theme Color Accent -->
+                <div class="color-picker-wrap">
+                    <label>Accent:</label>
+                    <div class="color-options">
+                        <button class="color-opt active" data-color="#8A49FF" style="background:#8A49FF;"></button>
+                        <button class="color-opt" data-color="#2563EB" style="background:#2563EB;"></button>
+                        <button class="color-opt" data-color="#059669" style="background:#059669;"></button>
+                        <button class="color-opt" data-color="#DC2626" style="background:#DC2626;"></button>
+                        <button class="color-opt" data-color="#D97706" style="background:#D97706;"></button>
+                        <button class="color-opt" data-color="#4F46E5" style="background:#4F46E5;"></button>
+                        <button class="color-opt" data-color="#0D9488" style="background:#0D9488;"></button>
+                        <button class="color-opt" data-color="#475569" style="background:#475569;"></button>
+                        <button class="color-opt" data-color="#EC4899" style="background:#EC4899;"></button>
+                    </div>
+                </div>
+
+                <!-- Template Selector -->
+                <div class="template-select-wrap">
+                    <label for="template-select">Template:</label>
+                    <select id="template-select" class="tool-select">
+                        <option value="minimalist">Modern Minimalist</option>
+                        <option value="elegant">Executive Elegant</option>
+                        <option value="classic">Creative Classic</option>
+                        <option value="ats">Professional ATS</option>
+                        <option value="developer">Premium Developer</option>
+                    </select>
+                </div>
+
+                <!-- Print/Download Button -->
+                <button class="btn primary-btn print-btn" onclick="window.downloadResumePDF()"><i class="fas fa-download"></i> Download Free PDF</button>
+            </div>
+        </header>
+
+        <!-- Split Screen Main Layout -->
+        <div class="builder-split-container">
+            <!-- Left Panel: Input Wizard Form -->
+            <div class="wizard-panel">
+                <div class="wizard-tabs">
+                    <button class="wizard-tab-link active" data-tab="personal"><i class="fas fa-user"></i> Personal</button>
+                    <button class="wizard-tab-link" data-tab="summary"><i class="fas fa-align-left"></i> Summary</button>
+                    <button class="wizard-tab-link" data-tab="experience"><i class="fas fa-briefcase"></i> Experience</button>
+                    <button class="wizard-tab-link" data-tab="projects"><i class="fas fa-folder-open"></i> Projects</button>
+                    <button class="wizard-tab-link" data-tab="education"><i class="fas fa-graduation-cap"></i> Education</button>
+                    <button class="wizard-tab-link" data-tab="skills"><i class="fas fa-code"></i> Skills</button>
+                </div>
+
+                <div class="wizard-panes">
+                    <!-- Personal Info Pane -->
+                    <div class="wizard-pane active" id="pane-personal">
+                        <h3>Personal Information</h3>
+                        <div class="form-grid">
+                            <div class="form-group"><label>Full Name</label><input type="text" id="in-name" placeholder="e.g. John Doe"></div>
+                            <div class="form-group"><label>Professional Title</label><input type="text" id="in-title" placeholder="e.g. Senior Software Engineer"></div>
+                            <div class="form-group"><label>Email Address</label><input type="email" id="in-email" placeholder="e.g. john.doe@email.com"></div>
+                            <div class="form-group"><label>Phone Number</label><input type="tel" id="in-phone" placeholder="e.g. +91 98765 43210"></div>
+                            <div class="form-group"><label>LinkedIn URL</label><input type="url" id="in-linkedin" placeholder="e.g. linkedin.com/in/username"></div>
+                            <div class="form-group"><label>GitHub or Portfolio URL</label><input type="url" id="in-github" placeholder="e.g. github.com/username"></div>
+                        </div>
+                    </div>
+
+                    <!-- Summary Pane -->
+                    <div class="wizard-pane" id="pane-summary">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h3>Professional Summary</h3>
+                            <button class="btn secondary-btn ai-helper-btn" onclick="generateAISummary()"><i class="fas fa-magic"></i> Suggest with AI</button>
+                        </div>
+                        <div class="form-group">
+                            <textarea id="in-summary" rows="8" placeholder="Write a short overview of your professional achievements and career goals..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Experience Pane -->
+                    <div class="wizard-pane" id="pane-experience">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h3>Work Experience</h3>
+                            <button class="btn secondary-btn" onclick="addExperienceItem()"><i class="fas fa-plus"></i> Add Position</button>
+                        </div>
+                        <div id="experience-list" class="dynamic-inputs-list">
+                            <!-- Dynamically added experience entries -->
+                        </div>
+                    </div>
+
+                    <!-- Projects Pane -->
+                    <div class="wizard-pane" id="pane-projects">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h3>Projects</h3>
+                            <button class="btn secondary-btn" onclick="addProjectItem()"><i class="fas fa-plus"></i> Add Project</button>
+                        </div>
+                        <div id="projects-list" class="dynamic-inputs-list">
+                            <!-- Dynamically added project entries -->
+                        </div>
+                    </div>
+
+                    <!-- Education Pane -->
+                    <div class="wizard-pane" id="pane-education">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h3>Education</h3>
+                            <button class="btn secondary-btn" onclick="addEducationItem()"><i class="fas fa-plus"></i> Add Education</button>
+                        </div>
+                        <div id="education-list" class="dynamic-inputs-list">
+                            <!-- Dynamically added education entries -->
+                        </div>
+                    </div>
+
+                    <!-- Skills Pane -->
+                    <div class="wizard-pane" id="pane-skills">
+                        <h3>Skills</h3>
+                        <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1rem;">Group your skills by category (e.g. Languages, Frameworks, Tools) or list them comma-separated.</p>
+                        <div class="form-group">
+                            <label>Technical Skills (Comma-separated)</label>
+                            <input type="text" id="in-skills-tech" placeholder="e.g. Python, React, Docker, Node.js">
+                        </div>
+                        <div class="form-group">
+                            <label>Soft Skills / Methodologies (Comma-separated)</label>
+                            <input type="text" id="in-skills-soft" placeholder="e.g. Agile, System Design, Team Leadership">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel: Live A4 Print Preview -->
+            <div class="preview-panel">
+                <div class="preview-inner">
+                    <!-- Target element that will be printed or turned into PDF -->
+                    <div id="resume-a4-sheet" class="resume-sheet minimalist">
+                        <!-- Content dynamically populated by script -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Dependencies -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="./script/auth.js"></script>
+
+    <!-- html2pdf dependency for client side high quality rendering -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <!-- Feature Script -->
+    <script src="./script/resume_builder.js"></script>
+</body>
+</html>
