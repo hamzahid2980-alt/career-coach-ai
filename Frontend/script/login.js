@@ -27,18 +27,32 @@ const googleSignInBtn = document.getElementById('google-signin-btn');
 const googleSignInBtnSignup = document.getElementById('google-signin-btn-signup');
 const errorMessageDiv = document.getElementById('error-message');
 
-// --- Global Flag for Race Condition Fix ---
-let isGoogleLoginPending = false;
+// --- Global Flag for Auth Redirection Control ---
+let isAuthActionPending = false;
 
 // --- Auth State Guard ---
 auth.onAuthStateChanged(user => {
-    // FIX: Only redirect if we are NOT in the middle of a Google Login.
-    // If we are, handleGoogleAuth() will handle the redirect after saving the token.
-    if (user && !isGoogleLoginPending) {
-        // console.log("User is signed in, redirecting to home.");
+    // Only redirect if we are NOT in the middle of a form submit or Google login action.
+    // If we are, the specific handlers below will manage the redirect after completing sync.
+    if (user && !isAuthActionPending) {
         document.body.classList.add('auth-success');
         setTimeout(() => {
-            window.location.href = 'home.html';
+            const params = new URLSearchParams(window.location.search);
+            const redirectUrl = params.get('redirect');
+            if (redirectUrl) {
+                const plan = params.get('plan');
+                const billing = params.get('billing');
+                let targetUrl = redirectUrl;
+                const queryParams = [];
+                if (plan) queryParams.push(`plan=${plan}`);
+                if (billing) queryParams.push(`billing=${billing}`);
+                if (queryParams.length > 0) {
+                    targetUrl += `?${queryParams.join('&')}`;
+                }
+                window.location.href = targetUrl;
+            } else {
+                window.location.href = 'home.html';
+            }
         }, 500);
     }
 });
@@ -66,21 +80,31 @@ signupForm.addEventListener('submit', async (e) => {
     const email = document.getElementById('signup-email').value;
     const password = document.getElementById('signup-password').value;
 
+    isAuthActionPending = true;
+
     try {
         const userCredential = await auth.createUserWithEmailAndPassword(email, password);
         await userCredential.user.updateProfile({ displayName: name });
 
-        const response = await fetch(`${API_BASE_URL}/api/auth/signup`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: email, password: password, name: name })
-        });
-
-        if (!response.ok) { throw await response.json(); }
+        // Sync with backend database
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/auth/signup`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: email, password: password, name: name })
+            });
+            if (!response.ok) { console.warn("Backend signup sync warned:", await response.json()); }
+        } catch (backendError) {
+            console.error("Backend signup registration sync failed, continuing to redirect:", backendError);
+        }
         
-        // Redirect is handled by onAuthStateChanged because isGoogleLoginPending is false
+        document.body.classList.add('auth-success');
+        setTimeout(() => {
+            window.location.href = 'home.html';
+        }, 500);
     } catch (error) {
         showError(error.detail || error.message);
+        isAuthActionPending = false;
     }
 });
 
@@ -90,17 +114,39 @@ loginForm.addEventListener('submit', async (e) => {
     const email = document.getElementById('login-email').value;
     const password = document.getElementById('login-password').value;
 
+    isAuthActionPending = true;
+
     try {
         await auth.signInWithEmailAndPassword(email, password);
+        document.body.classList.add('auth-success');
+        setTimeout(() => {
+            const params = new URLSearchParams(window.location.search);
+            const redirectUrl = params.get('redirect');
+            if (redirectUrl) {
+                const plan = params.get('plan');
+                const billing = params.get('billing');
+                let targetUrl = redirectUrl;
+                const queryParams = [];
+                if (plan) queryParams.push(`plan=${plan}`);
+                if (billing) queryParams.push(`billing=${billing}`);
+                if (queryParams.length > 0) {
+                    targetUrl += `?${queryParams.join('&')}`;
+                }
+                window.location.href = targetUrl;
+            } else {
+                window.location.href = 'home.html';
+            }
+        }, 500);
     } catch (error) {
         showError(error.message);
+        isAuthActionPending = false;
     }
 });
-// --- REPLACE YOUR handleGoogleAuth FUNCTION WITH THIS ---
 
+// --- Google Authentication Handler ---
 const handleGoogleAuth = async () => {
     hideError();
-    isGoogleLoginPending = true; 
+    isAuthActionPending = true; 
 
     try {
         const provider = new firebase.auth.GoogleAuthProvider();
@@ -111,42 +157,33 @@ const handleGoogleAuth = async () => {
         provider.setCustomParameters({ prompt: 'consent' });
 
         const result = await auth.signInWithPopup(provider);
-        
-        // --- DEBUGGING LOGS ---
         console.log("Login Result:", result);
         
         let googleAccessToken = null;
-        
-        // Check method 1 (Standard)
         if (result.credential && result.credential.accessToken) {
             googleAccessToken = result.credential.accessToken;
-            console.log("Found token in result.credential");
-        } 
-        // Check method 2 (Helper)
-        else if (firebase.auth.GoogleAuthProvider.credentialFromResult) {
+        } else if (firebase.auth.GoogleAuthProvider.credentialFromResult) {
             const cred = firebase.auth.GoogleAuthProvider.credentialFromResult(result);
-            if (cred) {
-                googleAccessToken = cred.accessToken;
-                console.log("Found token via credentialFromResult");
-            }
+            if (cred) googleAccessToken = cred.accessToken;
         }
 
         if (googleAccessToken) {
             sessionStorage.setItem('googleAccessToken', googleAccessToken);
-            console.log("✅ TOKEN SAVED:", googleAccessToken); // Look for this in console
-        } else {
-            console.error("❌ NO TOKEN FOUND IN RESULT. Check scopes.");
+            console.log("✅ TOKEN SAVED:", googleAccessToken);
         }
 
-        // Proceed with backend login
-        const idToken = await result.user.getIdToken(); 
-        const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id_token: idToken })
-        });
-
-        if (!response.ok) { throw await response.json(); }
+        // Sync token with backend database
+        try {
+            const idToken = await result.user.getIdToken(); 
+            const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id_token: idToken })
+            });
+            if (!response.ok) { console.warn("Backend login sync warned:", await response.json()); }
+        } catch (backendError) {
+            console.error("Backend login registration sync failed, continuing to redirect:", backendError);
+        }
         
         document.body.classList.add('auth-success');
         setTimeout(() => {
@@ -170,8 +207,17 @@ const handleGoogleAuth = async () => {
 
     } catch (error) {
         console.error("Google Auth Error:", error);
-        showError(error.detail || error.message);
-        isGoogleLoginPending = false; 
+        // Fallback: If user successfully authenticated in Firebase, redirect them anyway!
+        if (auth.currentUser) {
+            console.log("Firebase credentials active. Redirecting user despite sync error.");
+            document.body.classList.add('auth-success');
+            setTimeout(() => {
+                window.location.href = 'home.html';
+            }, 500);
+        } else {
+            showError(error.detail || error.message);
+            isAuthActionPending = false; 
+        }
     }
 };
 
