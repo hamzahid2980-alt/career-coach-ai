@@ -14,38 +14,46 @@ from firebase_admin import credentials, initialize_app
 if not firebase_admin._apps:
     try:
         firebase_creds = os.environ.get("FIREBASE_CREDENTIALS")
+        # Check if environment variable contains Firebase credentials
+        firebase_creds = os.getenv("FIREBASE_CREDENTIALS")
+        project_id = "ai-career-coach-70a8d" # Fallback
+        
         if firebase_creds:
-            # Load credentials from environment variable (Render or local .env)
             cred_dict = json.loads(firebase_creds)
+            project_id = cred_dict.get("project_id", project_id)
             cred = credentials.Certificate(cred_dict)
             print("✅ Loaded credentials from environment variable.")
         else:
             # Fallback to local JSON file (for local dev)
             credentials_path = Path(__file__).parent / "firebase-credentials.json"
             if not credentials_path.exists():
-                # Try looking one level up just in case
                 credentials_path = Path(__file__).parent.parent / "firebase-credentials.json"
             
             if credentials_path.exists():
-                cred = credentials.Certificate(credentials_path)
+                try:
+                    with open(credentials_path) as f:
+                        cred_data = json.load(f)
+                        project_id = cred_data.get("project_id", project_id)
+                except Exception:
+                    pass
+                cred = credentials.Certificate(str(credentials_path))
+                print(f"✅ Loaded credentials from local JSON: {credentials_path}")
             else:
                 cred = None
                 print("⚠️ Warning: 'firebase-credentials.json' not found.")
         
         if cred:
-            # Fix: Explicitly set the project ID to avoid "A project ID is required" error
             initialize_app(cred, options={
-                'projectId': 'genaihack-240d7',
-                'storageBucket': 'genaihack-240d7.firebasestorage.app' 
+                'projectId': project_id,
+                'storageBucket': f"{project_id}.firebasestorage.app"
             })
-            print("✅ Firebase Admin SDK initialized successfully.")
+            print(f"✅ Firebase Admin SDK initialized successfully for project: {project_id}")
         else:
-            # Try to initialize with application default credentials
             initialize_app(options={
-                'projectId': 'genaihack-240d7',
-                'storageBucket': 'genaihack-240d7.firebasestorage.app' 
+                'projectId': project_id,
+                'storageBucket': f"{project_id}.firebasestorage.app"
             })
-            print("✅ Firebase Admin SDK initialized using default credentials.")
+            print(f"✅ Firebase Admin SDK initialized using default credentials for project: {project_id}")
     except Exception as e:
         print(f"❌ Failed to initialize Firebase Admin SDK: {e}")
 else:

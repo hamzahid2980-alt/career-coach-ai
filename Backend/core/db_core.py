@@ -16,16 +16,19 @@ def initialize_firebase():
     if not firebase_admin._apps:
         # PRIORITIZE: Env Var first (Render or local .env)
         firebase_creds = os.environ.get("FIREBASE_CREDENTIALS")
+        project_id = "ai-career-coach-70a8d" # Fallback default
         cred = None
+        
         try:
             if firebase_creds:
                 cred_dict = json.loads(firebase_creds)
+                project_id = cred_dict.get("project_id", project_id)
                 cred = credentials.Certificate(cred_dict)
                 firebase_admin.initialize_app(cred, options={
-                    'projectId': 'genaihack-240d7',
-                    'storageBucket': 'genaihack-240d7.firebasestorage.app'
+                    'projectId': project_id,
+                    'storageBucket': f"{project_id}.firebasestorage.app"
                 })
-                print("✅ Firebase initialized in db_core using credentials from environment variable.")
+                print(f"✅ Firebase initialized in db_core using credentials from environment variable for project: {project_id}")
                 return
         except Exception as e:
             print(f"⚠️ Warning: Env variable Firebase init failed: {e}")
@@ -42,23 +45,29 @@ def initialize_firebase():
         for path in possible_keys:
             if path.exists():
                 cred_path = str(path)
+                try:
+                    with open(path) as f:
+                        cred_data = json.load(f)
+                        project_id = cred_data.get("project_id", project_id)
+                except Exception:
+                    pass
                 break
         
         try:
             if cred_path:
                 cred = credentials.Certificate(cred_path)
                 firebase_admin.initialize_app(cred, options={
-                    'projectId': 'genaihack-240d7',
-                    'storageBucket': 'genaihack-240d7.firebasestorage.app'
+                    'projectId': project_id,
+                    'storageBucket': f"{project_id}.firebasestorage.app"
                 })
-                print(f"✅ Firebase initialized with credentials from: {cred_path}")
+                print(f"✅ Firebase initialized with credentials from: {cred_path} for project: {project_id}")
             else:
                 # Default initialization (works if Google Application Credentials env var is set)
                 firebase_admin.initialize_app(options={
-                    'projectId': 'genaihack-240d7',
-                    'storageBucket': 'genaihack-240d7.firebasestorage.app'
+                    'projectId': project_id,
+                    'storageBucket': f"{project_id}.firebasestorage.app"
                 })
-                print("✅ Firebase initialized with default credentials/environment variable.")
+                print(f"✅ Firebase initialized with default credentials for project: {project_id}")
         except Exception as e:
             print(f"⚠️ Warning: Firebase initialization failed: {e}")
 

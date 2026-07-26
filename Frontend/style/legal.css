@@ -1,0 +1,298 @@
+/* =========================================================
+   legal.css – Shared styles for privacy.html & terms.html
+   Relies on index.css for all base variables, resets,
+   button classes, header, footer, particle and animation
+   definitions. Only legal-page-specific rules live here.
+   ========================================================= */
+
+/* ── Hero ── */
+.legal-hero {
+  padding: 5rem 0 3rem;
+  text-align: center;
+  animation: fadeInUp 0.8s ease-out both;
+}
+
+.legal-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(138, 73, 255, 0.12);
+  border: 1px solid rgba(138, 73, 255, 0.3);
+  border-radius: 50px;
+  padding: 0.4rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 1.5rem;
+  letter-spacing: 0.04em;
+}
+
+.legal-hero h1 {
+  font-size: 3rem;
+  font-weight: 800;
+  margin: 0 0 1rem;
+  background: linear-gradient(90deg, #EAEBF0, #c5c7d3);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: 1.2;
+}
+
+.legal-hero p {
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  max-width: 600px;
+  margin: 0 auto 1.5rem;
+  line-height: 1.7;
+}
+
+.legal-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.legal-meta i {
+  color: var(--primary);
+}
+
+/* ── Section divider ── */
+.legal-divider {
+  height: 1px;
+  background: var(--border-color);
+  margin: 0 0 3rem;
+}
+
+/* ── Table of contents ── */
+.toc-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  padding: 2rem;
+  margin-bottom: 3rem;
+  animation: fadeInUp 0.6s ease-out 0.2s both;
+}
+
+.toc-card h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0 0 1rem;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.toc-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  columns: 2;
+  column-gap: 2rem;
+}
+
+.toc-list li {
+  margin-bottom: 0.6rem;
+  break-inside: avoid;
+}
+
+.toc-list a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.92rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: color 0.2s ease;
+}
+
+.toc-list a i {
+  font-size: 0.7rem;
+  color: var(--primary);
+}
+
+.toc-list a:hover {
+  color: var(--text-light);
+}
+
+/* ── Content sections ── */
+.legal-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  padding: 2rem 2.5rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  animation: fadeInUp 0.5s ease-out both;
+}
+
+.legal-section:hover {
+  border-color: rgba(138, 73, 255, 0.35);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Gradient left-border accent */
+.legal-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(180deg, var(--primary), var(--secondary));
+  border-radius: 4px 0 0 4px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  margin-bottom: 1.2rem;
+}
+
+.section-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: rgba(138, 73, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.legal-section:hover .section-icon {
+  background: rgba(138, 73, 255, 0.22);
+  transform: scale(1.08);
+}
+
+.legal-section h2 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--text-light);
+}
+
+.legal-section p,
+.legal-section li {
+  color: var(--text-muted);
+  line-height: 1.8;
+  font-size: 0.97rem;
+}
+
+.legal-section p {
+  margin: 0 0 1rem;
+}
+
+.legal-section p:last-child {
+  margin-bottom: 0;
+}
+
+.legal-section ul,
+.legal-section ol {
+  padding-left: 1.4rem;
+  margin: 0.5rem 0 1rem;
+}
+
+.legal-section li {
+  margin-bottom: 0.5rem;
+}
+
+.legal-section strong {
+  color: var(--text-light);
+  font-weight: 600;
+}
+
+/* ── Callout / highlight box ── */
+.legal-callout {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  background: rgba(138, 73, 255, 0.08);
+  border: 1px solid rgba(138, 73, 255, 0.25);
+  border-radius: 10px;
+  padding: 1rem 1.2rem;
+  margin: 1rem 0;
+}
+
+.legal-callout i {
+  color: var(--primary);
+  margin-top: 0.15rem;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.legal-callout p {
+  margin: 0 !important;
+  color: var(--text-light) !important;
+  font-size: 0.93rem !important;
+}
+
+/* Warning variant (pink accent) */
+.legal-callout.warning {
+  background: rgba(255, 77, 184, 0.07);
+  border-color: rgba(255, 77, 184, 0.25);
+}
+
+.legal-callout.warning i {
+  color: var(--secondary);
+}
+
+/* ── Contact cards ── */
+.contact-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: rgba(138, 73, 255, 0.08);
+  border: 1px solid rgba(138, 73, 255, 0.2);
+  border-radius: 10px;
+  padding: 1rem 1.2rem;
+  margin-top: 1rem;
+}
+
+.contact-card i {
+  color: var(--primary);
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.contact-card a {
+  color: var(--primary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.contact-card a:hover {
+  color: var(--secondary);
+}
+
+/* ── Staggered section entry animations ── */
+.legal-section:nth-child(1)  { animation-delay: 0.05s; }
+.legal-section:nth-child(2)  { animation-delay: 0.10s; }
+.legal-section:nth-child(3)  { animation-delay: 0.15s; }
+.legal-section:nth-child(4)  { animation-delay: 0.20s; }
+.legal-section:nth-child(5)  { animation-delay: 0.25s; }
+.legal-section:nth-child(6)  { animation-delay: 0.30s; }
+.legal-section:nth-child(7)  { animation-delay: 0.35s; }
+.legal-section:nth-child(8)  { animation-delay: 0.40s; }
+.legal-section:nth-child(9)  { animation-delay: 0.45s; }
+.legal-section:nth-child(10) { animation-delay: 0.50s; }
+.legal-section:nth-child(11) { animation-delay: 0.55s; }
+.legal-section:nth-child(12) { animation-delay: 0.60s; }
+.legal-section:nth-child(13) { animation-delay: 0.65s; }
+.legal-section:nth-child(14) { animation-delay: 0.70s; }
+
+/* ── Responsive overrides ── */
+@media (max-width: 768px) {
+  .legal-hero h1 { font-size: 2rem; }
+  .legal-section { padding: 1.5rem; }
+}
+
+@media (max-width: 600px) {
+  .toc-list { columns: 1; }
+}

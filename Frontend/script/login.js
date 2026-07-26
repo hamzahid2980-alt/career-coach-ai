@@ -1,10 +1,10 @@
 const firebaseConfig = {
-    apiKey: "AIzaSyDtuYr4icwQf2HsvByrCZeqbEex28lL6GI", // Replace with your actual key in production (or use environment variables if applicable)
-    authDomain: "genaihack-240d7.firebaseapp.com",
-    projectId: "genaihack-240d7",
-    storageBucket: "genaihack-240d7.firebasestorage.app",
-    messagingSenderId: "1095624251792",
-    appId: "1:1095624251792:web:8b4be21e68c1a8bcc2bb15"
+    apiKey: "AIzaSyA-D0XcXpB5agZm9XdPV0CjHv9uJZd9Z2c",
+    authDomain: "ai-career-coach-70a8d.firebaseapp.com",
+    projectId: "ai-career-coach-70a8d",
+    storageBucket: "ai-career-coach-70a8d.firebasestorage.app",
+    messagingSenderId: "54181501139",
+    appId: "1:54181501139:web:fd42aaeb0a0b2ae8539c26"
 };
 
 firebase.initializeApp(firebaseConfig);
