@@ -296,3 +296,12 @@
 @media (max-width: 600px) {
   .toc-list { columns: 1; }
 }
+
+/* App Logo in Header */
+.app-logo {
+  height: 42px;
+  width: auto;
+  vertical-align: middle;
+  margin-right: 10px;
+  border-radius: 6px;
+}
